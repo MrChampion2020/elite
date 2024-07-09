@@ -141,13 +141,14 @@
       flex-direction: row;
     }
     .profile {
-      width: 5%;
-      height: 80%;
+      width: 4%;
+      height: 60%;
       object-fit: cover;
+      margin-top: 10px;
     }
     .profile img {
-      width: 80%;
-      height: 100%;
+      width: 60%;
+      height: 80%;
       border: 2px solid white;
       border-radius: 50%;
       object-fit: cover;
@@ -162,7 +163,7 @@
       color: black;
       font-size: 16px;
       font-family: 'Times New Roman', Times, serif;
-      padding: 20px;
+      padding: 20px 10px;
     }
     .profile-top {
       display: flex;
@@ -202,34 +203,51 @@
       background: purple;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
     }
     .withdraw-form {
       display: none;
       position: fixed;
       top: 50%;
+      width: 60%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: white;
+      background: purple;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       z-index: 1000;
     }
-    .withdraw-form input {
+    .withdraw-form h3{
+      margin: auto;
+      text-align: center;
+      color: white;
+    }
+    .withdraw-form input, select{
       display: block;
-      width: 100%;
+      width: 80%;
       padding: 10px;
-      margin: 10px 0;
+      margin: 10px auto;
+      border-radius: 10px;
+      border: none;
     }
     .withdraw-form .close-button {
       padding: 5px 10px;
-      background: red;
-      color: white;
+      background: rgb(255, 255, 255);
+      color: purple;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin-left: 10%;
+    }
+    .withdraw-form .withdraw-button{
+      padding: 5px 10px;
+      background-color: rgba(128, 0, 128, 0.705);
+      color: white;
+      border: 1px solid white;
+      border-radius: 10px;
+      margin-left: 1%;
     }
     .referralLink {
       margin: auto;
@@ -531,7 +549,7 @@
     }
 
 
-    @media (max-width: 600px) {
+    @media (max-width: 678px) {
       .message {
         font-size: 3vw;
         bottom: -50px;
@@ -539,6 +557,16 @@
       .segment {
         font-size: 3vw;
       }
+    }
+
+    #dailyTask{
+      display: none;
+      height: 60%;
+      width: 50%;
+      background-color: purple;
+      color: white;
+      margin: auto
+
     }
   </style>
 </head>
@@ -564,13 +592,13 @@
     </div>
     <nav>
       <ul>
-        <li><a href="#home" id="showUserInfo">Profile</a></li>
-        <li><a href="#" id="earnHistory">Earnings</a></li>
+        <li><a href="#" id="showUserInfo">Profile</a></li>
+        <li><a href="#" id="earnHistory">Airtime</a></li>
         <li><a href="#" id="topEarners">Top Earners</a></li>
         <li class=""><a href="#">Courses</a></li>
         <li><a href="#" id="openFullPageButton">Lucky Wheel</a></li>
-        <li><a href="#" id="openFullPageButton">Daily Tasks</a></li>
-        <li class="logout" ><a href="#">Logout</a></li>
+        <li><a href="#" id="openTask">Daily Tasks</a></li>
+        <li onclick="logoutUser()"><a href="#">Logout</a></li>
       </ul>
     </nav>
   </div>
@@ -591,7 +619,7 @@
       <div class="wallet">
        <h3>NGN: <b id="wallet"></b>  <!--<b class="balance">Balance</b>--></h3>
        <h4 > EC: <b id="referralWallet"></b>   <!--<b class="bonus">Bonus</b>--></h4>
-       <button class="withdraw-button" onclick="openWithdrawForm()">Withdraw</button>
+       <button class="withdraw-button" onclick="toggleWithdrawForm()">Withdraw</button>
       </div>   
    
        <div class="referralLink">
@@ -617,12 +645,7 @@
      <div id="fullPageArea">
       <button id="exitButton">Exit</button>
 
-
-      
-      <!--area for full page content -->
-
-
-      
+      <!--area for full page content -->      
   <div class="wheel-container">
     <div class="basement">
       <div class="inner-basement">
@@ -651,7 +674,34 @@
     <div class="message" id="message"></div>
   </div>
   </div>
+
+<div id="dailyTask">
+  <button id="exitTask">Exit</button>
+
+
+  <h1>coming soon...</h1>
+
+</div>
+
    
+
+  <div id="withdraw-form" class="withdraw-form"> 
+
+    <h3>Withdraw Funds</h3>
+        <input type="text" id="name" placeholder="Name">
+        <input type="text" id="bank-name" placeholder="Bank Name">
+        <input type="text" id="phone" placeholder="Phone">
+        <input type="email" id="email" placeholder="Email">
+        <input type="number" id="account-number" placeholder="Account Number">
+        <input type="number" id="withdraw-amount" placeholder="Enter Amount">
+        <select id="wallet-type">
+          <option value="wallet">Wallet</option>
+          <option value="referralWallet">Referral Wallet</option>
+        </select>
+        <button class="close-button" onclick="closeWithdrawForm()">Close</button>
+        <button class="withdraw-button" onclick="withdrawFunds()">Withdraw</button>
+
+  </div>
   </main>
   
   <footer>
@@ -659,8 +709,10 @@
   </footer>
 
   <script>
-const API_URL = `https://elitearn.onrender.com`;
+const API_URL = `https://elitearn.onrender.com`; //url
 
+
+//function to fetch user data
 const fetchUserData = async () => {
     const token = localStorage.getItem('token');
 
@@ -707,6 +759,16 @@ document.getElementById('openFullPageButton').addEventListener('click', function
         document.getElementById('exitButton').addEventListener('click', function() {
             document.getElementById('fullPageArea').style.display = 'none';
         });
+        
+
+        document.getElementById('openTask').addEventListener('click', function() {
+            document.getElementById('dailyTask').style.display = 'block';
+        });
+
+        document.getElementById('exitTask').addEventListener('click', function() {
+            document.getElementById('dailyTask').style.display = 'none';
+        });
+
 
     function toggleDropdownMenu() {
       const menu = document.getElementById('dropdown-menu');
@@ -730,6 +792,9 @@ document.getElementById('openFullPageButton').addEventListener('click', function
       const amount = document.getElementById('withdraw-amount').value;
       alert(`Withdrawing ${amount} coins`);
       toggleWithdrawForm();
+    }
+    function closeWithdrawForm() {
+      document.querySelector('.withdraw-form').style.display = 'none';
     }
 
     function toggleSpinWheel() {
@@ -822,6 +887,52 @@ document.getElementById('openFullPageButton').addEventListener('click', function
         .then(() => alert("Referral link copied!"))
         .catch(err => console.error("Error copying referral link:", err));
     }
+
+    async function withdrawFunds() {
+      const userId = document.getElementById('user-id').value;
+      const name = document.getElementById('name').value;
+      const bankName = document.getElementById('bank-name').value;
+      const phone = document.getElementById('phone').value;
+      const email = document.getElementById('email').value;
+      const accountNumber = document.getElementById('account-number').value;
+      const amount = document.getElementById('withdraw-amount').value;
+      const walletType = document.getElementById('wallet-type').value;
+
+      if (amount <= 0) {
+        alert('Please enter a valid amount.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/withdraw', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId, name, bankName, phone, email, accountNumber, amount, walletType })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Withdrawal successful.');
+          console.log('Receipt:', data.receipt);
+          closeWithdrawForm();
+        } else {
+          alert('Withdrawal failed: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    }
+
+    async function logoutUser() {
+      localStorage.removeItem("token");
+      document.getElementById("dashboard").style.display = "none";
+      window.location.href = 'login.html';
+    }
+
   </script>
 </body>
 </html>
