@@ -306,41 +306,7 @@
       cursor: pointer;
       color: purple;
     }
-    .activity-buttons {
-      display: flex;
-      justify-content: space-around;
-      padding: 10px;
-    }
-    .activity-buttons button {
-      padding: 5px 10px;
-      background: purple;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .spin-wheel, .earn-bonus {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      z-index: 1000;
-      text-align: center;
-    }
-    .spin-wheel .close-button, .earn-bonus .close-button {
-      margin-top: 10px;
-      padding: 5px 10px;
-      background: red;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+
     footer{
       margin: auto;
       width: 80%;
@@ -361,6 +327,37 @@
       color: white;
     }
     
+
+
+    /*DROP LIST STYLES*/
+
+    .profilePage{
+        width: 90%;
+        display: none;
+        height: 85%;
+        position: fixed;
+        top: 16%;
+        background-color: purple;
+        margin-left: -5%;
+        padding: 10px;
+        border-radius: 10px;
+      }
+      #exitProfile{
+          padding: 6px 20px;
+          font-size: 16px;
+          background-color: purple;
+          color: rgb(245, 222, 245);
+          border: 0.5px solid white;
+          border-radius: 5px;
+        }
+        .profileData{
+          width: 50%;
+          margin: auto;
+          background-color: purple;
+          color: white;
+          text-align: center;
+        }
+
     @media (max-width: 768px) {
       
       main{
@@ -413,6 +410,30 @@
       .segment {
         font-size: 3vw;
       }
+
+      .profilePage{
+        width: 100%;
+        display: none;
+        height: 85%;
+        position: relative;
+        top: 16%;
+        background-color: white;
+        
+      }
+      #exitProfile{
+          padding: 6px 20px;
+          font-size: 16px;
+          background-color: purple;
+          color: white;
+          border: none;
+        }
+        .profileData{
+          width: 190%;
+          margin: auto;
+          background-color: white;
+          color: black;
+        }
+
       #wheelPage {
             width: 90%;
             height: 100%;
@@ -578,26 +599,38 @@
 
     #dailyTask{
       display: none;
-      height: 60%;
-      width: 50%;
+      height: 85%;
+      width: 80%;
+      margin-top: 15%;
+      background-color: rgb(255, 255, 255);
+      color: purple;
+      margin: auto;
+      position: fixed;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    #exitTask{
+      padding: 8px 16px;
+      border: none;
       background-color: purple;
       color: white;
-      margin: auto
-
+      border-radius: 5px;
     }
 
     #wheelPage {
       display: none;
       position: fixed;
-      top: 0;
+      top: 16%;
       left: 0;
       width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      height: 85%;
+      background: rgb(255, 255, 255);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 999;
+      padding: 10px;
+      border-radius: 10px;
     }
     #wheelPage .wheel-container {
       position: relative;
@@ -609,38 +642,13 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      margin: auto;
     }
     #wheelPage .wheel-container img {
       width: 100%;
       height: 100%;
     }
-    #wheelPage .exit-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: red;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 5px 10px;
-      cursor: pointer;
-      z-index: 1000;
-    }
-    .message {
-      position: absolute;
-      bottom: 10%;
-      background: white;
-      color: black;
-      padding: 10px 20px;
-      border-radius: 5px;
-      z-index: 1001;
-      text-align: center;
-    }
-    .wheel-container {
-      position: relative;
-      width: 350px;
-      height: 350px;
-    }
+    
 
     .basement {
       position: absolute;
@@ -704,25 +712,14 @@
       transform: translateX(-50%);
     }
 
-    #exitbutton {
-      position: absolute;
-      bottom: -50px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 10px 20px;
-      background-color: gold;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-    }
+
 
     button:disabled {
       background-color: grey;
       cursor: not-allowed;
     }
-
     button:active {
-      transform: translateX(-50%) scale(0.95);
+      background-color: rgb(158, 27, 158);
     }
 
     /* Media queries for responsive design */
@@ -785,7 +782,7 @@
     </div>
     <nav>
       <ul>
-        <li><a href="#" id="showUserInfo">Profile</a></li>
+        <li><a href="#" id="openProfile">Profile</a></li>
         <li><a href="#" id="earnHistory">Airtime</a></li>
         <li><a href="#" id="topEarners">Top Earners</a></li>
         <li class=""><a href="#">Courses</a></li>
@@ -834,6 +831,29 @@
       </div>
 
      </section>
+
+     <div id="profilePage" class="profilePage">
+
+      <button id="exitProfile" onclick="closeWheel()">Exit</button>
+
+      <div class="profileData">
+
+
+        <div> 
+          <h3>Name: <b id="fullName"></b></h3> 
+        </div>
+
+        <div> 
+          <h3>phone: <b id="phone"></b></h3> 
+        </div>
+
+        <div> 
+          <h3>Email: <b id="email"></b></h3> 
+        </div>
+
+        
+      </div>
+     </div>
 
 
      <div id="wheelPage">
@@ -927,6 +947,9 @@ const fetchUserData = async () => {
 
         if (response.ok) {
             const data = await response.json();
+            document.getElementById('fullName').textContent = data.user.fullName;
+            document.getElementById('email').textContent = data.user.email;
+            document.getElementById('phone').textContent = data.user.phone;
             document.getElementById('username').textContent = data.user.username;
             document.getElementById('wallet').textContent = data.user.wallet;
             document.getElementById('referralWallet').textContent = data.user.referralWallet;
@@ -948,15 +971,45 @@ const fetchUserData = async () => {
 window.onload = fetchUserData;
 
 
-document.getElementById('openWheel').addEventListener('click', function() {
-            document.getElementById('wheelPage').style.display = 'block';
-            document.getElementById('dropdown-menu').style.display = 'none';
-            
-        });
+document.addEventListener('DOMContentLoaded', function() {
+      const openProfile = document.getElementById('openProfile');
+      const profilePage = document.getElementById('profilePage');
+      const dropdown = document.getElementById('dropdown-menu');
+      const exitProfile = document.getElementById('exitProfile');
 
-        document.getElementById('exitButton').addEventListener('click', function() {
-            document.getElementById('wheelPage').style.display = 'none';
-        });
+      openProfile.addEventListener('click', function(event) {
+        event.preventDefault();
+        profilePage.style.display = 'block';
+        dropdown.style.display = 'none';
+      });
+
+      exitProfile.addEventListener('click', function(event) {
+        event.preventDefault();
+        profilePage.style.display = 'none';
+        dropdown.style.display = 'block';
+
+      });
+    });
+
+document.addEventListener('DOMContentLoaded', function() {
+      const openWheelButton = document.getElementById('openWheel');
+      const wheelPage = document.getElementById('wheelPage');
+      const dropdown = document.getElementById('dropdown-menu');
+      const exitButton = document.getElementById('exitButton');
+
+      openWheelButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        wheelPage.style.display = 'block';
+        dropdown.style.display = 'none';
+      });
+
+      exitButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        wheelPage.style.display = 'none';
+        dropdown.style.display = 'block';
+
+      });
+    });
 
 
         document.getElementById('openTask').addEventListener('click', function() {
@@ -966,6 +1019,7 @@ document.getElementById('openWheel').addEventListener('click', function() {
 
         document.getElementById('exitTask').addEventListener('click', function() {
             document.getElementById('dailyTask').style.display = 'none';
+            document.getElementById('dropdown-menu').style.display = 'block';
         });
 
 
