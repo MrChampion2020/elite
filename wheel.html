@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,7 +55,7 @@
       align-items: center;
       position: relative;
       transform: rotate(0deg);
-      transition: transform 20s cubic-bezier(0.33, 1, 0.68, 1);
+      transition: transform 10s cubic-bezier(0.33, 1, 0.68, 1);
     }
 
     .segment {
@@ -83,38 +84,67 @@
       transform: translateX(-50%);
     }
 
-    .message {
+    button {
       position: absolute;
-      bottom: -70px;
+      bottom: -50px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 20px;
-      color: green;
-      text-align: center;
+      padding: 10px 20px;
+      background-color: gold;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
     }
 
-    .ribbon {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background-color: red;
-      animation: spread 2s ease-out;
-      opacity: 0;
+    button:disabled {
+      background-color: grey;
+      cursor: not-allowed;
     }
 
-    @keyframes spread {
-      0% {
-        transform: scale(1);
-        opacity: 1;
+    button:active {
+      transform: translateX(-50%) scale(0.95);
+    }
+
+    /* Media queries for responsive design */
+    @media screen and (max-width: 600px) {
+      .wheel-container {
+        width: 250px;
+        height: 250px;
       }
-      100% {
-        transform: scale(10);
-        opacity: 0;
+
+      .wheel {
+        width: 90%;
+        height: 90%;
+      }
+
+      button {
+        bottom: -30px;
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+    }
+
+    @media screen and (max-width: 400px) {
+      .wheel-container {
+        width: 200px;
+        height: 200px;
+      }
+
+      .wheel {
+        width: 95%;
+        height: 95%;
+      }
+
+      button {
+        bottom: -20px;
+        font-size: 12px;
+        padding: 6px 12px;
       }
     }
   </style>
 </head>
 <body>
+  
   
   <div class="wheel-container">
     <div class="basement">
@@ -141,35 +171,17 @@
         <div class="stopper"></div>
       </div>
     </div>
-    <div class="message" id="message"></div>
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const wheel = document.getElementById('wheel');
-      const message = document.getElementById('message');
+
       const lastSpin = localStorage.getItem('lastSpin');
       const now = new Date().getTime();
-      const segments = 17;
-      const rotationPerSegment = 360 / segments;
-
+      
       if (lastSpin && (now - lastSpin) < 24 * 60 * 60 * 1000) {
-        message.textContent = 'You can spin again in 24 hours';
-      }
-
-      function createRibbons() {
-        const shapes = ['ribbon', 'balloon', 'flower'];
-        const colors = ['red', 'blue', 'green', 'yellow', 'purple'];
-
-        for (let i = 0; i < 200; i++) {
-          const shape = document.createElement('div');
-          shape.className = 'ribbon';
-          shape.style.left = `${Math.random() * 100}%`;
-          shape.style.top = `${Math.random() * 100}%`;
-          shape.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-          document.body.appendChild(shape);
-          setTimeout(() => shape.remove(), 2000);
-        }
+        alert('You can spin again in 24 hours');
       }
 
       function spinWheel() {
@@ -181,35 +193,39 @@
           return;
         }
 
+        const randomIndex = Math.floor(Math.random() * 17);
+        const degrees = (360 / 17) * randomIndex + (360 * 10); // Spin multiple times for effect
+        wheel.style.transform = `rotate(${degrees}deg)`;
+
+        setTimeout(() => {
+          const selectedValue = wheel.querySelector(`.segment:nth-child(${randomIndex + 1})`).textContent;
+          alert(`You won ${selectedValue}!`);
+          updateReferralWallet(selectedValue);
+          localStorage.setItem('lastSpin', new Date().getTime());
+        }, 10000); // Delay matches the transition time
+      }
+
+      function updateReferralWallet(amount) {
         fetch('/spin', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': token  // Adjust as needed
-          }
+            'Authorization': 'Bearer your_token_here', // Adjust as needed
+          },
+          body: JSON.stringify({ amount: parseInt(amount, 10) }),
         })
         .then(response => response.json())
         .then(data => {
-          const amount = data.amount;
-          const randomIndex = segments.findIndex(value => value === amount);
-          const degrees = (rotationPerSegment * randomIndex) + (360 * 10); // Spin multiple times for effect
-          wheel.style.transform = `rotate(${degrees}deg)`;
-
-          setTimeout(() => {
-            const actualRotation = degrees % 360;
-            const selectedIndex = Math.floor((actualRotation + rotationPerSegment / 2) / rotationPerSegment) % segments;
-            const selectedValue = wheel.querySelector(`.segment:nth-child(${selectedIndex + 1})`).textContent;
-            message.textContent = `You won ${selectedValue} coins!`;
-            createRibbons();
-            localStorage.setItem('lastSpin', now);
-          }, 20000);
+          console.log(data);
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+          console.error('Error:', error);
+        });
       }
 
       wheel.addEventListener('click', spinWheel);
+      wheel.addEventListener('touchend', spinWheel);
     });
   </script>
 </body>
 </html>
-

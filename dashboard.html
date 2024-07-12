@@ -160,7 +160,7 @@
       height: 50%;
       width: 40%;
       text-align: left;
-      color: black;
+      color: purple;
       font-size: 16px;
       font-family: 'Times New Roman', Times, serif;
       padding: 20px 10px;
@@ -190,11 +190,13 @@
       flex-direction: column;
       justify-content: space-between;
       padding: 10px;
+      color: purple;
       border-bottom: 0.2px solid purple;
     }
     .wallet h3{
+      font-size: 24px;
       margin: 0;
-      font-weight: bold;
+      font-weight: 600;
       font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     }
     .wallet .withdraw-button {
@@ -358,6 +360,7 @@
     footer p a{
       color: white;
     }
+    
     @media (max-width: 768px) {
       
       main{
@@ -382,7 +385,7 @@
       height: 50%;
       width: 40%;
       text-align: left;
-      color: black;
+      color: purple;
       font-size: 14px;
       font-family: 'Times New Roman', Times, serif;
     }
@@ -410,7 +413,7 @@
       .segment {
         font-size: 3vw;
       }
-      #fullPageArea {
+      #wheelPage {
             width: 90%;
             height: 100%;
             background-color: white;
@@ -524,6 +527,10 @@
     }
     }
 
+
+
+
+
     .spin-wheel, .earn-bonus {
       display: none;
       position: fixed;
@@ -547,17 +554,6 @@
       cursor: pointer;
     }
 
-    #fullPageArea {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            z-index: 1000;
-            margin: auto;
-        }
         #exitButton{
           padding: 6px 20px;
           font-size: 16px;
@@ -567,13 +563,83 @@
         }
     
 
-        .wheel-container {
+    @keyframes spread {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(10);
+        opacity: 0;
+      }
+    }
+
+
+
+    #dailyTask{
+      display: none;
+      height: 60%;
+      width: 50%;
+      background-color: purple;
+      color: white;
+      margin: auto
+
+    }
+
+    #wheelPage {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    #wheelPage .wheel-container {
       position: relative;
-      width: 30%;
-      height: 50%;
-      margin: auto;
-      padding: 40px;
-      margin-top: 5%;
+      width: 300px;
+      height: 300px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    #wheelPage .wheel-container img {
+      width: 100%;
+      height: 100%;
+    }
+    #wheelPage .exit-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    .message {
+      position: absolute;
+      bottom: 10%;
+      background: white;
+      color: black;
+      padding: 10px 20px;
+      border-radius: 5px;
+      z-index: 1001;
+      text-align: center;
+    }
+    .wheel-container {
+      position: relative;
+      width: 350px;
+      height: 350px;
     }
 
     .basement {
@@ -609,7 +675,7 @@
       align-items: center;
       position: relative;
       transform: rotate(0deg);
-      transition: transform 20s cubic-bezier(0.33, 1, 0.68, 1);
+      transition: transform 10s cubic-bezier(0.33, 1, 0.68, 1);
     }
 
     .segment {
@@ -638,46 +704,62 @@
       transform: translateX(-50%);
     }
 
-    .message {
+    #exitbutton {
       position: absolute;
-      bottom: -70px;
-      left: 60%;
+      bottom: -50px;
+      left: 50%;
       transform: translateX(-50%);
-      font-size: 20px;
-      color: green;
-      text-align: center;
+      padding: 10px 20px;
+      background-color: gold;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
     }
 
-    .ribbon {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background-color: red;
-      animation: spread 2s ease-out;
-      opacity: 0;
+    button:disabled {
+      background-color: grey;
+      cursor: not-allowed;
     }
 
-    @keyframes spread {
-      0% {
-        transform: scale(1);
-        opacity: 1;
+    button:active {
+      transform: translateX(-50%) scale(0.95);
+    }
+
+    /* Media queries for responsive design */
+    @media screen and (max-width: 600px) {
+      .wheel-container {
+        width: 250px;
+        height: 250px;
       }
-      100% {
-        transform: scale(10);
-        opacity: 0;
+
+      .wheel {
+        width: 90%;
+        height: 90%;
+      }
+
+      #exitbutton {
+        bottom: -30px;
+        font-size: 14px;
+        padding: 8px 16px;
       }
     }
 
+    @media screen and (max-width: 400px) {
+      .wheel-container {
+        width: 200px;
+        height: 200px;
+      }
 
+      .wheel {
+        width: 95%;
+        height: 95%;
+      }
 
-    #dailyTask{
-      display: none;
-      height: 60%;
-      width: 50%;
-      background-color: purple;
-      color: white;
-      margin: auto
-
+      button {
+        bottom: -20px;
+        font-size: 12px;
+        padding: 6px 12px;
+      }
     }
   </style>
 </head>
@@ -707,7 +789,7 @@
         <li><a href="#" id="earnHistory">Airtime</a></li>
         <li><a href="#" id="topEarners">Top Earners</a></li>
         <li class=""><a href="#">Courses</a></li>
-        <li><a href="#" id="openFullPageButton">Lucky Wheel</a></li>
+        <li><a href="#" id="openWheel" >Lucky Wheel</a></li>
         <li><a href="#" id="openTask">Daily Tasks</a></li>
         <li onclick="logoutUser()"><a href="#">Logout</a></li>
       </ul>
@@ -753,38 +835,41 @@
 
      </section>
 
-     <div id="fullPageArea">
-      <button id="exitButton">Exit</button>
+
+     <div id="wheelPage">
+      <button id="exitButton" onclick="closeWheel()">Exit</button>
 
       <!--area for full page content -->      
-  <div class="wheel-container">
-    <div class="basement">
-      <div class="inner-basement">
-        <div class="wheel" id="wheel">
-          <div class="segment" style="--i:0;">0</div>
-          <div class="segment" style="--i:1;">1</div>
-          <div class="segment" style="--i:2;">5</div>
-          <div class="segment" style="--i:3;">8</div>
-          <div class="segment" style="--i:4;">10</div>
-          <div class="segment" style="--i:5;">50</div>
-          <div class="segment" style="--i:6;">20</div>
-          <div class="segment" style="--i:7;">100</div>
-          <div class="segment" style="--i:8;">150</div>
-          <div class="segment" style="--i:9;">250</div>
-          <div class="segment" style="--i:10;">500</div>
-          <div class="segment" style="--i:11;">350</div>
-          <div class="segment" style="--i:12;">25</div>
-          <div class="segment" style="--i:13;">430</div>
-          <div class="segment" style="--i:14;">400</div>
-          <div class="segment" style="--i:15;">380</div>
-          <div class="segment" style="--i:16;">450</div>
+      <div class="wheel-container">
+        <div class="basement">
+          <div class="inner-basement">
+            <div class="wheel" id="wheel">
+              <div class="segment" style="--i:0;">0</div>
+              <div class="segment" style="--i:1;">1</div>
+              <div class="segment" style="--i:2;">5</div>
+              <div class="segment" style="--i:3;">8</div>
+              <div class="segment" style="--i:4;">10</div>
+              <div class="segment" style="--i:5;">50</div>
+              <div class="segment" style="--i:6;">20</div>
+              <div class="segment" style="--i:7;">100</div>
+              <div class="segment" style="--i:8;">150</div>
+              <div class="segment" style="--i:9;">250</div>
+              <div class="segment" style="--i:10;">500</div>
+              <div class="segment" style="--i:11;">350</div>
+              <div class="segment" style="--i:12;">25</div>
+              <div class="segment" style="--i:13;">430</div>
+              <div class="segment" style="--i:14;">400</div>
+              <div class="segment" style="--i:15;">380</div>
+              <div class="segment" style="--i:16;">450</div>
+            </div>
+            <div class="stopper"></div>
+          </div>
         </div>
-        <div class="stopper"></div>
       </div>
-    </div>
-    <div class="message" id="message"></div>
-  </div>
-  </div>
+    
+  
+      </div>
+
 
 <div id="dailyTask">
   <button id="exitTask">Exit</button>
@@ -863,17 +948,20 @@ const fetchUserData = async () => {
 window.onload = fetchUserData;
 
 
-document.getElementById('openFullPageButton').addEventListener('click', function() {
-            document.getElementById('fullPageArea').style.display = 'block';
+document.getElementById('openWheel').addEventListener('click', function() {
+            document.getElementById('wheelPage').style.display = 'block';
+            document.getElementById('dropdown-menu').style.display = 'none';
+            
         });
 
         document.getElementById('exitButton').addEventListener('click', function() {
-            document.getElementById('fullPageArea').style.display = 'none';
+            document.getElementById('wheelPage').style.display = 'none';
         });
 
 
         document.getElementById('openTask').addEventListener('click', function() {
             document.getElementById('dailyTask').style.display = 'block';
+            document.getElementById('dropdown-menu').style.display = 'none';
         });
 
         document.getElementById('exitTask').addEventListener('click', function() {
@@ -927,31 +1015,15 @@ document.getElementById('openFullPageButton').addEventListener('click', function
     }
 
 
-    document.addEventListener('DOMContentLoaded', function() {
+//wheel component
+document.addEventListener('DOMContentLoaded', function() {
       const wheel = document.getElementById('wheel');
-      const message = document.getElementById('message');
+
       const lastSpin = localStorage.getItem('lastSpin');
       const now = new Date().getTime();
-      const segments = 17;
-      const rotationPerSegment = 360 / segments;
-
+      
       if (lastSpin && (now - lastSpin) < 24 * 60 * 60 * 1000) {
-        message.textContent = 'You can spin again in 24 hours';
-      }
-
-      function createRibbons() {
-        const shapes = ['ribbon', 'balloon', 'flower'];
-        const colors = ['red', 'blue', 'green', 'yellow', 'purple'];
-
-        for (let i = 0; i < 200; i++) {
-          const shape = document.createElement('div');
-          shape.className = 'ribbon';
-          shape.style.left = `${Math.random() * 100}%`;
-          shape.style.top = `${Math.random() * 100}%`;
-          shape.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-          document.body.appendChild(shape);
-          setTimeout(() => shape.remove(), 2000);
-        }
+        alert('You can spin again in 24 hours');
       }
 
       function spinWheel() {
@@ -963,33 +1035,38 @@ document.getElementById('openFullPageButton').addEventListener('click', function
           return;
         }
 
-        fetch(`${API_URL}/spin`, {
+        const randomIndex = Math.floor(Math.random() * 17);
+        const degrees = (360 / 17) * randomIndex + (360 * 10); // Spin multiple times for effect
+        wheel.style.transform = `rotate(${degrees}deg)`;
+
+        setTimeout(() => {
+          const selectedValue = wheel.querySelector(`.segment:nth-child(${randomIndex + 1})`).textContent;
+          alert(`You won ${selectedValue}!`);
+          updateReferralWallet(selectedValue);
+          localStorage.setItem('lastSpin', new Date().getTime());
+        }, 10000); // Delay matches the transition time
+      }
+
+      function updateReferralWallet(amount) {
+        fetch('/spin', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization':  `Bearer ${token}` // Adjust as needed
-          }
+            'Authorization': token, // Adjust as needed
+          },
+          body: JSON.stringify({ amount: parseInt(amount, 10) }),
         })
         .then(response => response.json())
         .then(data => {
-          const amount = data.amount;
-          const randomIndex = segments.findIndex(value => value === amount);
-          const degrees = (rotationPerSegment * randomIndex) + (360 * 10); // Spin multiple times for effect
-          wheel.style.transform = `rotate(${degrees}deg)`;
-
-          setTimeout(() => {
-            const actualRotation = degrees % 360;
-            const selectedIndex = Math.floor((actualRotation + rotationPerSegment / 2) / rotationPerSegment) % segments;
-            const selectedValue = wheel.querySelector(`.segment:nth-child(${selectedIndex + 1})`).textContent;
-            message.textContent = `You won ${selectedValue} coins!`;
-            createRibbons();
-            localStorage.setItem('lastSpin', now);
-          }, 20000);
+          console.log(data);
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+          console.error('Error:', error);
+        });
       }
 
       wheel.addEventListener('click', spinWheel);
+      wheel.addEventListener('touchend', spinWheel);
     });
 
     function copyReferralLink() {

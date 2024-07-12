@@ -167,6 +167,70 @@ const sendVerificationEmail = async (email, verificationToken) => {
 };
 
 
+app.post('/api/reset-password/request', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Email does not exist' });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = await bcrypt.hash(resetToken, 10);
+    const resetTokenExpiry = Date.now() + 3600000; // 1 hour
+
+    user.resetToken = hashedToken;
+    user.resetTokenExpiry = resetTokenExpiry;
+    await user.save();
+
+    const resetLink = `https://www.elitearn.com/reset-password?token=${resetToken}&email=${email}`;
+
+    const mailOptions = {
+      from: 'Elitearn',
+      to: email,
+      subject: 'Password Reset',
+      text: `You requested a password reset. Please use the following link to reset your password: ${resetLink}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: 'Password reset link sent to your email' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.post('/api/reset-password', async (req, res) => {
+  const { token, email, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Invalid or expired token' });
+    }
+
+    const isTokenValid = await bcrypt.compare(token, user.resetToken);
+
+    if (!isTokenValid || user.resetTokenExpiry < Date.now()) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.resetToken = undefined;
+    user.resetTokenExpiry = undefined;
+    await user.save();
+
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 /*
 const distributeReferralBonus = async (userId, userLevel, vendorLevel) => {

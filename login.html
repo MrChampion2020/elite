@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -98,8 +98,6 @@ button{
   </style>
 </head>
 <body>
-  
-
   <form id="loginForm" method="POST">
     <h2>Login</h2>
     <div class="form-group">
@@ -156,6 +154,221 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
             }
         );
 
+  </script>
+</body>
+</html>
+-->
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="icon" href="logo.jpg" type="image/jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ElitEarn</title>
+  <style>
+    body {
+      width: 100%;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      margin: 0 auto;
+    }
+    form {
+      height: 50%;
+      width: 40%;
+      margin: 0 auto;
+      box-shadow: 1px 1px 4px 2px rgb(226, 223, 223);
+    }
+    .form-group {
+      width: 100%;
+      margin-bottom: 15px;
+      margin: 0 10%;
+    }
+    .form-group a {
+      text-decoration: none;
+      color: purple;
+      padding: 10px;
+      width: 60%;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      padding: 10px;
+      color: purple;
+    }
+    label {
+      display: block;
+    }
+    input {
+      width: 80%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid purple;
+      box-shadow: 2px rgb(231, 208, 231);
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: purple;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      width: 80%;
+      margin: 10px auto;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .alert {
+      display: none;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 5px;
+    }
+    @media (max-width: 768px) {
+      form {
+        width: 90%;
+        margin: auto;
+      }
+      .form-group {
+        width: 100%;
+        margin: 0 5%;
+      }
+      input {
+        width: 90%;
+        margin: auto;
+        margin-top: 2%;
+        margin-bottom: 4%;
+      }
+      button {
+        width: 90%;
+        margin-top: 2%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <form id="loginForm" method="POST">
+    <h2>Login</h2>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    <div class="form-group">
+      <button type="submit">Login</button>
+    </div>
+    <div class="form-group">
+      <a href="register.html">Don't have an account? Sign Up</a>
+    </div>
+    <div class="form-group">
+      <a href="#" id="forgotPasswordLink">Forgot Password?</a>
+    </div>
+    <div id="alert" class="alert"></div>
+  </form>
+
+  <form id="resetPasswordForm" method="POST" style="display: none;">
+    <h2>Reset Password</h2>
+    <div class="form-group">
+      <label for="resetEmail">Email:</label>
+      <input type="email" id="resetEmail" name="resetEmail" required>
+    </div>
+    <div class="form-group">
+      <button type="submit">Send Reset Link</button>
+    </div>
+    <div id="resetAlert" class="alert"></div>
+  </form>
+
+  <script>
+    const API_URL = `https://elitearn.onrender.com`;
+    
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const response = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      const alert = document.getElementById('alert');
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        window.location.href = 'dashboard.html';
+      } else {
+        alert.style.display = 'block';
+        alert.style.backgroundColor = 'white';
+        alert.style.color = 'black';
+        alert.style.borderColor = 'purple';
+        alert.innerText = data.message || 'Login failed';
+      }
+    });
+
+    document.getElementById('forgotPasswordLink').addEventListener('click', () => {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('resetPasswordForm').style.display = 'block';
+    });
+
+    document.getElementById('resetPasswordForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const email = document.getElementById('resetEmail').value;
+
+      if (!email) {
+        const resetAlert = document.getElementById('resetAlert');
+        resetAlert.style.display = 'block';
+        resetAlert.style.backgroundColor = 'white';
+        resetAlert.style.color = 'black';
+        resetAlert.style.borderColor = 'purple';
+        resetAlert.innerText = 'Email is required';
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/api/reset-password/request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      const resetAlert = document.getElementById('resetAlert');
+
+      if (response.ok) {
+        resetAlert.style.display = 'block';
+        resetAlert.style.backgroundColor = 'white';
+        resetAlert.style.color = 'black';
+        resetAlert.style.borderColor = 'purple';
+        resetAlert.innerText = 'Password reset link sent to your email';
+      } else {
+        resetAlert.style.display = 'block';
+        resetAlert.style.backgroundColor = 'white';
+        resetAlert.style.color = 'black';
+        resetAlert.style.borderColor = 'purple';
+        resetAlert.innerText = data.message || 'Failed to send password reset link';
+      }
+    });
   </script>
 </body>
 </html>
