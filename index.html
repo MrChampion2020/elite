@@ -50,7 +50,32 @@ a{
       cursor: pointer;
       padding: 10px;
     }
-    .menu{display: none;}
+    .menu {
+        display: block; /* Hide dropdown menu */
+        width: 60%;
+        height: 40%;
+      }
+      
+      .menu ul {
+        display: flex;
+        flex-direction: row; /* Display menu items in a row */
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        margin-top: 0%;
+        width: 100%;
+        margin-left: 140%;
+        color: white;
+        border: 1px solid red;
+      }
+      .menu ul li a {
+       padding: 0px 20px;
+        width: 15%;
+        font-size: 16px;
+        position: relative;
+        color: white;
+      }
+     
 
     #dropdown-menu {
       position: fixed;
@@ -147,7 +172,7 @@ a{
      color: purple;
     }
     .notes p {
-     font-size: 30px;
+     font-size: 25px;
      font-weight: 200;
      font-family: 'Times New Roman', Times, serif;
      color: rgb(49, 42, 42);
@@ -301,20 +326,20 @@ a{
   margin: 10% auto;
 
 }
-.start-ups .start-header{
-  text-align: center;
-  font-size: 40px;
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: 600;
-  padding: 10px;
-}
 
     .start-ups h1, .start-ups p {
       padding: 5px;
       text-align: center;
       color: purple;
     }
-
+.start-ups h3{
+  font-size: 30px;
+  color: purple;
+  text-align: center;
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: 600;
+  padding: 10px;
+}
     .start-up {
       display: grid;
       grid-template-columns: 1fr;
@@ -358,8 +383,9 @@ a{
     }
 
     .individuals a, .Vendor a{
-     width: 80%;
-     height: 10%;
+     width: 90%;
+     height: 20%;
+     padding: 5px;
      margin: auto;
     }
     #img-logo{
@@ -380,8 +406,10 @@ a{
       color: purple;
     }
 
-    .social h1{
-      padding: 0 10px;
+    .social a{
+      padding: 15px 10px;
+      color: purple;
+      font-size: 30px;
     }
     .links{
       display: flex;
@@ -405,7 +433,7 @@ a{
       color: purple;
     }
     .links ul li a #icon{
-      padding: 5pxpx;
+      padding: 5px;
       color: purple;
 
     }
@@ -444,32 +472,6 @@ a{
       .menu-icon {
         display: none; /* Hide menu icon */
       }
-      .menu {
-        display: flex; /* Hide dropdown menu */
-        width: 100%;
-        height: 40%;
-      }
-      
-      .menu ul {
-          display: flex;
-        flex-direction: row; /* Display menu items in a row */
-        justify-content: center;
-        align-items: center;
-        margin: auto;
-        margin-top: 0%;
-        width: 100%;
-        margin-left: 140%;
-        color: white;
-        border: 1px solid red;
-      }
-      .menu ul li a {
-       padding: 0px 20px;
-        width: 15%;
-        font-size: 16px;
-        position: relative;
-        color: white;
-      }
-
       .start-up {
         grid-template-columns: 1fr 1fr; /* Display individual and vendor sections in a row */
         justify-content: space-around;
@@ -488,7 +490,96 @@ a{
         grid-template-columns: 1fr 1fr;
     }
 }
+@media (max-width: 768px) {
+   
+  .menu {
+        display: none; /* Hide dropdown menu */
+        width: 100%;
+        height: 40%;
+      }
+      
+      /*.menu ul {
+          display: flex;
+        flex-direction: row; 
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        margin-top: 0%;
+        width: 100%;
+        margin-left: 140%;
+        color: white;
+        border: 1px solid red;
+      }
+      .menu ul li a {
+       padding: 0px 20px;
+        width: 15%;
+        font-size: 16px;
+        position: relative;
+        color: white;
+      }
+     
+   main p {
+     font-size: 16px;
+     font-weight: light;
+     font-family: 'Times New Roman', Times, serif;
+     letter-spacing: 0.1em;
+     word-spacing: 0.1em;
+     line-height: 30px;
+    }*/
 
+
+    .notes p {
+     font-size: 18px;
+     font-weight: lighter;
+     font-family: 'Times New Roman', Times, serif;
+     color: rgb(49, 42, 42);
+     letter-spacing: 0.1em;
+     word-spacing: 0.1em;
+     line-height: 30px;
+    }
+    main h1{
+      font-size: 20px;
+    }
+    .about h1{
+      font-size: 20px;
+    }
+    .start-ups h1{
+      font-size: 20px;
+    }
+    .start-ups h3{
+      font-size: 20px;
+    }
+    .individuals a, .Vendor a{
+     width: 100%;
+     height: 20%;
+     font-size: 14px;
+     padding: 5px 10px;
+     margin: auto;
+     text-align: center;
+    }
+    #sign-in-btn {
+      color: white;
+      background-color: purple;
+      width: 40%;
+      height: 20%;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-family: 'Times New Roman', Times, serif;
+      padding: 10px;
+    }
+    .social a{
+      padding: 15px 5px;
+      color: purple;
+      font-size: 20px;
+    }
+    .social h2{
+      font-size: 20px;
+      padding: 0px 10px;
+    }
+}
+
+ 
 @media (min-width: 1024px) {
     .image-area, .about {
         grid-template-columns: 1fr 1fr;
@@ -509,7 +600,6 @@ a{
       <li>Coupon Checker</li>
       <li>Top Earners</li>
       <li><a href="terms.html">Terms</a></li>
-      <li><a href="register.html">Get Started</a></li>
     </ul>
   </div>
 
@@ -591,7 +681,7 @@ a{
     </section>
      
     <section class="start-ups">
-      <h1 class="start-header">How it Works</h1>
+      <h3>How it Works</h3>
       <p>Get latest update about our services</p>
 
       <div class="start-up">
@@ -617,9 +707,15 @@ a{
 
     <section class="social">
       <h2>follow Us:</h2>
-      <h1 class="fa-brands fa-facebook purple"> </h1>
+      <!--<h1 class="fa-brands fa-facebook purple"> </h1>
       <h1 class="fa-brands fa-instagram purple"></h1>
-      <h1 class="fa-brands fa-tiktok purple"></h1>
+      <h1 class="fa-brands fa-tiktok purple"></h1>-->
+          <a href="https://www.facebook.com/profile.php?id=61558977133876" target="_blank" class="fa-brands fa-facebook purple"></a>
+          <a href="https://www.instagram.com/eliteearnofficial?igsh=ZzdseGpmN3ZoYnht" target="_blank" class="fa-brands fa-instagram purple"></a>
+          <a href="https://www.tiktok.com/@eliteearn.officia" target="_blank" class="fa-brands fa-tiktok purple"></a>
+          <!--<a href="https://wa.me/+2349117499173" target="_blank" class="fa-brands fa-whatsapp"></a>-->
+          <a href="https://www.youtube.com/c/@EliteEarnOfficial" target="_blank" class="fa-brands fa-youtube purple"></a>
+          <a href="https://t.me/+iXU1lq5siDg0OTA0" target="_blank" class="fa-brands fa-telegram purple"></a>
     </section>
 
     <section class="links">
