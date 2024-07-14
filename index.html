@@ -46,19 +46,20 @@ a{
     }
 
     .menu-icon {
+      display: none;
       font-size: 40px;
       cursor: pointer;
       padding: 10px;
     }
-    .menu {
-        display: block; /* Hide dropdown menu */
+    /*.menu {
+        display: block; 
         width: 60%;
         height: 40%;
       }
       
       .menu ul {
         display: flex;
-        flex-direction: row; /* Display menu items in a row */
+        flex-direction: row; 
         justify-content: center;
         align-items: center;
         margin: auto;
@@ -76,8 +77,9 @@ a{
         color: white;
       }
      
-
+*/
     #dropdown-menu {
+      display: none;
       position: fixed;
       top: 0;
       left: -100%;
@@ -145,6 +147,7 @@ a{
 
     main {
       padding: 20px;
+      display: block;
     }
 
     .notes, .image-area, .earning-structure, .links-area {
@@ -469,8 +472,48 @@ a{
   .header{
     position: sticky;
   }
+  .menu{
+    display: block;
+    width: 60%;
+  }
+  .menu ul {
+        display: flex;
+        flex-direction: row; 
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        margin-top: 0%;
+        width: 100%;
+        color: white;
+      }
+      .menu ul li{
+        list-style-type: none;
+        padding: 5px;
+
+      }
+      .menu ul li a {
+       padding: 0px 10px;
+        width: 25%;
+        font-size: 20px;
+        font-weight: 600;
+        position: relative;
+        color: white;
+      }
+     
+   main p {
+     font-size: 16px;
+     font-weight: light;
+     font-family: 'Times New Roman', Times, serif;
+     letter-spacing: 0.1em;
+     word-spacing: 0.1em;
+     line-height: 30px;
+    }*/
+
+
       .menu-icon {
         display: none; /* Hide menu icon */
+        width: 100%;
+        overflow: hidden;
       }
       .start-up {
         grid-template-columns: 1fr 1fr; /* Display individual and vendor sections in a row */
@@ -491,43 +534,18 @@ a{
     }
 }
 @media (max-width: 768px) {
-   
+   .menu-icon{
+    display: block;
+   }
   .menu {
         display: none; /* Hide dropdown menu */
-        width: 100%;
-        height: 40%;
       }
+      #dropdown-menu {
+      display: block;
+      position: absolute;
+      overflow: hidden;
+    }
       
-      /*.menu ul {
-          display: flex;
-        flex-direction: row; 
-        justify-content: center;
-        align-items: center;
-        margin: auto;
-        margin-top: 0%;
-        width: 100%;
-        margin-left: 140%;
-        color: white;
-        border: 1px solid red;
-      }
-      .menu ul li a {
-       padding: 0px 20px;
-        width: 15%;
-        font-size: 16px;
-        position: relative;
-        color: white;
-      }
-     
-   main p {
-     font-size: 16px;
-     font-weight: light;
-     font-family: 'Times New Roman', Times, serif;
-     letter-spacing: 0.1em;
-     word-spacing: 0.1em;
-     line-height: 30px;
-    }*/
-
-
     .notes p {
      font-size: 18px;
      font-weight: lighter;
@@ -587,18 +605,17 @@ a{
   }
   </style>
 </head>
-<body>
+<body id="body">
   <header class="header">
     <div class="logo"><img src="logo.jpg" alt="Logo"></div>
     <div class="menu-icon" id="menu-icon"><i class="fas fa-bars"></i></div>
 
     <div class="menu">
       <ul>
-      <li> Home </li>
+      <li><a href="index.html">Services</a></li>
+      <li><a href="vendors.html">Get Coupon</a></li>
+      <li><a href="register.html">Get Started</a></li>
       <li><a href="about.html">About</a></li>
-      <li>Buy Coupons</li>
-      <li>Coupon Checker</li>
-      <li>Top Earners</li>
       <li><a href="terms.html">Terms</a></li>
     </ul>
   </div>
@@ -619,7 +636,7 @@ a{
       <li class="register"><a href="register.html">Get Started</a></li>
     </ul>
   </nav>
-  <main>
+  <main id="main">
     <section class="notes">
      <h1>Elevate Your Earnings</h1>
       <p>EliteEarn is an online platform that connects individuals 
@@ -742,12 +759,23 @@ a{
             // Redirect to register.html
             window.location.href = 'login.html';
         });
-    document.getElementById('menu-icon').addEventListener('click', function() {
+    /*document.getElementById('menu-icon').addEventListener('click', function() {
       document.getElementById('dropdown-menu').style.left = '0';
     });
 
     document.getElementById('close-icon').addEventListener('click', function() {
       document.getElementById('dropdown-menu').style.left = '-100%';
+    });*/
+
+
+    document.getElementById('menu-icon').addEventListener('click', function() {
+      document.getElementById('dropdown-menu').style.left = '0';
+      document.getElementById('main').style.display = 'none';
+    });
+
+    document.getElementById('close-icon').addEventListener('click', function() {
+      document.getElementById('dropdown-menu').style.left = '-100%';
+      document.getElementById('main').style.display = 'block';
     });
 
     document.getElementById('back-to-top').addEventListener('click', function() {
