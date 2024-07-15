@@ -21,6 +21,11 @@ const UserSchema = new mongoose.Schema({
   referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   referralLinkActive: { type: Boolean, default: true },
   accountType: { type: String, default: 'naira' },
+  bankAccount: {
+    accountNumber: String,
+    bankName: String,
+    accountHolderName: String,
+  },
   lastLogin: { type: Date, default: null },
   lastSpin: { type: Date, default: null }
 

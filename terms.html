@@ -359,6 +359,7 @@ a{
       padding: 10px;
       width: 80%;
       margin: 0 auto;
+      color: purple;
     }
 
     .social h1{
@@ -419,8 +420,25 @@ a{
 
 
 
+@media (max-width: 768px) {
+  
+  .notes p{
+    font-size: 16px;
+  }
+  .notes h1{
+    font-size: 20px;
+  }
+
+     
+    }
+
+    /* Responsive layout for larger screens */
 @media (min-width: 768px) {
-  .header{
+    .image-area, .about{
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .header{
     position: sticky;
   }
       .menu-icon {
@@ -454,15 +472,6 @@ a{
         font-size: 16px;
         position: relative;
       }
-
-     
-    }
-
-    /* Responsive layout for larger screens */
-@media (min-width: 768px) {
-    .image-area, .about{
-        grid-template-columns: 1fr 1fr;
-    }
 }
 
 @media (min-width: 1024px) {

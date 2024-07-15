@@ -233,6 +233,107 @@ app.post('/api/reset-password', async (req, res) => {
 
 
 
+
+
+// Function to distribute referral bonus
+async function vendistributeReferralBonus(referredBy, fatherAmount, grandfatherAmount, greatGrandfatherAmount) {
+  try {
+    const father = await User.findById(referredBy) || await Vendor.findById(referredBy);
+    if (father) {
+      father.wallet += fatherAmount;
+      await father.save();
+
+      const grandfather = await User.findById(father.referredBy) || await Vendor.findById(father.referredBy);
+      if (grandfather) {
+        grandfather.wallet += grandfatherAmount;
+        await grandfather.save();
+
+        const greatGrandfather = await User.findById(grandfather.referredBy) || await Vendor.findById(grandfather.referredBy);
+        if (greatGrandfather) {
+          greatGrandfather.wallet += greatGrandfatherAmount;
+          await greatGrandfather.save();
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error distributing referral bonus:", error);
+  }
+}
+/*
+// User registration endpoint
+app.post('/register', async (req, res) => {
+  try {
+    const { name, email, password, referredBy } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      referredBy,
+      verificationToken,
+    });
+
+    await newUser.save();
+    await sendVerificationEmail(email, verificationToken);
+
+    if (referredBy) {
+      await distributeReferralBonus(referredBy, 4000, 2000, 100);
+    }
+
+    res.status(200).json({ message: 'User registered successfully' });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ message: 'Failed to register user' });
+  }
+});
+*/
+// Vendor registration endpoint
+app.post('/vendor/register', async (req, res) => {
+  try {
+    const { name, email, password, companyName, referredBy } = req.body;
+
+    const existingVendor = await Vendor.findOne({ email });
+    if (existingVendor) {
+      return res.status(400).json({ message: 'Vendor already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newVendor = new Vendor({
+      name,
+      email,
+      password: hashedPassword,
+      companyName,
+      referredBy,
+    });
+
+    await newVendor.save();
+
+    if (referredBy) {
+      await vendistributeReferralBonus(referredBy, 4000, 200, 100);
+    }
+
+    res.status(200).json({ message: 'Vendor registered successfully' });
+  } catch (error) {
+    console.error('Error registering vendor:', error);
+    res.status(500).json({ message: 'Failed to register vendor' });
+  }
+});
+
+
+
+
+
+
+//user referral distribution
 const distributeReferralBonus = async (userId, userLevel, vendorLevel) => {
   if (userLevel <= 0 && vendorLevel <= 0) return;
 
@@ -269,7 +370,7 @@ const distributeReferralBonus = async (userId, userLevel, vendorLevel) => {
       if (vendorLevel > 0) {
         switch (vendorLevel) {
           case 1:
-            vendorBonusAmount = 4000;
+            vendorBonusAmount = 100;
             vendorReferrer.wallet += vendorBonusAmount;
             break;
           case 2:
@@ -277,7 +378,7 @@ const distributeReferralBonus = async (userId, userLevel, vendorLevel) => {
             vendorReferrer.wallet += vendorBonusAmount;
             break;
           case 3:
-            vendorBonusAmount = 100;
+            vendorBonusAmount = 0;
             vendorReferrer.wallet += vendorBonusAmount;
             break;
         }
@@ -689,7 +790,7 @@ app.patch('/admin/vendors/:vendorId/status', authenticateToken, setVendorStatus)
 //Vendor Endpoints
 
 
-app.post("/vendor-register", async (req, res) => {
+/*app.post("/vendor-register", async (req, res) => {
   try {
     const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
 
@@ -735,7 +836,7 @@ app.post("/vendor-register", async (req, res) => {
     res.status(500).json({ message: "Vendor registration failed" });
   }
 });
-
+*/
 
 
 // Vendor login endpoint
