@@ -284,7 +284,7 @@ function generateReferralLink(username, type) {
 }
 
 app.post('/vendor-register', async (req, res) => {
-  const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
+  const { fullName, email, phone, password, username, companyName, companyAddress} = req.body;
 
   try {
     // Check if the vendor already exists
@@ -318,8 +318,8 @@ app.post('/vendor-register', async (req, res) => {
     });
 
     // Handle referral link if provided
-    if (referralLink) {
-      const referrer = await Vendor.findOne({ username: referralLink }) || await User.findOne({ username: referralLink });
+    if (usereferralLink, vendoreferralLink) {
+      const referrer = await Vendor.findOne({ username: vendoreferralLink }) || await User.findOne({ username: usereferralLink });
       if (referrer) {
         newVendor.referredBy = referrer._id;
         referrer.referrals.push(newVendor._id);
