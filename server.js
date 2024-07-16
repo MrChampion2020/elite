@@ -409,12 +409,6 @@ app.post('/vendor-register', async (req, res) => {
 });
 
 
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
-
 app.post("/register", async (req, res) => {
   try {
     const { fullName, email, phone, password, username, referralLink, couponCode, accountType = 'naira' } = req.body;
