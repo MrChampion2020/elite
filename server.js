@@ -281,9 +281,9 @@ async function distributeReferralBonus(referredBy, type, level = 1) {
 
 
 // Function to generate referral link
-function generateReferralLink(username, type) {
+/*function generateReferralLink(username, type) {
   return `${process.env.API_URL}/register/${type}/${username}`;
-}
+}*/
 
 app.post('/vendor-register', async (req, res) => {
   const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
@@ -296,8 +296,10 @@ app.post('/vendor-register', async (req, res) => {
     }
 
     // Generate referral links
-    const usereferralLink = generateReferralLink(username, 'user');
-    const vendoreferralLink = generateReferralLink(username, 'vendor');
+    /*const usereferralLink = generateReferralLink(username, 'user');
+    const vendoreferralLink = generateReferralLink(username, 'vendor');*/
+    const usereferralLink = `${process.env.API_URL}/register?referral=${username}`;
+    const vendoreferralLink = `${process.env.API_URL}/vendor-register?referral=${username}`;
 
     // Log referral links for debugging
     console.log(`Generated usereferralLink: ${usereferralLink}`);
