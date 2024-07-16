@@ -10,7 +10,7 @@ const vendorSchema = new mongoose.Schema({
   couponCode: String,
   companyAddress: { type: String, required: true },
   active: { type: Boolean, default: false },
-  vendoreferralLink: { type: String, unique: true },
+  referralLink: { type: String, unique: true },
   referrals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' }],
   wallet: { type: Number, default: 0 },
   bankAccount: {

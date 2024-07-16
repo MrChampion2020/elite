@@ -342,7 +342,7 @@ const distributeReferralBonusVendor = async (referrerId) => {
 };
 
 
-
+/*
 // Generate unique referral link function
 const generateReferralLink = (vendorId) => {
   const hash = crypto.createHash('sha256').update(vendorId.toString()).digest('hex');
@@ -405,6 +405,55 @@ app.post('/vendor-register', async (req, res) => {
   }
 });
 
+*/
+
+
+function generateReferralCode() {
+  return Math.random().toString(36).substring(2, 15);
+}
+
+app.post('/register-vendor', async (req, res) => {
+  try {
+    let referralLink;
+    let isUnique = false;
+    
+    while (!isUnique) {
+      referralLink = `${API_URL}/vendor-register?referral=${generateReferralCode()}`;
+      
+      const existingVendor = await Vendor.findOne({ referralLink });
+      if (!existingVendor) {
+        isUnique = true;
+      }
+    }
+
+    const newVendor = new Vendor({
+
+      fullName,
+      email,
+      phone,
+      password: hashedPassword,
+      username,
+      companyName,
+      couponCode,
+      companyAddress,
+      referralLink,
+    });
+
+    await newVendor.save();
+
+    if (referredBy) {
+      await distributeReferralBonusVendor(referredBy);
+    }
+
+    res.status(201).send('Vendor registered successfully');
+  } catch (error) {
+    if (error.code === 11000) {
+      res.status(400).send('Duplicate referral link, please try again');
+    } else {
+      res.status(500).send(`Error registering vendor: ${error.message}`);
+    }
+  }
+});
 
 
 app.post("/register", async (req, res) => {
