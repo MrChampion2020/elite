@@ -279,11 +279,10 @@ async function distributeReferralBonus(referredBy, type, level = 1) {
 
 
 
-
 // Function to generate referral link
-/*function generateReferralLink(username, type) {
-  return `${process.env.API_URL}/register/${type}/${username}`;
-}*/
+function generateReferralLink(username, type) {
+  return `${process.env.API_URL}/register?referral=${username}`;
+}
 
 app.post('/vendor-register', async (req, res) => {
   const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
@@ -296,8 +295,84 @@ app.post('/vendor-register', async (req, res) => {
     }
 
     // Generate referral links
+    const usereferralLink = generateReferralLink(username, 'user');
+    const vendoreferralLink = generateReferralLink(username, 'vendor');
+
+    // Log referral links for debugging
+    console.log(`Generated usereferralLink: ${usereferralLink}`);
+    console.log(`Generated vendoreferralLink: ${vendoreferralLink}`);
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create new vendor
+    const newVendor = new Vendor({
+      fullName,
+      email,
+      phone,
+      password: hashedPassword,
+      username,
+      companyName,
+      companyAddress,
+      usereferralLink,
+      vendoreferralLink
+    });
+
+    // Handle referral link if provided
+    if (referralLink) {
+      // Extract the username from the referral link
+      const url = new URL(referralLink);
+      const referredUsername = url.searchParams.get('referral');
+
+      // Find the referrer based on the extracted username
+      const referrer = await Vendor.findOne({ username: referredUsername }) || await User.findOne({ username: referredUsername });
+
+      if (referrer) {
+        newVendor.referredBy = referrer._id;
+        referrer.referrals.push(newVendor._id);
+
+        // Log referrer for debugging
+        console.log(`Referral link found. Referrer ID: ${referrer._id}`);
+
+        // Save referrer with updated referrals
+        await referrer.save();
+      } else {
+        return res.status(400).json({ message: 'Invalid referral link' });
+      }
+    }
+
+    // Save the vendor to the database
+    await newVendor.save();
+
+    // Distribute referral bonuses
+    await distributeReferralBonusUser(newVendor._id, 3, 3); // Assuming 3 levels of referral bonus for both user and vendor
+
+    res.status(201).json({ message: 'Vendor registered successfully' });
+  } catch (error) {
+    console.error('Error registering vendor:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+// Function to generate referral link
+/*function generateReferralLink(username, type) {
+  return `${process.env.API_URL}/register/${type}/${username}`;
+}*/
+/*
+app.post('/vendor-register', async (req, res) => {
+  const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
+
+  try {
+    // Check if the vendor already exists
+    const existingVendor = await Vendor.findOne({ email });
+    if (existingVendor) {
+      return res.status(400).json({ message: 'Vendor already exists' });
+    }
+
+    // Generate referral links
     /*const usereferralLink = generateReferralLink(username, 'user');
-    const vendoreferralLink = generateReferralLink(username, 'vendor');*/
+    const vendoreferralLink = generateReferralLink(username, 'vendor');*//*
     const usereferralLink = `${process.env.API_URL}/register?referral=${username}`;
     const vendoreferralLink = `${process.env.API_URL}/vendor-register?referral=${username}`;
 
@@ -355,7 +430,7 @@ app.post('/vendor-register', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+*/
 
 // User registration endpoint
 /*app.post('/register', async (req, res) => {
