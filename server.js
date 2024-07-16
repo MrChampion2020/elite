@@ -333,7 +333,7 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
 
 
 // Distribute referral bonus function
-const distributeReferralBonus = async (referrerId) => {
+const distributeReferralBonusVendor = async (referrerId) => {
   const referrer = await Vendor.findById(referrerId);
   if (referrer) {
     referrer.wallet += 4000;
@@ -394,7 +394,7 @@ app.post('/vendor-register', async (req, res) => {
 
     // Distribute referral bonus
     if (referredBy) {
-      await distributeReferralBonus(referredBy);
+      await distributeReferralBonusVendor(referredBy);
     }
 
     const token = jwt.sign({ id: savedVendor._id }, secretKey, { expiresIn: '1h' });
