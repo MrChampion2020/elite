@@ -279,236 +279,6 @@ async function distributeReferralBonus(referredBy, type, level = 1) {
 
 
 
-/*
-app.post('/vendor-register', async (req, res) => {
-  const { fullName, email, phone, password, username, companyName, companyAddress } = req.body;
-
-  try {
-    // Check if the vendor already exists
-    const existingVendor = await Vendor.findOne({ email });
-    if (existingVendor) {
-      return res.status(400).json({ message: 'Vendor already exists' });
-    }
-
-    // Generate unique referral links
-    const usereferralLink = `${process.env.API_URL}/register?referral=${username}-user`;
-    const vendoreferralLink = `${process.env.API_URL}/vendor-register?referral=${username}-vendor`;
-
-    // Log referral links for debugging
-    console.log(`Generated usereferralLink: ${usereferralLink}`);
-    console.log(`Generated vendoreferralLink: ${vendoreferralLink}`);
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create new vendor object
-    const newVendor = new Vendor({
-      fullName,
-      email,
-      phone,
-      password: hashedPassword,
-      username,
-      companyName,
-      companyAddress,
-      usereferralLink,
-      vendoreferralLink
-    });
-
-    // Handle referral link if provided
-    if (referralLink) {
-      // Extract the username from the referral link
-      const url = new URL(referralLink);
-      const referredUsername = url.searchParams.get('referral');
-
-      // Find the referrer based on the extracted username
-      const referrer = await Vendor.findOne({ username: referredUsername });
-
-      if (referrer) {
-        newVendor.referredBy = referrer._id;
-        referrer.referrals.push(newVendor._id);
-
-        // Log referrer for debugging
-        console.log(`Referral link found. Referrer ID: ${referrer._id}`);
-
-        // Save referrer with updated referrals
-        await referrer.save();
-      } else {
-        return res.status(400).json({ message: 'Invalid referral link or referrer is not a vendor' });
-      }
-    }
-
-    // Save the vendor to the database
-    await newVendor.save();
-
-    // Distribute referral bonuses
-    await distributeReferralBonusUser(newVendor._id, 3, 3); // Assuming 3 levels of referral bonus for both user and vendor
-
-    res.status(201).json({ message: 'Vendor registered successfully' });
-  } catch (error) {
-    console.error('Error registering vendor:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-
-
-// Function to generate referral link
-/*function generateReferralLink(username, type) {
-  return `${process.env.API_URL}/register/${type}/${username}`;
-}*/
-/*
-app.post('/vendor-register', async (req, res) => {
-  const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
-
-  try {
-    // Check if the vendor already exists
-    const existingVendor = await Vendor.findOne({ email });
-    if (existingVendor) {
-      return res.status(400).json({ message: 'Vendor already exists' });
-    }
-
-    // Generate referral links
-    /*const usereferralLink = generateReferralLink(username, 'user');
-    const vendoreferralLink = generateReferralLink(username, 'vendor');*//*
-    const usereferralLink = `${process.env.API_URL}/register?referral=${username}`;
-    const vendoreferralLink = `${process.env.API_URL}/vendor-register?referral=${username}`;
-
-    // Log referral links for debugging
-    console.log(`Generated usereferralLink: ${usereferralLink}`);
-    console.log(`Generated vendoreferralLink: ${vendoreferralLink}`);
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create new vendor
-    const newVendor = new Vendor({
-      fullName,
-      email,
-      phone,
-      password: hashedPassword,
-      username,
-      companyName,
-      companyAddress,
-      usereferralLink,
-      vendoreferralLink
-    });
-
-    // Handle referral link if provided
-    if (referralLink) {
-      // Extract the username from the referral link
-      const referredUsername = referralLink.split('/').pop();
-
-      // Find the referrer based on the extracted username
-      const referrer = await Vendor.findOne({ username: referredUsername }) || await User.findOne({ username: referredUsername });
-
-      if (referrer) {
-        newVendor.referredBy = referrer._id;
-        referrer.referrals.push(newVendor._id);
-
-        // Log referrer for debugging
-        console.log(`Referral link found. Referrer ID: ${referrer._id}`);
-
-        // Save referrer with updated referrals
-        await referrer.save();
-      } else {
-        return res.status(400).json({ message: 'Invalid referral link' });
-      }
-    }
-
-    // Save the vendor to the database
-    await newVendor.save();
-
-    // Distribute referral bonuses
-    await distributeReferralBonusUser(newVendor._id, 3, 3); // Assuming 3 levels of referral bonus for both user and vendor
-
-    res.status(201).json({ message: 'Vendor registered successfully' });
-  } catch (error) {
-    console.error('Error registering vendor:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-*/
-
-// User registration endpoint
-/*app.post('/register', async (req, res) => {
-  try {
-    const { name, email, password, referredBy } = req.body;
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword,
-      referredBy,
-      verificationToken,
-    });
-
-    await newUser.save();
-    await sendVerificationEmail(email, verificationToken);
-
-    if (referredBy) {
-      await distributeReferralBonus(referredBy, 'user');
-    }
-
-    res.status(200).json({ message: 'User registered successfully' });
-  } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).json({ message: 'Failed to register user' });
-  }
-});
-*/
-
-/*
-app.post('/vendor-register', async (req, res) => {
-  const { fullName, email, phone, password, username, companyName, companyAddress } = req.body;
-
-  try {
-    // Check if the vendor already exists
-    const existingVendor = await Vendor.findOne({ email });
-    if (existingVendor) {
-      return res.status(400).json({ message: 'Vendor already exists' });
-    }
-
-    // Generate referral links
-    const usereferralLink = `${process.env.API_URL}/register?referral=${username}`;
-    const vendoreferralLink = `${process.env.API_URL}/vendor-register?referral=${username}`;
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create new vendor
-    const newVendor = new Vendor({
-      fullName,
-      email,
-      phone,
-      password: hashedPassword,
-      username,
-      companyName,
-      companyAddress,
-      usereferralLink,
-      vendoreferralLink
-    });
-
-    // Save the vendor to the database
-    await newVendor.save();
-
-    res.status(201).json({ message: 'Vendor registered successfully' });
-  } catch (error) {
-    console.error('Error registering vendor:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-*/
-
-
 
 const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
   if (userLevel <= 0 && vendorLevel <= 0) return;
@@ -568,7 +338,6 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
 
 
 
-
 app.post('/vendor-register', async (req, res) => {
   try {
     const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
@@ -606,13 +375,10 @@ app.post('/vendor-register', async (req, res) => {
 
     // Handle referral link if provided
     if (referralLink) {
-      // Extract the username from the referral link
       const url = new URL(referralLink);
       const referredUsername = url.searchParams.get('referral');
 
-      // Find the referrer based on the extracted username
       const referrer = await Vendor.findOne({ username: referredUsername });
-
       if (referrer && referrer.referralLinkActive) {
         newVendor.referredBy = referrer._id;
         referrer.referrals.push(newVendor._id);
@@ -643,73 +409,12 @@ app.post('/vendor-register', async (req, res) => {
 });
 
 
-/*app.post('/vendor-register', async (req, res) => {
-  const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
 
-  try {
-    // Check if the vendor already exists
-    const existingVendor = await Vendor.findOne({ email });
-    if (existingVendor) {
-      return res.status(400).json({ message: 'Vendor already exists' });
-    }
-
-    // Generate referral links
-    const usereferralLink = `${process.env.API_URL}/register?referral=${username}`;
-    const vendoreferralLink = `${process.env.API_URL}/vendor-register?referral=${username}`;
-
-    // Log referral links for debugging
-    console.log(`Generated usereferralLink: ${usereferralLink}`);
-    console.log(`Generated vendoreferralLink: ${vendoreferralLink}`);
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create new vendor
-    const newVendor = new Vendor({
-      fullName,
-      email,
-      phone,
-      password: hashedPassword,
-      username,
-      companyName,
-      companyAddress,
-      usereferralLink,
-      vendoreferralLink,
-      referredBy: referrer
-    });
-
-    // Handle referral link if provided
-    if (referralLink) {
-      const referrer = await Vendor.findOne({ username: referralLink }) || await User.findOne({ username: referralLink });
-      if (referrer) {
-        newVendor.referredBy = referrer._id;
-        referrer.referrals.push(newVendor._id);
-
-        // Log referrer for debugging
-        console.log(`Referral link found. Referrer ID: ${referrer._id}`);
-
-        // Save referrer with updated referrals
-        await referrer.save();
-      } else {
-        return res.status(400).json({ message: 'Invalid referral link' });
-      }
-    }
-
-    // Save the vendor to the database
-    await newVendor.save();
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
-    // Distribute referral bonuses
-    await distributeReferralBonus(newVendor._id, 3, 3); // Assuming 3 levels of referral bonus for both user and vendor
 
-    res.status(201).json({ message: 'Vendor registered successfully' });
-  } catch (error) {
-    console.error('Error registering vendor:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-*/
 app.post("/register", async (req, res) => {
   try {
     const { fullName, email, phone, password, username, referralLink, couponCode, accountType = 'naira' } = req.body;
@@ -866,23 +571,7 @@ app.get("/user-details", authenticateToken, async (req, res) => {
 });
 
 
-/*
-app.post('/spin', authenticateToken, async (req, res) => {
-  const { amount } = req.body;
-  const user = await User.findById(req.user.id);
 
-  const now = new Date();
-  if (user.lastSpin && (now - user.lastSpin) < 24 * 60 * 60 * 1000) {
-    return res.status(403).json({ message: 'You can only spin the wheel once every 24 hours.' });
-  }
-
-  user.referralWallet += amount;
-  user.lastSpin = now;
-  await user.save();
-  res.json({ referralWallet: user.referralWallet });
-});
-
-*/
 
 // Spin endpoint
 app.post('/spin', authenticateToken, async (req, res) => {
@@ -1107,55 +796,7 @@ app.patch('/admin/vendors/:vendorId/status', authenticateToken, setVendorStatus)
 
 //Vendor Endpoints
 
-/*
-app.post("/vendor-register", async (req, res) => {
-  try {
-    const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
 
-    const existingVendor = await Vendor.findOne({ email });
-    if (existingVendor) {
-      return res.status(400).json({ message: "Email already registered" });
-    }
-
-    const existingVendorUsername = await Vendor.findOne({ username });
-    if (existingVendorUsername) {
-      return res.status(400).json({ message: "Username already taken" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newVendor = new Vendor({
-      fullName,
-      email,
-      phone,
-      password: hashedPassword,
-      username,
-      companyName,
-      companyAddress,
-      referralLink: `${process.env.API_URL}/register?vendor=${username}`
-    });
-
-    if (referralLink) {
-      const referrer = await Vendor.findOne({ username: referralLink });
-      if (referrer) {
-        newVendor.referredBy = referrer._id;
-        referrer.referrals.push(newVendor._id);
-        referrer.wallet += 4000;
-        await referrer.save();
-        await distributeReferralBonus(referrer._id, 0, 2);
-      } else {
-        return res.status(400).json({ message: "Invalid referral link" });
-      }
-    }
-
-    await newVendor.save();
-    res.status(200).json({ message: "Vendor registered successfully", vendorId: newVendor._id });
-  } catch (error) {
-    console.log("Error registering vendor:", error);
-    res.status(500).json({ message: "Vendor registration failed" });
-  }
-});
-
-*/
 
 // Vendor login endpoint
 app.post("/vendor-login", async (req, res) => {
