@@ -301,7 +301,7 @@ app.post('/vendor-register', async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create new vendor
+    // Create new vendor object
     const newVendor = new Vendor({
       fullName,
       email,
@@ -321,7 +321,7 @@ app.post('/vendor-register', async (req, res) => {
       const referredUsername = url.searchParams.get('referral');
 
       // Find the referrer based on the extracted username
-      const referrer = await Vendor.findOne({ username: referredUsername }) || await User.findOne({ username: referredUsername });
+      const referrer = await Vendor.findOne({ username: referredUsername });
 
       if (referrer) {
         newVendor.referredBy = referrer._id;
@@ -333,7 +333,7 @@ app.post('/vendor-register', async (req, res) => {
         // Save referrer with updated referrals
         await referrer.save();
       } else {
-        return res.status(400).json({ message: 'Invalid referral link' });
+        return res.status(400).json({ message: 'Invalid referral link or referrer is not a vendor' });
       }
     }
 
@@ -349,6 +349,7 @@ app.post('/vendor-register', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 // Function to generate referral link

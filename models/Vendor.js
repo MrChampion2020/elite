@@ -12,7 +12,7 @@ const vendorSchema = new mongoose.Schema({
   active: { type: Boolean, default: false },
   usereferralLink: { type: String, unique: true },
   vendoreferralLink: { type: String, unique: true },
-  referrals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  referrals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' }],
   wallet: { type: Number, default: 0 },
   bankAccount: {
     accountNumber: String,
@@ -20,7 +20,7 @@ const vendorSchema = new mongoose.Schema({
     accountHolderName: String,
   },
   referralLinkActive: { type: Boolean, default: true },
-  referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' },
   lastLogin: { type: Date },
   role: { type: String, enum: ['user', 'admin', 'vendor'], default: 'vendor' },
 }, { timestamps: true });
