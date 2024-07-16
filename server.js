@@ -278,13 +278,15 @@ async function distributeReferralBonus(referredBy, type, level = 1) {
 }
 
 
+
+
 // Function to generate referral link
 function generateReferralLink(username, type) {
   return `${process.env.API_URL}/register/${type}/${username}`;
 }
 
 app.post('/vendor-register', async (req, res) => {
-  const { fullName, email, phone, password, username, companyName, companyAddress} = req.body;
+  const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
 
   try {
     // Check if the vendor already exists
@@ -318,8 +320,13 @@ app.post('/vendor-register', async (req, res) => {
     });
 
     // Handle referral link if provided
-    if (usereferralLink, vendoreferralLink) {
-      const referrer = await Vendor.findOne({ username: vendoreferralLink }) || await User.findOne({ username: usereferralLink });
+    if (referralLink) {
+      // Extract the username from the referral link
+      const referredUsername = referralLink.split('/').pop();
+
+      // Find the referrer based on the extracted username
+      const referrer = await Vendor.findOne({ username: referredUsername }) || await User.findOne({ username: referredUsername });
+
       if (referrer) {
         newVendor.referredBy = referrer._id;
         referrer.referrals.push(newVendor._id);
