@@ -176,6 +176,10 @@
         <input type="text" id="username">
       </div>
       <div class="form-group">
+        <label for="couponCode">Coupon Code</label>
+        <input type="text" id="couponCode" required>
+      </div>
+      <div class="form-group">
         <label for="companyName">Company Name</label>
         <input type="text" id="companyName">
       </div>
@@ -310,7 +314,6 @@
           const data = await response.json();
           document.getElementById("welcome-message").textContent = `Welcome ${data.username}`;
           document.getElementById("wallet-balance").textContent = data.wallet;
-          document.getElementById("referral-link").textContent = data.usereferralLink;
           document.getElementById("referral-links").textContent = data.vendoreferralLink;
         } else {
           const errorData = await response.json();
@@ -330,6 +333,7 @@
       const username = document.getElementById("username").value;
       const companyName = document.getElementById("companyName").value;
       const companyAddress = document.getElementById("companyAddress").value;
+      const couponCode = document.getElementById("couponCode").value;
 
       try {
         const response = await fetch(`${API_URL}/vendor-register`, {
@@ -337,7 +341,7 @@
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ fullName, email, phone, password, username, companyName, companyAddress }),
+          body: JSON.stringify({ fullName, email, phone, password, username, companyName, couponCode, companyAddress }),
         });
 
         if (response.ok) {
