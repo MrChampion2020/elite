@@ -1,48 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="logo.jpg" type="image/jpg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elitearn</title>
-    <style>
-        /* Add some basic styles */
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            margin: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendors</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .vendors-container {
+      display: flex;
+     flex-direction: column;
+      gap: 10px;
+      width: 40%;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .vendor {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      background: #f8f8f8;
+      width: 90%;
+      padding: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      height: 15%;
+    }
+
+    .vendor img {
+      width: 20%;
+      max-height: 50%;
+      border-radius: 50%;
+    }
+
+    .vendor-info {
+        width: 80%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .vendor-info h3 {
+        width: 80%;
+      margin: 0;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .vendor-info a {
+        width: 20%;
+      color: #25D366;
+      text-decoration: none;
+      font-size: 30px;
+      margin-top: 5px;
+    }
+
+    @media screen and (max-width: 678px) {
+        .vendors-container {
+      display: flex;
+     flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      height: 100vh;
+      padding: 10px;
+      margin: auto;
+    }
+      .vendor{
+        width: 80%;
+        margin: auto;
+      }
+      .vendor-info{
+        width: 90%;
+      }
+
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        
-        <h2>Coupons</h2>
-        <div id="couponsList"></div>
+  <div class="vendors-container">
+    <!-- Vendor 1 -->
+    <div class="vendor">
+      <img src="admin.jpeg" alt="Vendor 1">
+      <div class="vendor-info">
+        <h3>Admin</h3>
+        <a href="https://wa.me/+2349117499173" target="_blank">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </div>
     </div>
-
-    <script>
-        const API_URL = `https://elitearn.onrender.com`;
-        const vendorId = 'your-vendor-id'; // Replace with the actual vendor ID
-
-        async function fetchCoupons() {
-            const response = await fetch(`${API_URL}/coupons/${vendorId}`);
-            const data = await response.json();
-
-            if (response.ok) {
-                const couponsList = document.getElementById('couponsList');
-                couponsList.innerHTML = '';
-                data.coupons.forEach(coupon => {
-                    couponsList.innerHTML += `<p>${coupon.code} - ${coupon.status}</p>`;
-                });
-            } else {
-                alert('Failed to fetch coupons: ' + data.error);
-            }
-        }
-
-        // Initialize the dashboard
-        fetchCoupons();
-    </script>
+    <!-- Vendor 2 -->
+    <div class="vendor">
+      <img src="vendor.jpeg" alt="Vendor 2">
+      <div class="vendor-info">
+        <h3>Vendor Name 2</h3>
+        <a href="https://wa.me/0987654321" target="_blank">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </div>
+    </div>
+    <!-- Vendor 3 -->
+    <div class="vendor">
+      <img src="vendor.jpeg" alt="Vendor 3">
+      <div class="vendor-info">
+        <h3>Vendor Name 3</h3>
+        <a href="https://wa.me/1122334455" target="_blank">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </div>
+    </div>
+    <!-- Vendor 4 -->
+    <div class="vendor">
+      <img src="vendor.jpeg" alt="Vendor 4">
+      <div class="vendor-info">
+        <h3>Vendor Name 4</h3>
+        <a href="https://wa.me/2233445566" target="_blank">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </div>
+    </div>
+    <!-- Vendor 5 -->
+    <div class="vendor">
+      <img src="vendor.jpeg" alt="Vendor 5">
+      <div class="vendor-info">
+        <h3>Vendor Name 5</h3>
+        <a href="https://wa.me/3344556677" target="_blank">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </div>
+    </div>
+    <!-- Vendor 3 -->
+    <div class="vendor">
+        <img src="vendor.jpeg" alt="Vendor 3">
+        <div class="vendor-info">
+          <h3>Vendor Name 3</h3>
+          <a href="https://wa.me/1122334455" target="_blank">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+    <!-- Add more vendors as needed -->
+  </div>
 </body>
 </html>
