@@ -314,7 +314,7 @@ async function distributeReferralBonus(referredBy, type, level = 1) {
 */
 
 
-router.post('/vendor-register', async (req, res) => {
+app.post('/vendor-register', async (req, res) => {
   const { fullName, email, phone, password, username, companyName, companyAddress } = req.body;
 
   try {
