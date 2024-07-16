@@ -28,6 +28,11 @@ app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, './', 'register.html'));
 });
 
+// Serve registration page
+app.get('/vendor-register', (req, res) => {
+  res.sendFile(path.join(__dirname, './', 'vendordash.html'));
+});
+
 const generateSecretKey = () => crypto.randomBytes(32).toString("hex");
 const secretKey = process.env.SECRET_KEY || generateSecretKey();
 
@@ -273,7 +278,7 @@ async function distributeReferralBonus(referredBy, type, level = 1) {
 }
 
 // User registration endpoint
-app.post('/register', async (req, res) => {
+/*app.post('/register', async (req, res) => {
   try {
     const { name, email, password, referredBy } = req.body;
 
@@ -306,43 +311,51 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Failed to register user' });
   }
 });
+*/
 
-// Vendor registration endpoint
-app.post('/vendor/register', async (req, res) => {
+
+router.post('/vendor-register', async (req, res) => {
+  const { fullName, email, phone, password, username, companyName, companyAddress } = req.body;
+
   try {
-    const { name, email, password, companyName, referredBy } = req.body;
-
+    // Check if the vendor already exists
     const existingVendor = await Vendor.findOne({ email });
     if (existingVendor) {
       return res.status(400).json({ message: 'Vendor already exists' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Generate referral links
+    const usereferralLink = `${process.env.API_URL}/register?referral=${username}`;
+    const vendoreferralLink = `${process.env.API_URL}/vendor-register?referral=${username}`;
 
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create new vendor
     const newVendor = new Vendor({
-      name,
+      fullName,
       email,
+      phone,
       password: hashedPassword,
+      username,
       companyName,
-      referredBy,
-      usereferralLink: generateReferralLink(referredBy, 'user'),
-      vendoreferralLink: generateReferralLink(referredBy, 'vendor'),
+      companyAddress,
+      usereferralLink,
+      vendoreferralLink
     });
 
+    // Save the vendor to the database
     await newVendor.save();
 
-    if (referredBy) {
-      await distributeReferralBonus(referredBy, 'vendor');
-    }
-
-    res.status(200).json({ message: 'Vendor registered successfully' });
+    res.status(201).json({ message: 'Vendor registered successfully' });
   } catch (error) {
     console.error('Error registering vendor:', error);
-    res.status(500).json({ message: 'Failed to register vendor' });
+    res.status(500).json({ message: 'Server error' });
   }
 });
-/*
-const distributeReferralBonus = async (userId, userLevel, vendorLevel) => {
+
+
+const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
   if (userLevel <= 0 && vendorLevel <= 0) return;
 
   const user = await User.findById(userId).populate('referredBy');
@@ -367,7 +380,7 @@ const distributeReferralBonus = async (userId, userLevel, vendorLevel) => {
       }
 
       await referrer.save();
-      await distributeReferralBonus(referrer._id, userLevel - 1, vendorLevel);
+      await distributeReferralBonusUser(referrer._id, userLevel - 1, vendorLevel);
     }
   } else {
     const vendor = await Vendor.findById(userId).populate('referredBy');
@@ -462,7 +475,7 @@ app.post("/register", async (req, res) => {
     await coupon.save();
 
     // Distribute referral bonuses
-    await distributeReferralBonus(newUser._id, 3, 3); // Assuming 3 levels of referral bonus for both user and vendor
+    await distributeReferralBonusUser(newUser._id, 3, 3); // Assuming 3 levels of referral bonus for both user and vendor
 
     res.status(200).json({ message: "User registered successfully", userId: newUser._id });
   } catch (error) {
@@ -474,7 +487,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-*/
+
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, './')));
 
