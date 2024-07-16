@@ -341,85 +341,19 @@ const distributeReferralBonusVendor = async (referrerId) => {
   }
 };
 
-
-/*
-// Generate unique referral link function
-const generateReferralLink = (vendorId) => {
-  const hash = crypto.createHash('sha256').update(vendorId.toString()).digest('hex');
-  return `referral_${hash}`;
-};
-
-// Vendor Registration Endpoint
-app.post('/vendor-register', async (req, res) => {
-  try {
-    const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referredBy } = req.body;
-
-    const existingVendor = await Vendor.findOne({ email });
-    if (existingVendor) {
-      return res.status(400).json({ message: 'Vendor already exists' });
-    }
-
-    const existingUsername = await Vendor.findOne({ username });
-    if (existingUsername) {
-      return res.status(400).json({ message: 'Username already exists' });
-    }
-
-    // Check if the coupon code is valid and not used
-    const coupon = await Coupon.findOne({ code: couponCode, isUsed: false });
-    if (!coupon) {
-      return res.status(400).json({ message: 'Invalid or already used coupon code' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newVendor = new Vendor({
-      fullName,
-      email,
-      phone,
-      password: hashedPassword,
-      username,
-      companyName,
-      couponCode,
-      companyAddress,
-      referredBy: referredBy ? mongoose.Types.ObjectId(referredBy) : null,
-    });
-
-    const savedVendor = await newVendor.save();
-    coupon.isUsed = true;
-    await coupon.save();
-
-    // Generate and save the referral link
-    const referralLink = generateReferralLink(savedVendor._id);
-    savedVendor.vendoreferralLink = referralLink;
-    await savedVendor.save();
-
-    // Distribute referral bonus
-    if (referredBy) {
-      await distributeReferralBonusVendor(referredBy);
-    }
-
-    const token = jwt.sign({ id: savedVendor._id }, secretKey, { expiresIn: '1h' });
-    res.status(201).json({ message: 'Vendor registered successfully', token });
-  } catch (error) {
-    console.error('Error registering vendor:', error);
-    res.status(500).json({ message: 'Failed to register vendor' });
-  }
-});
-
-*/
-
-
 function generateReferralCode() {
   return Math.random().toString(36).substring(2, 15);
 }
-
 app.post('/register-vendor', async (req, res) => {
   try {
+    const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referredBy } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     let referralLink;
     let isUnique = false;
-    
+
     while (!isUnique) {
       referralLink = `${API_URL}/vendor-register?referral=${generateReferralCode()}`;
-      
       const existingVendor = await Vendor.findOne({ referralLink });
       if (!existingVendor) {
         isUnique = true;
@@ -427,7 +361,6 @@ app.post('/register-vendor', async (req, res) => {
     }
 
     const newVendor = new Vendor({
-
       fullName,
       email,
       phone,
@@ -437,6 +370,7 @@ app.post('/register-vendor', async (req, res) => {
       couponCode,
       companyAddress,
       referralLink,
+      referredBy,
     });
 
     await newVendor.save();
@@ -445,12 +379,12 @@ app.post('/register-vendor', async (req, res) => {
       await distributeReferralBonusVendor(referredBy);
     }
 
-    res.status(201).send('Vendor registered successfully');
+    res.status(201).json({ message: 'Vendor registered successfully' });
   } catch (error) {
     if (error.code === 11000) {
-      res.status(400).send('Duplicate referral link, please try again');
+      res.status(400).json({ message: 'Duplicate key error, please try again' });
     } else {
-      res.status(500).send(`Error registering vendor: ${error.message}`);
+      res.status(500).json({ message: `Error registering vendor: ${error.message}` });
     }
   }
 });
