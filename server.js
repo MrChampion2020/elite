@@ -569,7 +569,7 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
 
 
 
-pp.post('/vendor-register', async (req, res) => {
+app.post('/vendor-register', async (req, res) => {
   try {
     const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
 
