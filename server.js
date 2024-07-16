@@ -277,6 +277,77 @@ async function distributeReferralBonus(referredBy, type, level = 1) {
   }
 }
 
+
+
+// Function to generate referral link
+function generateReferralLink(username, type) {
+  return `${process.env.API_URL}/register/${type}/${username}`;
+}
+
+app.post('/vendor-register', async (req, res) => {
+  const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
+
+  try {
+    // Check if the vendor already exists
+    const existingVendor = await Vendor.findOne({ email });
+    if (existingVendor) {
+      return res.status(400).json({ message: 'Vendor already exists' });
+    }
+
+    // Generate referral links
+    const usereferralLink = generateReferralLink(username, 'user');
+    const vendoreferralLink = generateReferralLink(username, 'vendor');
+
+    // Log referral links for debugging
+    console.log(`Generated usereferralLink: ${usereferralLink}`);
+    console.log(`Generated vendoreferralLink: ${vendoreferralLink}`);
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create new vendor
+    const newVendor = new Vendor({
+      fullName,
+      email,
+      phone,
+      password: hashedPassword,
+      username,
+      companyName,
+      companyAddress,
+      usereferralLink,
+      vendoreferralLink
+    });
+
+    // Handle referral link if provided
+    if (referralLink) {
+      const referrer = await Vendor.findOne({ username: referralLink }) || await User.findOne({ username: referralLink });
+      if (referrer) {
+        newVendor.referredBy = referrer._id;
+        referrer.referrals.push(newVendor._id);
+
+        // Log referrer for debugging
+        console.log(`Referral link found. Referrer ID: ${referrer._id}`);
+
+        // Save referrer with updated referrals
+        await referrer.save();
+      } else {
+        return res.status(400).json({ message: 'Invalid referral link' });
+      }
+    }
+
+    // Save the vendor to the database
+    await newVendor.save();
+
+    // Distribute referral bonuses
+    await distributeReferralBonus(newVendor._id, 'vendor', 1); // Assuming 1 level of referral bonus for vendor
+
+    res.status(201).json({ message: 'Vendor registered successfully' });
+  } catch (error) {
+    console.error('Error registering vendor:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // User registration endpoint
 /*app.post('/register', async (req, res) => {
   try {
@@ -414,7 +485,7 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
   }
 };
 
-app.post('/vendor-register', async (req, res) => {
+/*app.post('/vendor-register', async (req, res) => {
   const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
 
   try {
@@ -446,7 +517,7 @@ app.post('/vendor-register', async (req, res) => {
       companyAddress,
       usereferralLink,
       vendoreferralLink,
-      referredBy: null
+      referredBy: referrer
     });
 
     // Handle referral link if provided
@@ -480,7 +551,7 @@ app.post('/vendor-register', async (req, res) => {
   }
 });
 
-
+*/
 app.post("/register", async (req, res) => {
   try {
     const { fullName, email, phone, password, username, referralLink, couponCode, accountType = 'naira' } = req.body;
