@@ -279,9 +279,9 @@ async function distributeReferralBonus(referredBy, type, level = 1) {
 
 
 
-
+/*
 app.post('/vendor-register', async (req, res) => {
-  const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
+  const { fullName, email, phone, password, username, companyName, companyAddress } = req.body;
 
   try {
     // Check if the vendor already exists
@@ -565,6 +565,89 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
     }
   }
 };
+
+
+app.post("/vendor-register", async (req, res) => {
+  try {
+    const { fullName, email, phone, password, username, companyName, companyAddress } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    const existingVendor = await Vendor.findOne({ email });
+    if (existingVendor) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    const existingUsername = await Vendor.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ message: "Username already taken" });
+    }
+/*
+    const coupon = await Coupon.findOne({ code: couponCode });
+    if (!coupon || !coupon.isActive || coupon.isUsed) {
+      return res.status(400).json({ message: "Invalid or inactive coupon code" });
+    }
+*/
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newVendor = new Vendor({
+      fullName,
+      email,
+      phone,
+      password: hashedPassword,
+      username,
+      companyName,
+      companyAddress,
+      usereferralLink,
+      vendoreferralLink
+    });
+
+    
+    
+     // Generate unique referral links
+     const usereferralLink = `${process.env.API_URL}/register?referral=${username}-user`;
+     const vendoreferralLink = `${process.env.API_URL}/vendor-register?referral=${username}-vendor`;
+
+     
+
+    if (vendoreferralLink) {
+      const referrer = await Vendor.findOne({ username: vendoreferralLink }) || await Vendor.findOne({ username: vendoreferralLink });
+      if (referrer && referrer.referralLinkActive) {
+        newVendor.referredBy = referrer._id;
+        referrer.referrals.push(newvendor._id);
+
+        // Credit referrer's wallet
+        const amountToCredit = referrer.accountType === 'naira' ? 4000 : 4;
+        referrer.wallet += amountToCredit;
+        await referrer.save();
+      } else {
+        return res.status(400).json({ message: "Invalid or inactive referral link" });
+      }
+    }
+
+    await newVendor.save();
+    await sendVerificationEmail(newVendor.email, newVendor.verificationToken);
+
+   /* // Mark coupon as used
+    coupon.isUsed = true;
+    coupon.isActive = false;
+    coupon.usedBy = { email: newUser.email, username: newUser.username, phone: newUser.phone };
+    await coupon.save();*/
+
+    // Distribute referral bonuses
+    await distributeReferralBonusUser(newVendor._id, 3, 3); // Assuming 3 levels of referral bonus for both user and vendor
+
+    res.status(200).json({ message: "User registered successfully", vendorId: newVendor._id });
+  } catch (error) {
+    console.log("Error registering user:", error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Duplicate key error", error: error.message });
+    }
+    res.status(500).json({ message: "Registration failed" });
+  }
+});
 
 /*app.post('/vendor-register', async (req, res) => {
   const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
