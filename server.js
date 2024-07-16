@@ -279,10 +279,6 @@ async function distributeReferralBonus(referredBy, type, level = 1) {
 
 
 
-// Function to generate referral link
-function generateReferralLink(username, type) {
-  return `${process.env.API_URL}/register?referral=${username}`;
-}
 
 app.post('/vendor-register', async (req, res) => {
   const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
@@ -294,9 +290,9 @@ app.post('/vendor-register', async (req, res) => {
       return res.status(400).json({ message: 'Vendor already exists' });
     }
 
-    // Generate referral links
-    const usereferralLink = generateReferralLink(username, 'user');
-    const vendoreferralLink = generateReferralLink(username, 'vendor');
+    // Generate unique referral links
+    const usereferralLink = `${process.env.API_URL}/register?referral=${username}-user`;
+    const vendoreferralLink = `${process.env.API_URL}/vendor-register?referral=${username}-vendor`;
 
     // Log referral links for debugging
     console.log(`Generated usereferralLink: ${usereferralLink}`);
@@ -1131,8 +1127,9 @@ app.post('/vendor-details', authenticateVendorToken, async (req, res) => {
       companyName: vendor.companyName,
       companyAddress: vendor.companyAddress,
       wallet: vendor.wallet,
-      usereferralWallet: vendor.usereferralWallet,
+      usereferralLink: vendor.usereferralLink,
       vendoreferralLink: vendor.vendoreferralLink,
+
     });
   } catch (err) {
     console.error('Error fetching vendor details:', err);
