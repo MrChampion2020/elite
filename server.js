@@ -278,7 +278,6 @@ async function distributeReferralBonus(referredBy, type, level = 1) {
 }
 
 
-
 // Function to generate referral link
 function generateReferralLink(username, type) {
   return `${process.env.API_URL}/register/${type}/${username}`;
@@ -339,7 +338,7 @@ app.post('/vendor-register', async (req, res) => {
     await newVendor.save();
 
     // Distribute referral bonuses
-    await distributeReferralBonus(newVendor._id, 'vendor', 1); // Assuming 1 level of referral bonus for vendor
+    await distributeReferralBonusUser(newVendor._id, 3, 3); // Assuming 3 levels of referral bonus for both user and vendor
 
     res.status(201).json({ message: 'Vendor registered successfully' });
   } catch (error) {
@@ -347,6 +346,7 @@ app.post('/vendor-register', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 // User registration endpoint
 /*app.post('/register', async (req, res) => {
