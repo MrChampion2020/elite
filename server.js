@@ -91,6 +91,13 @@ const authenticateVendorToken = (req, res, next) => {
 };
 
 
+// Function to generate referral link
+function generateReferralLink(vendorId, type) {
+  return `${process.env.API_URL}/register/${type}/${vendorId}`;
+}
+
+
+
   //User Endpoints
 
 const generateCouponCode = () => crypto.randomBytes(4).toString("hex");
@@ -235,31 +242,36 @@ app.post('/api/reset-password', async (req, res) => {
 
 
 
+
+
 // Function to distribute referral bonus
-async function vendistributeReferralBonus(referredBy, fatherAmount, grandfatherAmount, greatGrandfatherAmount) {
+async function distributeReferralBonus(referredBy, type, level = 1) {
   try {
-    const father = await User.findById(referredBy) || await Vendor.findById(referredBy);
-    if (father) {
-      father.wallet += fatherAmount;
-      await father.save();
-
-      const grandfather = await User.findById(father.referredBy) || await Vendor.findById(father.referredBy);
-      if (grandfather) {
-        grandfather.wallet += grandfatherAmount;
-        await grandfather.save();
-
-        const greatGrandfather = await User.findById(grandfather.referredBy) || await Vendor.findById(grandfather.referredBy);
-        if (greatGrandfather) {
-          greatGrandfather.wallet += greatGrandfatherAmount;
-          await greatGrandfather.save();
-        }
+    let user, vendor;
+    if (type === 'user') {
+      user = await User.findById(referredBy);
+      if (user) {
+        if (level === 1) user.wallet += 4000;
+        if (level === 2) user.wallet += 200;
+        if (level === 3) user.wallet += 100;
+        await user.save();
+        await distributeReferralBonus(user.referredBy, 'user', level + 1);
+      }
+    } else if (type === 'vendor') {
+      vendor = await Vendor.findById(referredBy);
+      if (vendor) {
+        if (level === 1) vendor.wallet += 4000;
+        if (level === 2) vendor.wallet += 200;
+        if (level === 3) vendor.wallet += 100;
+        await vendor.save();
+        await distributeReferralBonus(vendor.referredBy, 'vendor', level + 1);
       }
     }
   } catch (error) {
     console.error("Error distributing referral bonus:", error);
   }
 }
-/*
+
 // User registration endpoint
 app.post('/register', async (req, res) => {
   try {
@@ -285,7 +297,7 @@ app.post('/register', async (req, res) => {
     await sendVerificationEmail(email, verificationToken);
 
     if (referredBy) {
-      await distributeReferralBonus(referredBy, 4000, 2000, 100);
+      await distributeReferralBonus(referredBy, 'user');
     }
 
     res.status(200).json({ message: 'User registered successfully' });
@@ -294,7 +306,7 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Failed to register user' });
   }
 });
-*/
+
 // Vendor registration endpoint
 app.post('/vendor/register', async (req, res) => {
   try {
@@ -313,12 +325,14 @@ app.post('/vendor/register', async (req, res) => {
       password: hashedPassword,
       companyName,
       referredBy,
+      usereferralLink: generateReferralLink(referredBy, 'user'),
+      vendoreferralLink: generateReferralLink(referredBy, 'vendor'),
     });
 
     await newVendor.save();
 
     if (referredBy) {
-      await vendistributeReferralBonus(referredBy, 4000, 200, 100);
+      await distributeReferralBonus(referredBy, 'vendor');
     }
 
     res.status(200).json({ message: 'Vendor registered successfully' });
@@ -327,13 +341,7 @@ app.post('/vendor/register', async (req, res) => {
     res.status(500).json({ message: 'Failed to register vendor' });
   }
 });
-
-
-
-
-
-
-//user referral distribution
+/*
 const distributeReferralBonus = async (userId, userLevel, vendorLevel) => {
   if (userLevel <= 0 && vendorLevel <= 0) return;
 
@@ -370,7 +378,7 @@ const distributeReferralBonus = async (userId, userLevel, vendorLevel) => {
       if (vendorLevel > 0) {
         switch (vendorLevel) {
           case 1:
-            vendorBonusAmount = 100;
+            vendorBonusAmount = 4000;
             vendorReferrer.wallet += vendorBonusAmount;
             break;
           case 2:
@@ -378,7 +386,7 @@ const distributeReferralBonus = async (userId, userLevel, vendorLevel) => {
             vendorReferrer.wallet += vendorBonusAmount;
             break;
           case 3:
-            vendorBonusAmount = 0;
+            vendorBonusAmount = 100;
             vendorReferrer.wallet += vendorBonusAmount;
             break;
         }
@@ -466,7 +474,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-
+*/
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, './')));
 
@@ -789,8 +797,8 @@ app.patch('/admin/vendors/:vendorId/status', authenticateToken, setVendorStatus)
 
 //Vendor Endpoints
 
-
-/*app.post("/vendor-register", async (req, res) => {
+/*
+app.post("/vendor-register", async (req, res) => {
   try {
     const { fullName, email, phone, password, username, companyName, companyAddress, referralLink } = req.body;
 
@@ -836,8 +844,8 @@ app.patch('/admin/vendors/:vendorId/status', authenticateToken, setVendorStatus)
     res.status(500).json({ message: "Vendor registration failed" });
   }
 });
-*/
 
+*/
 
 // Vendor login endpoint
 app.post("/vendor-login", async (req, res) => {
@@ -887,8 +895,8 @@ app.post('/vendor-details', authenticateVendorToken, async (req, res) => {
       companyName: vendor.companyName,
       companyAddress: vendor.companyAddress,
       wallet: vendor.wallet,
-      referralWallet: vendor.referralWallet,
-      referralLink: vendor.referralLink
+      usereferralWallet: vendor.usereferralWallet,
+      vendoreferralLink: vendor.vendoreferralLink,
     });
   } catch (err) {
     console.error('Error fetching vendor details:', err);

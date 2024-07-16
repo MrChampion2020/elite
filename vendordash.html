@@ -183,8 +183,12 @@
         <input type="text" id="companyAddress">
       </div>
       <div class="form-group">
-        <label for="referralLink">Referral Link</label>
-        <input type="text" id="referralLink">
+        <label for="usereferralLink">Referral Link</label>
+        <input type="text" id="usereferralLink">
+      </div>
+      <div class="form-group">
+        <label for="vendoreferralLink">Referral Link</label>
+        <input type="text" id="vendoreferralLink">
       </div>
       <button class="btn" onclick="registerVendor()">Register Vendor</button>
       <a class="link" href="#" onclick="showLoginForm()">Already registered? Login here</a>
@@ -210,9 +214,16 @@
 
   <div id="referralLinkContent" class="content-area">
     <button class="close-btn" onclick="closeContent('referralLinkContent')">Close</button>
-    <h2>Referral Link</h2>
+    <h2> User Referral Link</h2>
     <p id="referral-link"></p>
     <button class="btn" onclick="copyReferralLink()">Copy Link</button>
+
+    <br>
+    <br>
+
+    <h2> Vendor Referral Link</h2>
+    <p id="referral-links"></p>
+    <button class="btn" onclick="copyVendoReferralLink()">Copy Link</button>
   </div>
 
   <div id="checkCouponContent" class="content-area">
@@ -308,7 +319,9 @@
           const data = await response.json();
           document.getElementById("welcome-message").innerText = `Welcome, ${data.username}`;
           document.getElementById("wallet-balance").innerText = `NGN ${data.wallet}`;
-          document.getElementById("referral-link").innerText = data.referralLink;
+          document.getElementById("referral-link").innerText = data.usereferralLink;
+          document.getElementById("referral-links").innerText = data.vendoreferralLink;
+
         } else {
           const errorData = await response.json();
           alert(errorData.message);
@@ -327,7 +340,9 @@
       const username = document.getElementById("username").value;
       const companyName = document.getElementById("companyName").value;
       const companyAddress = document.getElementById("companyAddress").value;
-      const referralLink = document.getElementById("referralLink").value;
+      const usereferralLink = document.getElementById("usereferralLink").value;
+      const vendoreferralLink = document.getElementById("vendoreferralLink").value;
+
 
       try {
         const response = await fetch(`${API_URL}/vendor-register`, {
@@ -343,7 +358,9 @@
             username,
             companyName,
             companyAddress,
-            referralLink,
+            usereferralLink,
+            vendoreferralLink,
+            
           }),
         });
 
@@ -462,7 +479,14 @@
 
     function copyReferralLink() {
       const referralLink = document.getElementById("referral-link").innerText;
-      navigator.clipboard.writeText(referralLink)
+      navigator.clipboard.writeText(usereferralLink)
+        .then(() => alert("Referral link copied!"))
+        .catch(err => console.error("Error copying referral link:", err));
+    }
+
+    function copyVendoReferralLink() {
+      const referralLinks = document.getElementById("referral-links").innerText;
+      navigator.clipboard.writeText(referralLinks)
         .then(() => alert("Referral link copied!"))
         .catch(err => console.error("Error copying referral link:", err));
     }
