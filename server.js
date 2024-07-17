@@ -333,39 +333,38 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
 
 
 
-// Distribute referral bonus function
-const distributeReferralBonusVendor = async (referrerId) => {
+const generateReferralCode = () => new mongoose.Types.ObjectId().toString();
+
+async function distributeReferralBonusVendor(referralId) {
+  if (!mongoose.Types.ObjectId.isValid(referralId)) {
+    throw new Error(`Invalid referral ID: ${referralId}`);
+  }
+
   try {
-    const referrer = await Vendor.findById(referrerId);
-    if (referrer) {
-      referrer.wallet += 4000;
-      await referrer.save();
+    const referrer = await Vendor.findById(referralId);
+    if (!referrer) {
+      throw new Error('Referrer not found');
     }
+
+    // Add your referral bonus logic here
+    console.log('Referral bonus distributed successfully');
   } catch (error) {
     console.error('Error distributing referral bonus:', error);
   }
-};
-
-function generateReferralCode() {
-  return Math.random().toString(36).substring(2, 15);
 }
 
-/*
 app.post('/register-vendor', async (req, res) => {
   const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink } = req.body;
 
-  // Check for required fields
   if (!fullName || !email || !phone || !password || !username || !companyName || !companyAddress) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  // Validate email format (basic validation)
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({ message: 'Invalid email format' });
   }
 
-  // Validate password length
   if (password.length < 6) {
     return res.status(400).json({ message: 'Password must be at least 6 characters long' });
   }
@@ -373,19 +372,22 @@ app.post('/register-vendor', async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Extract referral ID from the registration link (if provided)
     let referredBy = null;
     if (referralLink) {
       const url = new URL(referralLink);
-      referredBy = url.searchParams.get('referral');
+      const referralId = url.searchParams.get('referral');
+      if (mongoose.Types.ObjectId.isValid(referralId)) {
+        referredBy = referralId;
+      } else {
+        console.warn(`Invalid referral ID: ${referralId}`);
+      }
     }
 
-    // Generate a unique referral link
     let newReferralLink;
     let isUnique = false;
 
     while (!isUnique) {
-      newReferralLink = `${process.env.API_URL}/vendor-register?referral=${generateReferralCode()}`;
+      newReferralLink = `${process.env.API_URL}/register-vendor?referral=${generateReferralCode()}`;
       const existingVendor = await Vendor.findOne({ referralLink: newReferralLink });
       if (!existingVendor) {
         isUnique = true;
@@ -403,6 +405,7 @@ app.post('/register-vendor', async (req, res) => {
       companyAddress,
       referralLink: newReferralLink,
       referredBy,
+      active: false // Set active to false by default
     });
 
     await newVendor.save();
@@ -422,7 +425,58 @@ app.post('/register-vendor', async (req, res) => {
   }
 });
 
-*/
+app.post('/vendor-login', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
+  try {
+    const vendor = await Vendor.findOne({ email });
+
+    if (!vendor) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    if (!vendor.active) {
+      return res.status(403).json({ message: 'Vendor account is not active. Please contact support.' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, vendor.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Generate a JWT token for the vendor
+    const token = jwt.sign({ vendorId: vendor._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error('Error logging in vendor:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+/*
+// Distribute referral bonus function
+const distributeReferralBonusVendor = async (referrerId) => {
+  try {
+    const referrer = await Vendor.findById(referrerId);
+    if (referrer) {
+      referrer.wallet += 4000;
+      await referrer.save();
+    }
+  } catch (error) {
+    console.error('Error distributing referral bonus:', error);
+  }
+};
+
+function generateReferralCode() {
+  return Math.random().toString(36).substring(2, 15);
+}
+
 
 app.post('/register-vendor', async (req, res) => {
   const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink } = req.body;
@@ -491,7 +545,7 @@ app.post('/register-vendor', async (req, res) => {
   }
 });
 
-
+*/
 
 app.post("/register", async (req, res) => {
   try {
@@ -873,7 +927,7 @@ app.patch('/admin/vendors/:vendorId/status', authenticateToken, setVendorStatus)
 
 
 //Vendor Endpoints
-
+/*
 app.post('/login-vendor', async (req, res) => {
   const { email, password } = req.body;
 
@@ -903,7 +957,7 @@ app.post('/login-vendor', async (req, res) => {
 });
 
 
-/*
+
 
 // Vendor login endpoint
 app.post("/vendor-login", async (req, res) => {
