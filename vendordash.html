@@ -619,7 +619,7 @@ const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
       document.getElementById('login-form').style.display = 'block';
     }
 
-    // Function to register a vendor
+    /*// Function to register a vendor
     async function registerVendor() {
       const fullName = document.getElementById('fullName').value;
       const email = document.getElementById('email').value;
@@ -644,7 +644,7 @@ const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
       };
 
       try {
-        const response = await fetch('/register-vendor', {
+        const response = await fetch(`${API_URL}/register-vendor`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -663,6 +663,54 @@ const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
         alert(`Registration failed: ${error.message}`);
       }
     }
+*/
+
+async function registerVendor() {
+  const fullName = document.getElementById('fullName').value;
+  const email = document.getElementById('email').value;
+  const phone = document.getElementById('phone').value;
+  const password = document.getElementById('password').value;
+  const username = document.getElementById('username').value;
+  const companyName = document.getElementById('companyName').value;
+  const couponCode = document.getElementById('couponCode').value;
+  const companyAddress = document.getElementById('companyAddress').value;
+  const referralLink = window.location.href; // Get the current URL
+
+  const data = {
+    fullName,
+    email,
+    phone,
+    password,
+    username,
+    companyName,
+    couponCode,
+    companyAddress,
+    referralLink
+  };
+
+  try {
+    const response = await fetch('http://localhost:5000/register-vendor', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert(result.message);
+      // Clear the form fields
+      document.getElementById('registrationForm').reset();
+    } else {
+      alert(result.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred while registering. Please try again.');
+  }
+}
 
     // Function to login a vendor
     async function loginVendor() {
@@ -670,7 +718,7 @@ const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
       const password = document.getElementById('loginPassword').value;
 
       try {
-        const response = await fetch('/login-vendor', {
+        const response = await fetch(`${API_URL}/login-vendor`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -696,7 +744,7 @@ const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
     // Function to fetch vendor details
     async function fetchVendorDetails() {
       try {
-        const response = await fetch('/vendor-details', {
+        const response = await fetch(`${API_URL}/vendor-details`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

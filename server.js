@@ -350,6 +350,79 @@ function generateReferralCode() {
   return Math.random().toString(36).substring(2, 15);
 }
 
+
+app.post('/register-vendor', async (req, res) => {
+  const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink } = req.body;
+
+  // Check for required fields
+  if (!fullName || !email || !phone || !password || !username || !companyName || !companyAddress) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  // Validate email format (basic validation)
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+
+  // Validate password length
+  if (password.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Extract referral ID from the registration link (if provided)
+    let referredBy = null;
+    if (referralLink) {
+      const url = new URL(referralLink);
+      referredBy = url.searchParams.get('referral');
+    }
+
+    // Generate a unique referral link
+    let newReferralLink;
+    let isUnique = false;
+
+    while (!isUnique) {
+      newReferralLink = `${process.env.API_URL}/vendor-register?referral=${generateReferralCode()}`;
+      const existingVendor = await Vendor.findOne({ referralLink: newReferralLink });
+      if (!existingVendor) {
+        isUnique = true;
+      }
+    }
+
+    const newVendor = new Vendor({
+      fullName,
+      email,
+      phone,
+      password: hashedPassword,
+      username,
+      companyName,
+      couponCode,
+      companyAddress,
+      referralLink: newReferralLink,
+      referredBy,
+    });
+
+    await newVendor.save();
+
+    if (referredBy) {
+      await distributeReferralBonusVendor(referredBy);
+    }
+
+    res.status(201).json({ message: 'Vendor registered successfully' });
+  } catch (error) {
+    console.error('Error registering vendor:', error);
+    if (error.code === 11000) {
+      res.status(400).json({ message: 'Duplicate key error, please try again' });
+    } else {
+      res.status(500).json({ message: `Error registering vendor: ${error.message}` });
+    }
+  }
+});
+
+/*
 app.post('/register-vendor', async (req, res) => {
   try {
     const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referredBy } = req.body;
@@ -395,7 +468,7 @@ app.post('/register-vendor', async (req, res) => {
     }
   }
 });
-
+*/
 
 
 app.post("/register", async (req, res) => {
