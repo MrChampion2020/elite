@@ -333,20 +333,22 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
 
 
 
+// Distribute referral bonus function
 const distributeReferralBonusVendor = async (referrerId) => {
-  const referrer = await Vendor.findById(referrerId);
-  if (referrer) {
-    referrer.wallet += 4000;
-    await referrer.save();
+  try {
+    const referrer = await Vendor.findById(referrerId);
+    if (referrer) {
+      referrer.wallet += 4000;
+      await referrer.save();
+    }
+  } catch (error) {
+    console.error('Error distributing referral bonus:', error);
   }
 };
 
-const generateReferralCode = () => {
+function generateReferralCode() {
   return Math.random().toString(36).substring(2, 15);
-};
-
-
-
+}
 
 app.post('/register-vendor', async (req, res) => {
   try {
@@ -357,7 +359,7 @@ app.post('/register-vendor', async (req, res) => {
     let isUnique = false;
 
     while (!isUnique) {
-      referralLink = `${API_URL}/vendor-register?referral=${generateReferralCode()}`;
+      referralLink = `${process.env.API_URL}/vendor-register?referral=${generateReferralCode()}`;
       const existingVendor = await Vendor.findOne({ referralLink });
       if (!existingVendor) {
         isUnique = true;
@@ -385,6 +387,7 @@ app.post('/register-vendor', async (req, res) => {
 
     res.status(201).json({ message: 'Vendor registered successfully' });
   } catch (error) {
+    console.error('Error registering vendor:', error);
     if (error.code === 11000) {
       res.status(400).json({ message: 'Duplicate key error, please try again' });
     } else {
@@ -392,7 +395,6 @@ app.post('/register-vendor', async (req, res) => {
     }
   }
 });
-
 
 
 
