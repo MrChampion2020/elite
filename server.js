@@ -332,7 +332,7 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
 };
 
 
-// Distribute referral bonus function
+
 const distributeReferralBonusVendor = async (referrerId) => {
   const referrer = await Vendor.findById(referrerId);
   if (referrer) {
@@ -341,9 +341,13 @@ const distributeReferralBonusVendor = async (referrerId) => {
   }
 };
 
-function generateReferralCode() {
+const generateReferralCode = () => {
   return Math.random().toString(36).substring(2, 15);
-}
+};
+
+
+
+
 app.post('/register-vendor', async (req, res) => {
   try {
     const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referredBy } = req.body;
@@ -388,6 +392,8 @@ app.post('/register-vendor', async (req, res) => {
     }
   }
 });
+
+
 
 
 app.post("/register", async (req, res) => {

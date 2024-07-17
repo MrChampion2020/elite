@@ -243,7 +243,142 @@
   </div>
 
   <script>
-    const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
+    const API_URL = `https://elitearn.onrender.com`;
+
+function showRegistrationForm() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('registration-form').style.display = 'block';
+}
+
+function showLoginForm() {
+  document.getElementById('registration-form').style.display = 'none';
+  document.getElementById('login-form').style.display = 'block';
+}
+
+function showContent(contentId) {
+  document.getElementById(contentId).style.display = 'block';
+}
+
+function closeContent(contentId) {
+  document.getElementById(contentId).style.display = 'none';
+}
+
+async function loginVendor() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  try {
+    const response = await fetch(`${API_URL}/vendor-login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem("vendorToken", data.token);
+      alert(data.message);
+      document.getElementById("login-form").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+      fetchVendorDetails();
+    } else {
+      const errorData = await response.json();
+      alert(errorData.message);
+    }
+  } catch (error) {
+    console.error("Error logging in vendor:", error);
+    alert("Login failed");
+  }
+}
+
+async function fetchVendorDetails() {
+  const token = localStorage.getItem("vendorToken");
+
+  if (!token) {
+    alert("Please login first.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/vendor-details`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      document.getElementById("welcome-message").textContent = `Welcome ${data.username}`;
+      document.getElementById("wallet-balance").textContent = data.wallet;
+      document.getElementById("referral-links").textContent = data.vendoreferralLink;
+    } else {
+      const errorData = await response.json();
+      alert(errorData.message);
+    }
+  } catch (error) {
+    console.error("Error fetching vendor details:", error);
+    alert("Failed to fetch vendor details");
+  }
+}
+
+async function registerVendor() {
+  const fullName = document.getElementById("fullName").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+  const password = document.getElementById("password").value;
+  const username = document.getElementById("username").value;
+  const companyName = document.getElementById("companyName").value;
+  const companyAddress = document.getElementById("companyAddress").value;
+  const couponCode = document.getElementById("couponCode").value;
+
+  try {
+    const response = await fetch(`${API_URL}/vendor-register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fullName, email, phone, password, username, companyName, couponCode, companyAddress }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      alert(data.message);
+      showLoginForm();
+    } else {
+      const errorData = await response.json();
+      alert(errorData.message);
+    }
+  } catch (error) {
+    console.error("Error registering vendor:", error);
+    alert("Registration failed");
+  }
+}
+
+function copyReferralLink() {
+  const referralLink = document.getElementById("referral-link").textContent;
+  navigator.clipboard.writeText(referralLink).then(() => {
+    alert("User Referral Link copied to clipboard");
+  });
+}
+
+function copyVendorReferralLink() {
+  const referralLink = document.getElementById("referral-links").textContent;
+  navigator.clipboard.writeText(referralLink).then(() => {
+    alert("Vendor Referral Link copied to clipboard");
+  });
+}
+
+function logoutVendor() {
+  localStorage.removeItem("vendorToken");
+  document.getElementById("dashboard").style.display = "none";
+  showLoginForm();
+}
+
+    /*const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
 
     function showRegistrationForm() {
       document.getElementById('login-form').style.display = 'none';
@@ -376,7 +511,7 @@
       localStorage.removeItem("vendorToken");
       document.getElementById("dashboard").style.display = "none";
       showLoginForm();
-    }
+    }*/
   </script>
 </body>
 </html>
