@@ -350,7 +350,7 @@ function generateReferralCode() {
   return Math.random().toString(36).substring(2, 15);
 }
 
-
+/*
 app.post('/register-vendor', async (req, res) => {
   const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink } = req.body;
 
@@ -422,18 +422,39 @@ app.post('/register-vendor', async (req, res) => {
   }
 });
 
-/*
+*/
+
 app.post('/register-vendor', async (req, res) => {
+  const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink } = req.body;
+
+  if (!fullName || !email || !phone || !password || !username || !companyName || !companyAddress) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+  }
+
   try {
-    const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referredBy } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    let referralLink;
+    let referredBy = null;
+    if (referralLink) {
+      const url = new URL(referralLink);
+      referredBy = url.searchParams.get('referral');
+    }
+
+    let newReferralLink;
     let isUnique = false;
 
     while (!isUnique) {
-      referralLink = `${process.env.API_URL}/vendor-register?referral=${generateReferralCode()}`;
-      const existingVendor = await Vendor.findOne({ referralLink });
+      newReferralLink = `${process.env.API_URL}/vendor-register?referral=${generateReferralCode()}`;
+      const existingVendor = await Vendor.findOne({ referralLink: newReferralLink });
       if (!existingVendor) {
         isUnique = true;
       }
@@ -448,8 +469,9 @@ app.post('/register-vendor', async (req, res) => {
       companyName,
       couponCode,
       companyAddress,
-      referralLink,
+      referralLink: newReferralLink,
       referredBy,
+      active: false // Set active to false by default
     });
 
     await newVendor.save();
@@ -468,7 +490,7 @@ app.post('/register-vendor', async (req, res) => {
     }
   }
 });
-*/
+
 
 
 app.post("/register", async (req, res) => {
@@ -852,7 +874,36 @@ app.patch('/admin/vendors/:vendorId/status', authenticateToken, setVendorStatus)
 
 //Vendor Endpoints
 
+app.post('/login-vendor', async (req, res) => {
+  const { email, password } = req.body;
 
+  try {
+    const vendor = await Vendor.findOne({ email });
+
+    if (!vendor) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    const isMatch = await bcrypt.compare(password, vendor.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    // Check if the vendor is active
+    if (!vendor.active) {
+      return res.status(403).json({ message: 'Account is inactive. Please contact support.' });
+    }
+
+    res.status(200).json({ message: 'Login successful', vendor });
+  } catch (error) {
+    console.error('Error logging in vendor:', error);
+    res.status(500).json({ message: `Error logging in vendor: ${error.message}` });
+  }
+});
+
+
+/*
 
 // Vendor login endpoint
 app.post("/vendor-login", async (req, res) => {
@@ -886,6 +937,7 @@ app.post("/vendor-login", async (req, res) => {
   }
 });
 
+*/
 
 // Vendor details endpoint
 app.post('/vendor-details', authenticateVendorToken, async (req, res) => {

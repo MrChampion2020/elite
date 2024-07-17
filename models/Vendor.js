@@ -1,19 +1,18 @@
 const mongoose = require('mongoose');
 
-const vendorSchema = new mongoose.Schema({
-  fullName: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  phone: { type: String, required: true },
-  password: { type: String, required: true },
-  username: { type: String, required: true, unique: true },
-  companyName: { type: String, required: true },
-  companyAddress: { type: String, required: true },
-  couponCode: { type: String, required: true },
-  referralLink: { type: String, required: true, unique: true },
-  referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' },
-  wallet: { type: Number, default: 0 },
+const VendorSchema = new mongoose.Schema({
+  fullName: String,
+  email: { type: String, unique: true },
+  phone: String,
+  password: String,
+  username: String,
+  companyName: String,
+  couponCode: String,
+  companyAddress: String,
+  referralLink: String,
+  referredBy: String,
+  wallet: {type: String, default: 0},
+  active: { type: Boolean, default: false } // Add the active field
 });
 
-const Vendor = mongoose.model('Vendor', vendorSchema);
-
-module.exports = Vendor;
+module.exports = mongoose.model('Vendor', VendorSchema);

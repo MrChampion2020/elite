@@ -619,52 +619,7 @@ const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
       document.getElementById('login-form').style.display = 'block';
     }
 
-    /*// Function to register a vendor
-    async function registerVendor() {
-      const fullName = document.getElementById('fullName').value;
-      const email = document.getElementById('email').value;
-      const phone = document.getElementById('phone').value;
-      const password = document.getElementById('password').value;
-      const username = document.getElementById('username').value;
-      const couponCode = document.getElementById('couponCode').value;
-      const companyName = document.getElementById('companyName').value;
-      const companyAddress = document.getElementById('companyAddress').value;
-      const referredBy = document.getElementById('referredBy').value;
-
-      const requestData = {
-        fullName,
-        email,
-        phone,
-        password,
-        username,
-        couponCode,
-        companyName,
-        companyAddress,
-        referredBy,
-      };
-
-      try {
-        const response = await fetch(`${API_URL}/register-vendor`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestData),
-        });
-
-        if (response.ok) {
-          alert('Vendor registered successfully');
-          showLoginForm();
-        } else {
-          const errorData = await response.json();
-          alert(`Registration failed: ${errorData.message}`);
-        }
-      } catch (error) {
-        alert(`Registration failed: ${error.message}`);
-      }
-    }
-*/
-
+    /*
 async function registerVendor() {
   const fullName = document.getElementById('fullName').value;
   const email = document.getElementById('email').value;
@@ -689,7 +644,7 @@ async function registerVendor() {
   };
 
   try {
-    const response = await fetch('http://localhost:5000/register-vendor', {
+    const response = await fetch(`${API_URL}/register-vendor`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -702,6 +657,52 @@ async function registerVendor() {
     if (response.ok) {
       alert(result.message);
       // Clear the form fields
+      document.getElementById('registrationForm').reset();
+    } else {
+      alert(result.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred while registering. Please try again.');
+  }
+}
+*/
+async function registerVendor() {
+  const fullName = document.getElementById('fullName').value;
+  const email = document.getElementById('email').value;
+  const phone = document.getElementById('phone').value;
+  const password = document.getElementById('password').value;
+  const username = document.getElementById('username').value;
+  const companyName = document.getElementById('companyName').value;
+  const couponCode = document.getElementById('couponCode').value;
+  const companyAddress = document.getElementById('companyAddress').value;
+  const referralLink = window.location.href;
+
+  const data = {
+    fullName,
+    email,
+    phone,
+    password,
+    username,
+    companyName,
+    couponCode,
+    companyAddress,
+    referralLink
+  };
+
+  try {
+    const response = await fetch(`${API_URL}/register-vendor`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert(result.message);
       document.getElementById('registrationForm').reset();
     } else {
       alert(result.message);
