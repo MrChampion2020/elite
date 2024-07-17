@@ -380,12 +380,11 @@
   </script>
 </body>
 </html>
--->
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Meta tags and styles remain unchanged -->
   <meta charset="UTF-8">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
@@ -394,7 +393,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Elitearn</title>
   <style>
-    /* Styles remain unchanged */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -472,7 +470,6 @@
       white-space: pre-wrap;
       word-wrap: break-word;
     }
-
     .content-area {
       display: none;
       position: fixed;
@@ -495,23 +492,21 @@
       top: 20px;
       right: 20px;
     }
-    #dashboard{
+    #dashboard {
       height: 100%;
-
     }
-    #welcome-message{
+    #welcome-message {
       height: 10%;
       width: 100%;
       padding: 10px;
     }
-    .wallet{
+    .wallet {
       height: 15%;
       padding: 10px;
     }
-    .empty{
+    .empty {
       height: 25%;
     }
-
   </style>
 </head>
 <body>
@@ -589,9 +584,7 @@
       <div class="wallet">
         <p>Your current wallet balance is: <span id="vendor-wallet"></span></p>
       </div>
-      <div class="empty">
-
-      </div>
+      <div class="empty"></div>
       <button id="fetch-details-btn" class="btn" onclick="fetchVendorDetails()">Fetch Vendor Details</button>
       <button id="logout-btn" class="btn" onclick="logoutVendor()">Logout Vendor</button>
     </div>
@@ -604,8 +597,7 @@
   </div>
 
   <script>
-
-const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
+   const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
 
     // Function to show the registration form
     function showRegistrationForm() {
@@ -619,167 +611,120 @@ const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
       document.getElementById('login-form').style.display = 'block';
     }
 
-   
-async function registerVendor() {
-  const fullName = document.getElementById('fullName').value;
-  const email = document.getElementById('email').value;
-  const phone = document.getElementById('phone').value;
-  const password = document.getElementById('password').value;
-  const username = document.getElementById('username').value;
-  const companyName = document.getElementById('companyName').value;
-  const couponCode = document.getElementById('couponCode').value;
-  const companyAddress = document.getElementById('companyAddress').value;
-  const referralLink = window.location.href;
+    // Function to register a vendor
+    async function registerVendor() {
+      const fullName = document.getElementById('fullName').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const password = document.getElementById('password').value;
+      const username = document.getElementById('username').value;
+      const companyName = document.getElementById('companyName').value;
+      const couponCode = document.getElementById('couponCode').value;
+      const companyAddress = document.getElementById('companyAddress').value;
+      const referredBy = document.getElementById('referredBy').value;
 
-  const data = {
-    fullName,
-    email,
-    phone,
-    password,
-    username,
-    companyName,
-    couponCode,
-    companyAddress,
-    referralLink
-  };
-
-  try {
-    const response = await fetch(`${API_URL}/register-vendor`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      alert(result.message);
-      document.getElementById('registrationForm').reset();
-    } else {
-      alert(result.message);
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    alert('An error occurred while registering. Please try again.');
-  }
-}
-
-async function loginVendor() {
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
+      const data = {
+        fullName,
+        email,
+        phone,
+        password,
+        username,
+        companyName,
+        couponCode,
+        companyAddress,
+        referredBy
+      };
 
       try {
-        const response = await fetch(`${API_URL}/vendor-login`, {
-          method: "POST",
+        const response = await fetch(`${API_URL}/register-vendor`, {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify(data)
         });
 
+        const result = await response.json();
+
         if (response.ok) {
-          const data = await response.json();
-          localStorage.setItem("vendorToken", data.token);
-          alert(data.message);
-          document.getElementById("login-form").style.display = "none";
-          document.getElementById("dashboard").style.display = "block";
-          fetchVendorDetails(); // Fetch vendor details after login
+          alert(result.message);
+          // Clear form inputs after successful registration
+          document.getElementById('registration-form').reset();
         } else {
-          const errorData = await response.json();
-          alert(errorData.message);
+          alert(result.message);
         }
       } catch (error) {
-        console.error("Error logging in vendor:", error);
-        alert("Login failed");
+        console.error('Error:', error);
+        alert('An error occurred while registering. Please try again.');
       }
     }
 
+    // Function to login a vendor
+    async function loginVendor() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const data = { email, password };
+
+      try {
+        const response = await fetch(`${API_URL}/vendor-login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem('vendorToken', result.token);
+          document.getElementById('login-form').style.display = 'none';
+          document.getElementById('registration-form').style.display = 'none';
+          document.getElementById('vendor-details').style.display = 'block';
+          document.getElementById('vendor-username').textContent = result.username;
+        } else {
+          alert(result.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while logging in. Please try again.');
+      }
+    }
+
+    // Function to fetch vendor details
     async function fetchVendorDetails() {
-      const token = localStorage.getItem("vendorToken");
+      const token = localStorage.getItem('vendorToken');
 
       if (!token) {
-        alert("Please login first.");
+        alert('Please login first.');
         return;
       }
 
       try {
         const response = await fetch(`${API_URL}/vendor-details`, {
-          method: "POST",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
 
         if (response.ok) {
           const data = await response.json();
-          document.getElementById("welcome-message").textContent = `Welcome ${data.username}`;
-          document.getElementById("wallet-balance").textContent = data.wallet;
-          document.getElementById("referral-links").textContent = data.vendoreferralLink;
+          document.getElementById('vendor-wallet').textContent = data.wallet;
+          document.getElementById('vendor-details-content').style.display = 'block';
+          document.getElementById('vendor-details-output').innerText = JSON.stringify(data, null, 2);
         } else {
           const errorData = await response.json();
           alert(errorData.message);
         }
       } catch (error) {
-        console.error("Error fetching vendor details:", error);
-        alert("Failed to fetch vendor details");
-      }
-    }
-/*
-    // Function to login a vendor
-    async function loginVendor() {
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-
-      try {
-        const response = await fetch(`${API_URL}/login-vendor`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          document.getElementById('vendor-username').innerText = data.username;
-          document.getElementById('vendor-wallet').innerText = data.wallet;
-          document.getElementById('login-form').style.display = 'none';
-          document.getElementById('vendor-details').style.display = 'block';
-        } else {
-          const errorData = await response.json();
-          alert(`Login failed: ${errorData.message}`);
-        }
-      } catch (error) {
-        alert(`Login failed: ${error.message}`);
+        console.error('Error fetching vendor details:', error);
+        alert('Failed to fetch vendor details');
       }
     }
 
-    // Function to fetch vendor details
-    async function fetchVendorDetails() {
-      try {
-        const response = await fetch(`${API_URL}/vendor-details`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          document.getElementById('vendor-details-output').innerText = JSON.stringify(data, null, 2);
-          document.getElementById('vendor-details-content').style.display = 'block';
-        } else {
-          const errorData = await response.json();
-          alert(`Failed to fetch vendor details: ${errorData.message}`);
-        }
-      } catch (error) {
-        alert(`Failed to fetch vendor details: ${error.message}`);
-      }
-    }
-*/
     // Function to close the content area
     function closeContentArea() {
       document.getElementById('vendor-details-content').style.display = 'none';
@@ -787,9 +732,364 @@ async function loginVendor() {
 
     // Function to logout a vendor
     function logoutVendor() {
+      localStorage.removeItem('vendorToken');
       document.getElementById('vendor-details').style.display = 'none';
       document.getElementById('login-form').style.display = 'block';
     }
+  </script>
+</body>
+</html>
+
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="icon" href="logo.jpg" type="image/jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elitearn</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      width: 80%;
+      height: auto;
+      margin: auto;
+      overflow: hidden;
+    }
+    #main-header {
+      background-color: rgb(252, 241, 252);
+      color: purple;
+      padding-top: 30px;
+      min-height: 70px;
+      border-bottom: purple 3px solid;
+    }
+    #main-header h1 {
+      text-align: center;
+      text-transform: uppercase;
+      margin: 0;
+      font-size: 24px;
+    }
+    .welcome-area {
+      background: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .wallet {
+      margin-top: 20px;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .referral-link {
+      margin-top: 20px;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .action-btn {
+      padding: 10px 15px;
+      background: #6a0dad;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .action-btn:hover {
+      background: #9a4dad;
+    }
+    .coupon-area {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+      display: none;
+    }
+    .coupon-content {
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .coupon-content label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .coupon-content input {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+    }
+    .coupon-content .btn-group {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .coupon-content .btn {
+      padding: 10px 15px;
+      margin-left: 10px;
+      background: #6a0dad;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .coupon-content .btn:hover {
+      background: #9a4dad;
+    }
+    .withdrawal-form {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+      display: none;
+    }
+    .withdrawal-content {
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .withdrawal-content label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .withdrawal-content input {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+    }
+    .withdrawal-content .btn-group {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .withdrawal-content .btn {
+      padding: 10px 15px;
+      margin-left: 10px;
+      background: #6a0dad;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .withdrawal-content .btn:hover {
+      background: #9a4dad;
+    }
+    .link {
+      display: block;
+      margin-top: 10px;
+      text-align: center;
+    }
+    #vendor-details-content {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <header id="main-header">
+    <div class="container">
+      <h1>Elitearn Vendor</h1>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="welcome-area">
+      <h2>Welcome, <span id="vendor-username"></span></h2>
+    </div>
+
+    <div class="wallet">
+      <p>Your current wallet balance is: <span id="vendor-wallet"></span></p>
+    </div>
+
+    <div class="referral-link">
+      <h3>Referral Link</h3>
+      <p id="vendor-referral-link"></p>
+      <button class="action-btn" onclick="copyReferralLink()">Copy Link</button>
+    </div>
+
+    <div class="actions">
+      <button class="action-btn" onclick="toggleCouponArea()">Coupons</button>
+      <button class="action-btn" onclick="toggleWithdrawalForm()">Withdraw</button>
+      <button class="action-btn" onclick="logoutVendor()">Logout</button>
+    </div>
+  </div>
+
+  <div class="coupon-area" id="coupon-area">
+    <div class="coupon-content">
+      <h2>Coupon Area</h2>
+      <label for="couponCode">Enter Coupon Code:</label>
+      <input type="text" id="couponCode">
+      <div class="btn-group">
+        <button class="btn" onclick="validateCoupon()">Apply Coupon</button>
+        <button class="btn" onclick="closeCouponArea()">Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="withdrawal-form" id="withdrawal-form">
+    <div class="withdrawal-content">
+      <h2>Withdraw Wallet Balance</h2>
+      <label for="withdrawalAmount">Enter Amount:</label>
+      <input type="number" id="withdrawalAmount" min="1">
+      <div class="btn-group">
+        <button class="btn" onclick="withdrawBalance()">Withdraw</button>
+        <button class="btn" onclick="closeWithdrawalForm()">Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'YOUR_API_URL'; // Replace with your backend API URL
+
+    // Function to fetch and display vendor details
+    async function fetchVendorDetails() {
+      const token = localStorage.getItem('vendorToken');
+
+      if (!token) {
+        alert('Please login first.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/vendor-details`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          document.getElementById('vendor-username').textContent = data.username;
+          document.getElementById('vendor-wallet').textContent = data.wallet;
+          document.getElementById('vendor-referral-link').textContent = `${window.location.origin}/register?ref=${data.username}`;
+        } else {
+          const errorData = await response.json();
+          alert(errorData.message);
+        }
+      } catch (error) {
+        console.error('Error fetching vendor details:', error);
+        alert('Failed to fetch vendor details');
+      }
+    }
+
+    // Function to copy referral link to clipboard
+    function copyReferralLink() {
+      const referralLink = document.getElementById('vendor-referral-link');
+      const tempInput = document.createElement('input');
+      tempInput.value = referralLink.textContent;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      alert('Referral link copied to clipboard!');
+    }
+
+    // Function to toggle coupon area visibility
+    function toggleCouponArea() {
+      const couponArea = document.getElementById('coupon-area');
+      couponArea.style.display = couponArea.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Function to validate and apply coupon
+    function validateCoupon() {
+      const couponCode = document.getElementById('couponCode').value;
+      // Logic to check and apply coupon
+      alert(`Coupon code '${couponCode}' applied successfully!`);
+      closeCouponArea();
+    }
+
+    // Function to close coupon area
+    function closeCouponArea() {
+      const couponArea = document.getElementById('coupon-area');
+      couponArea.style.display = 'none';
+    }
+
+    // Function to toggle withdrawal form visibility
+    function toggleWithdrawalForm() {
+      const withdrawalForm = document.getElementById('withdrawal-form');
+      withdrawalForm.style.display = withdrawalForm.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Function to withdraw balance
+    async function withdrawBalance() {
+      const withdrawalAmount = document.getElementById('withdrawalAmount').value;
+
+      if (!withdrawalAmount || withdrawalAmount <= 0) {
+        alert('Please enter a valid withdrawal amount.');
+        return;
+      }
+
+      const token = localStorage.getItem('vendorToken');
+
+      if (!token) {
+        alert('Please login first.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/withdraw`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ amount: withdrawalAmount })
+        });
+
+        if (response.ok) {
+          alert(`Withdrawal of ${withdrawalAmount} successfully processed!`);
+          fetchVendorDetails(); // Update vendor details after withdrawal
+          closeWithdrawalForm();
+        } else {
+          const errorData = await response.json();
+          alert(errorData.message);
+        }
+      } catch (error) {
+        console.error('Error withdrawing balance:', error);
+        alert('Failed to process withdrawal');
+      }
+    }
+
+    // Function to close withdrawal form
+    function closeWithdrawalForm() {
+      const withdrawalForm = document.getElementById('withdrawal-form');
+      withdrawalForm.style.display = 'none';
+    }
+
+    // Function to logout vendor
+    function logoutVendor() {
+      localStorage.removeItem('vendorToken');
+      window.location.reload(); // Refresh the page after logout
+    }
+
+    // Fetch vendor details on page load
+    window.onload = function() {
+      fetchVendorDetails();
+    };
   </script>
 </body>
 </html>

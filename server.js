@@ -239,7 +239,7 @@ app.post('/api/reset-password', async (req, res) => {
 });
 
 
-
+/*
 
 
 
@@ -273,7 +273,7 @@ async function distributeReferralBonus(referredBy, type, level = 1) {
 }
 
 
-
+*/
 
 const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
   if (userLevel <= 0 && vendorLevel <= 0) return;
@@ -459,93 +459,6 @@ app.post('/vendor-login', async (req, res) => {
   }
 });
 
-/*
-// Distribute referral bonus function
-const distributeReferralBonusVendor = async (referrerId) => {
-  try {
-    const referrer = await Vendor.findById(referrerId);
-    if (referrer) {
-      referrer.wallet += 4000;
-      await referrer.save();
-    }
-  } catch (error) {
-    console.error('Error distributing referral bonus:', error);
-  }
-};
-
-function generateReferralCode() {
-  return Math.random().toString(36).substring(2, 15);
-}
-
-
-app.post('/register-vendor', async (req, res) => {
-  const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink } = req.body;
-
-  if (!fullName || !email || !phone || !password || !username || !companyName || !companyAddress) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({ message: 'Invalid email format' });
-  }
-
-  if (password.length < 6) {
-    return res.status(400).json({ message: 'Password must be at least 6 characters long' });
-  }
-
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    let referredBy = null;
-    if (referralLink) {
-      const url = new URL(referralLink);
-      referredBy = url.searchParams.get('referral');
-    }
-
-    let newReferralLink;
-    let isUnique = false;
-
-    while (!isUnique) {
-      newReferralLink = `${process.env.API_URL}/vendor-register?referral=${generateReferralCode()}`;
-      const existingVendor = await Vendor.findOne({ referralLink: newReferralLink });
-      if (!existingVendor) {
-        isUnique = true;
-      }
-    }
-
-    const newVendor = new Vendor({
-      fullName,
-      email,
-      phone,
-      password: hashedPassword,
-      username,
-      companyName,
-      couponCode,
-      companyAddress,
-      referralLink: newReferralLink,
-      referredBy,
-      active: false // Set active to false by default
-    });
-
-    await newVendor.save();
-
-    if (referredBy) {
-      await distributeReferralBonusVendor(referredBy);
-    }
-
-    res.status(201).json({ message: 'Vendor registered successfully' });
-  } catch (error) {
-    console.error('Error registering vendor:', error);
-    if (error.code === 11000) {
-      res.status(400).json({ message: 'Duplicate key error, please try again' });
-    } else {
-      res.status(500).json({ message: `Error registering vendor: ${error.message}` });
-    }
-  }
-});
-
-*/
 
 app.post("/register", async (req, res) => {
   try {
@@ -1008,8 +921,7 @@ app.post('/vendor-details', authenticateVendorToken, async (req, res) => {
       companyName: vendor.companyName,
       companyAddress: vendor.companyAddress,
       wallet: vendor.wallet,
-      usereferralLink: vendor.usereferralLink,
-      vendoreferralLink: vendor.vendoreferralLink,
+      referralLink: vendor.referralLink
 
     });
   } catch (err) {
@@ -1017,7 +929,6 @@ app.post('/vendor-details', authenticateVendorToken, async (req, res) => {
     res.status(500).json({ message: 'Error fetching vendor details' });
   }
 });
-
 
 
 
