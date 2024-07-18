@@ -460,6 +460,18 @@ app.post('/register-vendor', async (req, res) => {
   }
 
   try {
+    // Check if username or email is already taken
+    const existingUsername = await Vendor.findOne({ username });
+    const existingEmail = await Vendor.findOne({ email });
+    if (existingUsername) {
+      console.warn(`Username already taken: ${username}`);
+      return res.status(400).json({ message: 'Username is already taken' });
+    }
+    if (existingEmail) {
+      console.warn(`Email already taken: ${email}`);
+      return res.status(400).json({ message: 'Email is already taken' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     let referredBy = null;
@@ -496,6 +508,17 @@ app.post('/register-vendor', async (req, res) => {
       await distributeReferralBonusVendor(referredBy);
     }
 
+    // Mark the coupon as used
+    if (couponCode) {
+      const coupon = await Coupon.findOne({ code: couponCode });
+      if (coupon && !coupon.used) {
+        coupon.used = true;
+        await coupon.save();
+      } else {
+        console.warn(`Invalid or already used coupon code: ${couponCode}`);
+      }
+    }
+
     res.status(201).json({ message: 'Vendor registered successfully' });
   } catch (error) {
     console.error('Error registering vendor:', error);
@@ -506,6 +529,7 @@ app.post('/register-vendor', async (req, res) => {
     }
   }
 });
+
 
 app.post('/vendor-login', async (req, res) => {
   const { email, password } = req.body;
