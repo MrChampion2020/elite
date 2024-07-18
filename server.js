@@ -490,6 +490,8 @@ app.post("/register-vendor", async (req, res) => {
 });
 */
 
+
+/*
 app.post('/vendor-login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -523,7 +525,7 @@ app.post('/vendor-login', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+*/
 
 
 app.post("/register", async (req, res) => {
@@ -903,7 +905,68 @@ app.patch('/admin/vendors/:vendorId/status', authenticateToken, setVendorStatus)
 
 
 
+app.post('/vendor-login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const vendor = await Vendor.findOne({ email });
+    if (!vendor) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
 
+    const isMatch = await bcrypt.compare(password, vendor.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    const token = jwt.sign({ id: vendor._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const vendorDetails = {
+      username: vendor.username,
+      wallet: vendor.wallet,
+      fullName: vendor.fullName,
+      email: vendor.email,
+      phone: vendor.phone,
+      companyName: vendor.companyName,
+      companyAddress: vendor.companyAddress,
+      referralLink: vendor.referralLink,
+      referredBy: vendor.referredBy
+    };
+    res.json({ token, vendorDetails });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
+app.get('/vendor-details', authenticateVendorToken, async (req, res) => {
+  try {
+    const vendor = await Vendor.findById(req.user.id);
+    if (!vendor) {
+      return res.status(404).json({ message: 'Vendor not found' });
+    }
+
+    const vendorDetails = {
+      username: vendor.username,
+      wallet: vendor.wallet,
+      fullName: vendor.fullName,
+      email: vendor.email,
+      phone: vendor.phone,
+      companyName: vendor.companyName,
+      companyAddress: vendor.companyAddress,
+      referralLink: vendor.referralLink,
+      referredBy: vendor.referredBy
+    };
+
+    res.json(vendorDetails);
+  } catch (error) {
+    console.error('Error fetching vendor details:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+/*
 // Vendor details endpoint
 app.post('/vendor-details', authenticateVendorToken, async (req, res) => {
   try {
@@ -928,7 +991,7 @@ app.post('/vendor-details', authenticateVendorToken, async (req, res) => {
   }
 });
 
-
+*/
 
 app.get('/vendor-referrals', authenticateVendorToken, async (req, res) => {
   try {

@@ -1543,7 +1543,16 @@
 </body>
 </html>
 
--->
+--
+
+
+
+
+
+
+
+
+
 
 
 <!DOCTYPE html>
@@ -2029,6 +2038,205 @@ function closeContentArea() {
     function closeContentArea() {
       document.getElementById('vendor-details-content').style.display = 'none';
     }*/
+  </script>
+</body>
+</html>
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor Portal</title>
+</head>
+<body>
+  <div id="login-form">
+    <h2>Vendor Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" required>
+    <input type="password" id="loginPassword" placeholder="Password" required>
+    <button onclick="loginVendor()">Login</button>
+    <button onclick="showRegistrationForm()">Register</button>
+  </div>
+
+  <div id="registration-form" style="display:none;">
+    <h2>Vendor Registration</h2>
+    <input type="text" id="fullName" placeholder="Full Name" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="text" id="phone" placeholder="Phone" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="text" id="couponCode" placeholder="Coupon Code">
+    <input type="text" id="companyName" placeholder="Company Name" required>
+    <input type="text" id="companyAddress" placeholder="Company Address" required>
+    <input type="text" id="referredBy" placeholder="Referred By">
+    <button onclick="registerVendor()">Register</button>
+    <button onclick="showLoginForm()">Back to Login</button>
+  </div>
+
+  <div id="vendor-details" style="display:none;">
+    <h2>Vendor Dashboard</h2>
+    <p>Username: <span id="vendor-username"></span></p>
+    <p>Wallet: <span id="vendor-wallet"></span></p>
+    <pre id="vendor-details-output"></pre>
+    <button onclick="logoutVendor()">Logout</button>
+  </div>
+
+  <script>
+    const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
+
+    function showRegistrationForm() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('registration-form').style.display = 'block';
+    }
+
+    function showLoginForm() {
+      document.getElementById('registration-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+    }
+
+    async function loginVendor() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const response = await fetch(`${API_URL}/vendor-login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('vendorDetails', JSON.stringify(data.vendorDetails));
+          showVendorDetails();
+          displayVendorDetails();
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while logging in.');
+      }
+    }
+
+    async function fetchVendorDetails() {
+      const authToken = localStorage.getItem('authToken');
+
+      try {
+        const response = await fetch(`${API_URL}/vendor-details`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem('vendorDetails', JSON.stringify(data));
+          displayVendorDetails();
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while fetching vendor details.');
+      }
+    }
+
+    function displayVendorDetails() {
+      const vendorDetails = JSON.parse(localStorage.getItem('vendorDetails'));
+      if (vendorDetails) {
+        document.getElementById('vendor-username').textContent = vendorDetails.username;
+        document.getElementById('vendor-wallet').textContent = vendorDetails.wallet;
+        document.getElementById('vendor-details-output').textContent = JSON.stringify(vendorDetails, null, 2);
+        showContentArea();
+      }
+    }
+
+    async function registerVendor() {
+      const fullName = document.getElementById('fullName').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const password = document.getElementById('password').value;
+      const username = document.getElementById('username').value;
+      const couponCode = document.getElementById('couponCode').value;
+      const companyName = document.getElementById('companyName').value;
+      const companyAddress = document.getElementById('companyAddress').value;
+      const referredBy = document.getElementById('referredBy').value;
+
+      const vendorData = {
+        fullName,
+        email,
+        phone,
+        password,
+        username,
+        couponCode,
+        companyName,
+        companyAddress,
+        referredBy
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/register-vendor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(vendorData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Vendor registered successfully.');
+          showLoginForm();
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while registering.');
+      }
+    }
+
+    function logoutVendor() {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('vendorDetails');
+      document.getElementById('vendor-details').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+    }
+
+    function showVendorDetails() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('vendor-details').style.display = 'block';
+    }
+
+    function showContentArea() {
+      document.getElementById('vendor-details-content').style.display = 'block';
+    }
+
+    function closeContentArea() {
+      document.getElementById('vendor-details-content').style.display = 'none';
+    }
+
+    // Auto-login if token and vendor details are stored in localStorage
+    document.addEventListener('DOMContentLoaded', () => {
+      const authToken = localStorage.getItem('authToken');
+      const vendorDetails = localStorage.getItem('vendorDetails');
+      if (authToken && vendorDetails) {
+        showVendorDetails();
+        displayVendorDetails();
+      }
+    });
   </script>
 </body>
 </html>
