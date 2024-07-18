@@ -426,15 +426,9 @@ app.post('/register-vendor', async (req, res) => {
 });
 */
 
-const generateReferralCode = () => new mongoose.Types.ObjectId().toString();
-
-async function distributeReferralBonusVendor(referralId) {
-  if (!mongoose.Types.ObjectId.isValid(referralId)) {
-    throw new Error(`Invalid referral ID: ${referralId}`);
-  }
-
+async function distributeReferralBonusVendor(referralUsername) {
   try {
-    const referrer = await Vendor.findById(referralId);
+    const referrer = await Vendor.findOne({ username: referralUsername });
     if (!referrer) {
       throw new Error('Referrer not found');
     }
@@ -471,24 +465,16 @@ app.post('/register-vendor', async (req, res) => {
     let referredBy = null;
     if (referralLink) {
       const url = new URL(referralLink);
-      const referralId = url.searchParams.get('referral');
-      if (mongoose.Types.ObjectId.isValid(referralId)) {
-        referredBy = referralId;
+      const referralUsername = url.searchParams.get('referral');
+      const referrer = await Vendor.findOne({ username: referralUsername });
+      if (referrer) {
+        referredBy = referralUsername;
       } else {
-        console.warn(`Invalid referral ID: ${referralId}`);
+        console.warn(`Invalid referral username: ${referralUsername}`);
       }
     }
 
-    let newReferralLink;
-    let isUnique = false;
-
-    while (!isUnique) {
-      newReferralLink = `${process.env.API_URL}/register-vendor?referral=${generateReferralCode()}`;
-      const existingVendor = await Vendor.findOne({ referralLink: newReferralLink });
-      if (!existingVendor) {
-        isUnique = true;
-      }
-    }
+    const newReferralLink = `${process.env.API_URL}/register-vendor?referral=${username}`;
 
     const newVendor = new Vendor({
       fullName,
