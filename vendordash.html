@@ -1763,6 +1763,142 @@
   <script>
     const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
 
+let authToken = '';
+
+function showRegistrationForm() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('registration-form').style.display = 'block';
+}
+
+function showLoginForm() {
+  document.getElementById('registration-form').style.display = 'none';
+  document.getElementById('login-form').style.display = 'block';
+}
+
+async function loginVendor() {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+
+  try {
+    const response = await fetch(`${API_URL}/vendor-login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      authToken = data.token;
+      showVendorDetails();
+      fetchVendorDetails();
+    } else {
+      alert(data.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred while logging in.');
+  }
+}
+
+async function fetchVendorDetails() {
+  try {
+    const response = await fetch(`${API_URL}/vendor-details`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      document.getElementById('vendor-username').textContent = data.username;
+      document.getElementById('vendor-wallet').textContent = data.wallet;
+      document.getElementById('vendor-details-output').textContent = JSON.stringify(data, null, 2);
+      showContentArea();
+    } else {
+      alert(data.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred while fetching vendor details.');
+  }
+}
+
+async function registerVendor() {
+  const fullName = document.getElementById('fullName').value;
+  const email = document.getElementById('email').value;
+  const phone = document.getElementById('phone').value;
+  const password = document.getElementById('password').value;
+  const username = document.getElementById('username').value;
+  const couponCode = document.getElementById('couponCode').value;
+  const companyName = document.getElementById('companyName').value;
+  const companyAddress = document.getElementById('companyAddress').value;
+  const referredBy = document.getElementById('referredBy').value;
+
+  const vendorData = {
+    fullName,
+    email,
+    phone,
+    password,
+    username,
+    couponCode,
+    companyName,
+    companyAddress,
+    referredBy
+  };
+
+  try {
+    const response = await fetch(`${API_URL}/register-vendor`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(vendorData)
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert('Vendor registered successfully.');
+      showLoginForm();
+    } else {
+      alert(data.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred while registering.');
+  }
+}
+
+function logoutVendor() {
+  authToken = '';
+  document.getElementById('vendor-details').style.display = 'none';
+  document.getElementById('login-form').style.display = 'block';
+}
+
+function showVendorDetails() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('vendor-details').style.display = 'block';
+}
+
+function showContentArea() {
+  document.getElementById('vendor-details-content').style.display = 'block';
+}
+
+function closeContentArea() {
+  document.getElementById('vendor-details-content').style.display = 'none';
+}
+
+    
+    
+    /*
+    const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
+
     let authToken = '';
 
     function showRegistrationForm() {
@@ -1892,7 +2028,7 @@
 
     function closeContentArea() {
       document.getElementById('vendor-details-content').style.display = 'none';
-    }
+    }*/
   </script>
 </body>
 </html>
