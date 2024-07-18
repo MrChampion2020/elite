@@ -29,7 +29,7 @@ app.get('/register', (req, res) => {
 });
 
 // Serve registration page
-app.get('/vendor-register', (req, res) => {
+app.get('/register-vendor', (req, res) => {
   res.sendFile(path.join(__dirname, './', 'vendordash.html'));
 });
 

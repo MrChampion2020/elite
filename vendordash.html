@@ -151,7 +151,7 @@
       <a class="link" href="#" onclick="showRegistrationForm()">New user? Register here</a>
     </div>
   </div>
-
+<!--
   <div class="container" id="registration-form" style="display:none;">
     <div class="form">
       <h2>Vendor Registration</h2>
@@ -191,6 +191,51 @@
       <a class="link" href="#" onclick="showLoginForm()">Already registered? Login here</a>
     </div>
   </div>
+--
+
+<div class="container" id="registration-form" style="display:none;">
+  <div class="form">
+    <h2>Vendor Registration</h2>
+    <div class="form-group">
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName">
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email">
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input type="text" id="phone">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password">
+    </div>
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username">
+    </div>
+    <div class="form-group">
+      <label for="couponCode">Coupon Code</label>
+      <input type="text" id="couponCode" required>
+    </div>
+    <div class="form-group">
+      <label for="companyName">Company Name</label>
+      <input type="text" id="companyName">
+    </div>
+    <div class="form-group">
+      <label for="companyAddress">Company Address</label>
+      <input type="text" id="companyAddress">
+    </div>
+    <div class="form-group">
+      <label for="referredBy">Referred By (Optional)</label>
+      <input type="text" id="referredBy">
+    </div>
+    <button class="btn" onclick="registerVendor()">Register Vendor</button>
+    <a class="link" href="#" onclick="showLoginForm()">Existing user? Login here</a>
+  </div>
+</div>
 
   <div class="container" id="dashboard" style="display:none;">
     <div id="welcome-message"></div>
@@ -325,6 +370,56 @@
       }
     }
 
+
+     // Function to register a vendor
+     async function registerVendor() {
+      const fullName = document.getElementById('fullName').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const password = document.getElementById('password').value;
+      const username = document.getElementById('username').value;
+      const companyName = document.getElementById('companyName').value;
+      const couponCode = document.getElementById('couponCode').value;
+      const companyAddress = document.getElementById('companyAddress').value;
+      const referredBy = document.getElementById('referredBy').value;
+
+      const data = {
+        fullName,
+        email,
+        phone,
+        password,
+        username,
+        companyName,
+        couponCode,
+        companyAddress,
+        referredBy
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/register-vendor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(result.message);
+          // Clear form inputs after successful registration
+          document.getElementById('registration-form').reset();
+        } else {
+          alert(result.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while registering. Please try again.');
+      }
+    }
+
+/*
     async function registerVendor() {
       const fullName = document.getElementById("fullName").value;
       const email = document.getElementById("email").value;
@@ -356,7 +451,7 @@
         console.error("Error registering vendor:", error);
         alert("Registration failed");
       }
-    }
+    }*/
 
     function copyReferralLink() {
       const referralLink = document.getElementById("referral-link").textContent;
@@ -381,7 +476,7 @@
 </body>
 </html>
 
-
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -740,9 +835,14 @@
 </body>
 </html>
 
--->
 
 
+
+
+
+
+
+<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -961,7 +1061,7 @@
   </div>
 
   <script>
-    const API_URL = 'YOUR_API_URL'; // Replace with your backend API URL
+   const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
 
     // Function to fetch and display vendor details
     async function fetchVendorDetails() {
@@ -1093,3 +1193,7 @@
   </script>
 </body>
 </html>
+
+-->
+
+
