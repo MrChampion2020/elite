@@ -332,7 +332,7 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
 };
 
 
-
+/*
 const generateReferralCode = () => new mongoose.Types.ObjectId().toString();
 
 async function distributeReferralBonusVendor(referralId) {
@@ -347,6 +347,102 @@ async function distributeReferralBonusVendor(referralId) {
     }
 
     // Add your referral bonus logic here
+    console.log('Referral bonus distributed successfully');
+  } catch (error) {
+    console.error('Error distributing referral bonus:', error);
+  }
+}
+
+app.post('/register-vendor', async (req, res) => {
+  const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink } = req.body;
+
+  if (!fullName || !email || !phone || !password || !username || !companyName || !companyAddress) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    let referredBy = null;
+    if (referralLink) {
+      const url = new URL(referralLink);
+      const referralId = url.searchParams.get('referral');
+      if (mongoose.Types.ObjectId.isValid(referralId)) {
+        referredBy = referralId;
+      } else {
+        console.warn(`Invalid referral ID: ${referralId}`);
+      }
+    }
+
+    let newReferralLink;
+    let isUnique = false;
+
+    while (!isUnique) {
+      newReferralLink = `${process.env.API_URL}/register-vendor?referral=${generateReferralCode()}`;
+      const existingVendor = await Vendor.findOne({ referralLink: newReferralLink });
+      if (!existingVendor) {
+        isUnique = true;
+      }
+    }
+
+    const newVendor = new Vendor({
+      fullName,
+      email,
+      phone,
+      password: hashedPassword,
+      username,
+      companyName,
+      couponCode,
+      companyAddress,
+      referralLink: newReferralLink,
+      referredBy,
+      active: false // Set active to false by default
+    });
+
+    await newVendor.save();
+
+    if (referredBy) {
+      await distributeReferralBonusVendor(referredBy);
+    }
+
+    res.status(201).json({ message: 'Vendor registered successfully' });
+  } catch (error) {
+    console.error('Error registering vendor:', error);
+    if (error.code === 11000) {
+      res.status(400).json({ message: 'Duplicate key error, please try again' });
+    } else {
+      res.status(500).json({ message: `Error registering vendor: ${error.message}` });
+    }
+  }
+});
+*/
+
+const generateReferralCode = () => new mongoose.Types.ObjectId().toString();
+
+async function distributeReferralBonusVendor(referralId) {
+  if (!mongoose.Types.ObjectId.isValid(referralId)) {
+    throw new Error(`Invalid referral ID: ${referralId}`);
+  }
+
+  try {
+    const referrer = await Vendor.findById(referralId);
+    if (!referrer) {
+      throw new Error('Referrer not found');
+    }
+
+    // Add 4000 to the referrer's wallet
+    referrer.wallet = (referrer.wallet || 0) + 4000;
+    await referrer.save();
+
     console.log('Referral bonus distributed successfully');
   } catch (error) {
     console.error('Error distributing referral bonus:', error);
@@ -837,74 +933,6 @@ app.patch('/admin/vendors/:vendorId/status', authenticateToken, setVendorStatus)
 
 
 
-
-
-//Vendor Endpoints
-/*
-app.post('/login-vendor', async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const vendor = await Vendor.findOne({ email });
-
-    if (!vendor) {
-      return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    const isMatch = await bcrypt.compare(password, vendor.password);
-
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    // Check if the vendor is active
-    if (!vendor.active) {
-      return res.status(403).json({ message: 'Account is inactive. Please contact support.' });
-    }
-
-    res.status(200).json({ message: 'Login successful', vendor });
-  } catch (error) {
-    console.error('Error logging in vendor:', error);
-    res.status(500).json({ message: `Error logging in vendor: ${error.message}` });
-  }
-});
-
-
-
-
-// Vendor login endpoint
-app.post("/vendor-login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const vendor = await Vendor.findOne({ email });
-
-    if (!vendor || !await bcrypt.compare(password, vendor.password)) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-
-    if (!vendor.active) {
-      return res.status(403).json({ message: "Vendor is not active" });
-    }
-
-    const now = new Date();
-    const lastLogin = vendor.lastLogin || new Date(0);
-    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-
-    if (now - lastLogin >= oneDayInMilliseconds) {
-      vendor.lastLogin = now;
-    }
-
-    const token = jwt.sign({ userId: vendor._id }, secretKey, { expiresIn: '1h' });
-    await vendor.save();
-
-    res.status(200).json({ message: "Login successful", token });
-  } catch (error) {
-    console.log("Error logging in vendor:", error);
-    res.status(500).json({ message: "Login failed" });
-  }
-});
-
-*/
 
 // Vendor details endpoint
 app.post('/vendor-details', authenticateVendorToken, async (req, res) => {

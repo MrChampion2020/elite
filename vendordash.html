@@ -602,6 +602,152 @@
     .empty {
       height: 25%;
     }
+
+    .container {
+      width: 80%;
+      height: auto;
+      margin: auto;
+      overflow: hidden;
+    }
+    #main-header {
+      background-color: rgb(252, 241, 252);
+      color: purple;
+      padding-top: 30px;
+      min-height: 70px;
+      border-bottom: purple 3px solid;
+    }
+    #main-header h1 {
+      text-align: center;
+      text-transform: uppercase;
+      margin: 0;
+      font-size: 24px;
+    }
+    .welcome-area {
+      background: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .wallet {
+      margin-top: 20px;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .referral-link {
+      margin-top: 20px;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .action-btn {
+      padding: 10px 15px;
+      background: #6a0dad;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .action-btn:hover {
+      background: #9a4dad;
+    }
+    .coupon-area {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+      display: none;
+    }
+    .coupon-content {
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .coupon-content label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .coupon-content input {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+    }
+    .coupon-content .btn-group {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .coupon-content .btn {
+      padding: 10px 15px;
+      margin-left: 10px;
+      background: #6a0dad;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .coupon-content .btn:hover {
+      background: #9a4dad;
+    }
+    .withdrawal-form {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+      display: none;
+    }
+    .withdrawal-content {
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .withdrawal-content label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .withdrawal-content input {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+    }
+    .withdrawal-content .btn-group {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .withdrawal-content .btn {
+      padding: 10px 15px;
+      margin-left: 10px;
+      background: #6a0dad;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .withdrawal-content .btn:hover {
+      background: #9a4dad;
+    }
+    .link {
+      display: block;
+      margin-top: 10px;
+      text-align: center;
+    }
+    #vendor-details-content {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
   </style>
 </head>
 <body>
@@ -670,7 +816,7 @@
       <a class="link" href="#" onclick="showLoginForm()">Existing user? Login here</a>
     </div>
   </div>
-
+<!--
   <div class="container" id="vendor-details" style="display:none;">
     <div id="dashboard">
       <div id="welcome-message">
@@ -690,6 +836,55 @@
     <div id="vendor-details-output"></div>
     <button class="close-btn" onclick="closeContentArea()">Close</button>
   </div>
+
+-->
+  
+  <div class="container">
+    <div class="welcome-area">
+      <h2>Welcome, <span id="vendor-username"></span></h2>
+    </div>
+
+    <div class="wallet">
+      <p>Your current wallet balance is: <span id="vendor-wallet"></span></p>
+    </div>
+
+    <div class="referral-link">
+      <h3>Referral Link</h3>
+      <p id="vendor-referral-link"></p>
+      <button class="action-btn" onclick="copyReferralLink()">Copy Link</button>
+    </div>
+
+    <div class="actions">
+      <button class="action-btn" onclick="toggleCouponArea()">Coupons</button>
+      <button class="action-btn" onclick="toggleWithdrawalForm()">Withdraw</button>
+      <button class="action-btn" onclick="logoutVendor()">Logout</button>
+    </div>
+  </div>
+
+  <div class="coupon-area" id="coupon-area">
+    <div class="coupon-content">
+      <h2>Coupon Area</h2>
+      <label for="couponCode">Enter Coupon Code:</label>
+      <input type="text" id="couponCode">
+      <div class="btn-group">
+        <button class="btn" onclick="validateCoupon()">Apply Coupon</button>
+        <button class="btn" onclick="closeCouponArea()">Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="withdrawal-form" id="withdrawal-form">
+    <div class="withdrawal-content">
+      <h2>Withdraw Wallet Balance</h2>
+      <label for="withdrawalAmount">Enter Amount:</label>
+      <input type="number" id="withdrawalAmount" min="1">
+      <div class="btn-group">
+        <button class="btn" onclick="withdrawBalance()">Withdraw</button>
+        <button class="btn" onclick="closeWithdrawalForm()">Exit</button>
+      </div>
+    </div>
+  </div>
+
 
   <script>
    const API_URL = `https://elitearn.onrender.com`; // Change to your backend URL
@@ -787,6 +982,7 @@
       }
     }
 
+    /*
     // Function to fetch vendor details
     async function fetchVendorDetails() {
       const token = localStorage.getItem('vendorToken');
@@ -819,7 +1015,7 @@
         alert('Failed to fetch vendor details');
       }
     }
-
+*/
     // Function to close the content area
     function closeContentArea() {
       document.getElementById('vendor-details-content').style.display = 'none';
@@ -831,6 +1027,134 @@
       document.getElementById('vendor-details').style.display = 'none';
       document.getElementById('login-form').style.display = 'block';
     }
+
+    // Function to fetch and display vendor details
+    async function fetchVendorDetails() {
+      const token = localStorage.getItem('vendorToken');
+
+      if (!token) {
+        alert('Please login first.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/vendor-details`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          document.getElementById('vendor-username').textContent = data.username;
+          document.getElementById('vendor-wallet').textContent = data.wallet;
+          document.getElementById('vendor-referral-link').textContent = `${window.location.origin}/register?ref=${data.username}`;
+        } else {
+          const errorData = await response.json();
+          alert(errorData.message);
+        }
+      } catch (error) {
+        console.error('Error fetching vendor details:', error);
+        alert('Failed to fetch vendor details');
+      }
+    }
+
+    // Function to copy referral link to clipboard
+    function copyReferralLink() {
+      const referralLink = document.getElementById('vendor-referral-link');
+      const tempInput = document.createElement('input');
+      tempInput.value = referralLink.textContent;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      alert('Referral link copied to clipboard!');
+    }
+
+    // Function to toggle coupon area visibility
+    function toggleCouponArea() {
+      const couponArea = document.getElementById('coupon-area');
+      couponArea.style.display = couponArea.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Function to validate and apply coupon
+    function validateCoupon() {
+      const couponCode = document.getElementById('couponCode').value;
+      // Logic to check and apply coupon
+      alert(`Coupon code '${couponCode}' applied successfully!`);
+      closeCouponArea();
+    }
+
+    // Function to close coupon area
+    function closeCouponArea() {
+      const couponArea = document.getElementById('coupon-area');
+      couponArea.style.display = 'none';
+    }
+
+    // Function to toggle withdrawal form visibility
+    function toggleWithdrawalForm() {
+      const withdrawalForm = document.getElementById('withdrawal-form');
+      withdrawalForm.style.display = withdrawalForm.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Function to withdraw balance
+    async function withdrawBalance() {
+      const withdrawalAmount = document.getElementById('withdrawalAmount').value;
+
+      if (!withdrawalAmount || withdrawalAmount <= 0) {
+        alert('Please enter a valid withdrawal amount.');
+        return;
+      }
+
+      const token = localStorage.getItem('vendorToken');
+
+      if (!token) {
+        alert('Please login first.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/withdraw`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ amount: withdrawalAmount })
+        });
+
+        if (response.ok) {
+          alert(`Withdrawal of ${withdrawalAmount} successfully processed!`);
+          fetchVendorDetails(); // Update vendor details after withdrawal
+          closeWithdrawalForm();
+        } else {
+          const errorData = await response.json();
+          alert(errorData.message);
+        }
+      } catch (error) {
+        console.error('Error withdrawing balance:', error);
+        alert('Failed to process withdrawal');
+      }
+    }
+
+    // Function to close withdrawal form
+    function closeWithdrawalForm() {
+      const withdrawalForm = document.getElementById('withdrawal-form');
+      withdrawalForm.style.display = 'none';
+    }
+
+    // Function to logout vendor
+    function logoutVendor() {
+      localStorage.removeItem('vendorToken');
+      window.location.reload(); // Refresh the page after logout
+    }
+
+    // Fetch vendor details on page load
+    window.onload = function() {
+      fetchVendorDetails();
+    };
   </script>
 </body>
 </html>
