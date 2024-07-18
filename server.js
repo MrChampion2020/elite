@@ -239,42 +239,8 @@ app.post('/api/reset-password', async (req, res) => {
 });
 
 
-/*
 
-
-
-
-// Function to distribute referral bonus
-async function distributeReferralBonus(referredBy, type, level = 1) {
-  try {
-    let user, vendor;
-    if (type === 'user') {
-      user = await User.findById(referredBy);
-      if (user) {
-        if (level === 1) user.wallet += 4000;
-        if (level === 2) user.wallet += 200;
-        if (level === 3) user.wallet += 100;
-        await user.save();
-        await distributeReferralBonus(user.referredBy, 'user', level + 1);
-      }
-    } else if (type === 'vendor') {
-      vendor = await Vendor.findById(referredBy);
-      if (vendor) {
-        if (level === 1) vendor.wallet += 4000;
-        if (level === 2) vendor.wallet += 200;
-        if (level === 3) vendor.wallet += 100;
-        await vendor.save();
-        await distributeReferralBonus(vendor.referredBy, 'vendor', level + 1);
-      }
-    }
-  } catch (error) {
-    console.error("Error distributing referral bonus:", error);
-  }
-}
-
-
-*/
-
+//user referral bonus
 const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
   if (userLevel <= 0 && vendorLevel <= 0) return;
 
@@ -332,100 +298,42 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
 };
 
 
+
+//vendor referral bonus
+
+const distributeReferralBonusVendor = async (vendorId, vendorLevel) => {
+  if (vendorLevel <= 0) return;
+
+  const vendor = await Vendor.findById(vendorId).populate('referredBy');
+  if (vendor && vendor.referredBy) {
+    const vendorReferrer = vendor.referredBy;
+    let vendorBonusAmount;
+
+    if (vendorLevel > 0) {
+      switch (vendorLevel) {
+        case 1:
+          vendorBonusAmount = 4000;
+          vendorReferrer.wallet += vendorBonusAmount;
+          break;
+        case 2:
+          vendorBonusAmount = 200;
+          vendorReferrer.wallet += vendorBonusAmount;
+          break;
+        case 3:
+          vendorBonusAmount = 100;
+          vendorReferrer.wallet += vendorBonusAmount;
+          break;
+      }
+
+      await vendorReferrer.save();
+      await distributeReferralBonusVendor(vendorReferrer._id, vendorLevel - 1);
+    }
+  }
+};
+
+
+
 /*
-const generateReferralCode = () => new mongoose.Types.ObjectId().toString();
-
-async function distributeReferralBonusVendor(referralId) {
-  if (!mongoose.Types.ObjectId.isValid(referralId)) {
-    throw new Error(`Invalid referral ID: ${referralId}`);
-  }
-
-  try {
-    const referrer = await Vendor.findById(referralId);
-    if (!referrer) {
-      throw new Error('Referrer not found');
-    }
-
-    // Add your referral bonus logic here
-    console.log('Referral bonus distributed successfully');
-  } catch (error) {
-    console.error('Error distributing referral bonus:', error);
-  }
-}
-
-app.post('/register-vendor', async (req, res) => {
-  const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink } = req.body;
-
-  if (!fullName || !email || !phone || !password || !username || !companyName || !companyAddress) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({ message: 'Invalid email format' });
-  }
-
-  if (password.length < 6) {
-    return res.status(400).json({ message: 'Password must be at least 6 characters long' });
-  }
-
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    let referredBy = null;
-    if (referralLink) {
-      const url = new URL(referralLink);
-      const referralId = url.searchParams.get('referral');
-      if (mongoose.Types.ObjectId.isValid(referralId)) {
-        referredBy = referralId;
-      } else {
-        console.warn(`Invalid referral ID: ${referralId}`);
-      }
-    }
-
-    let newReferralLink;
-    let isUnique = false;
-
-    while (!isUnique) {
-      newReferralLink = `${process.env.API_URL}/register-vendor?referral=${generateReferralCode()}`;
-      const existingVendor = await Vendor.findOne({ referralLink: newReferralLink });
-      if (!existingVendor) {
-        isUnique = true;
-      }
-    }
-
-    const newVendor = new Vendor({
-      fullName,
-      email,
-      phone,
-      password: hashedPassword,
-      username,
-      companyName,
-      couponCode,
-      companyAddress,
-      referralLink: newReferralLink,
-      referredBy,
-      active: false // Set active to false by default
-    });
-
-    await newVendor.save();
-
-    if (referredBy) {
-      await distributeReferralBonusVendor(referredBy);
-    }
-
-    res.status(201).json({ message: 'Vendor registered successfully' });
-  } catch (error) {
-    console.error('Error registering vendor:', error);
-    if (error.code === 11000) {
-      res.status(400).json({ message: 'Duplicate key error, please try again' });
-    } else {
-      res.status(500).json({ message: `Error registering vendor: ${error.message}` });
-    }
-  }
-});
-*/
-
 async function distributeReferralBonusVendor(referralUsername) {
   try {
     const referrer = await Vendor.findOne({ username: referralUsername });
@@ -527,6 +435,85 @@ app.post('/register-vendor', async (req, res) => {
     } else {
       res.status(500).json({ message: `Error registering vendor: ${error.message}` });
     }
+  }
+});
+
+*/
+
+app.post("/register-vendor", async (req, res) => {
+  try {
+    const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink, accountType = 'naira' } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    const existingVendor = await Vendor.findOne({ email });
+    if (existingVendor) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    const existingUsername = await Vendor.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ message: "Username already taken" });
+    }
+
+    const coupon = await Coupon.findOne({ code: couponCode });
+    if (!coupon || !coupon.isActive || coupon.isUsed) {
+      return res.status(400).json({ message: "Invalid or inactive coupon code" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newVendor = new Vendor({
+      fullName,
+      email,
+      phone,
+      password: hashedPassword,
+      username,
+      companyName,
+      couponCode,
+      companyAddress,
+      verificationToken: crypto.randomBytes(20).toString("hex"),
+      accountType
+    });
+
+    // Generate referral link
+    newVendor.referralLink = `${process.env.API_URL}/register-vendor?ref=${username}`;
+
+    if (referralLink) {
+      const referrer = await User.findOne({ username: referralLink }) || await Vendor.findOne({ username: referralLink });
+      if (referrer && referrer.referralLinkActive) {
+        newVendor.referredBy = referrer._id;
+        referrer.referrals.push(newVendor._id);
+
+        // Credit referrer's wallet
+        const amountToCredit = referrer.accountType === 'naira' ? 4000 : 4;
+        referrer.wallet += amountToCredit;
+        await referrer.save();
+      } else {
+        return res.status(400).json({ message: "Invalid or inactive referral link" });
+      }
+    }
+
+    await newVendor.save();
+    await sendVerificationEmail(newVendor.email, newVendor.verificationToken);
+
+    // Mark coupon as used
+    coupon.isUsed = true;
+    coupon.isActive = false;
+    coupon.usedBy = { email: newVendor.email, username: newVendor.username, phone: newVendor.phone };
+    await coupon.save();
+
+    // Distribute referral bonuses
+    await distributeReferralBonusVendor(newVendor._id, 3); // Assuming 3 levels of referral bonus for vendors
+
+    res.status(200).json({ message: "Vendor registered successfully", vendorId: newVendor._id });
+  } catch (error) {
+    console.log("Error registering vendor:", error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Duplicate key error", error: error.message });
+    }
+    res.status(500).json({ message: "Registration failed" });
   }
 });
 
