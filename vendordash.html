@@ -300,14 +300,7 @@
       document.getElementById('login-form').style.display = 'block';
     }
 
-    function showContent(contentId) {
-      document.getElementById(contentId).style.display = 'block';
-    }
-
-    function closeContent(contentId) {
-      document.getElementById(contentId).style.display = 'none';
-    }
-
+    
     async function loginVendor() {
       const email = document.getElementById("loginEmail").value;
       const password = document.getElementById("loginPassword").value;
@@ -452,6 +445,15 @@
         alert("Registration failed");
       }
     }*/
+
+
+    function showContent(contentId) {
+      document.getElementById(contentId).style.display = 'block';
+    }
+
+    function closeContent(contentId) {
+      document.getElementById(contentId).style.display = 'none';
+    }
 
     function copyReferralLink() {
       const referralLink = document.getElementById("referral-link").textContent;
@@ -2041,17 +2043,142 @@ function closeContentArea() {
   </script>
 </body>
 </html>
--->
+--
 
 
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="icon" href="logo.jpg" type="image/jpg">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vendor Portal</title>
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      width: 80%;
+      height: auto;
+      margin: auto;
+      overflow: hidden;
+    }
+    #main-header {
+      background-color: rgb(252, 241, 252);
+      color: purple;
+      padding-top: 30px;
+      min-height: 70px;
+      border-bottom: purple 3px solid;
+    }
+    #main-header h1 {
+      text-align: center;
+      text-transform: uppercase;
+      margin: 0;
+      font-size: 24px;
+    }
+    .form, .actions, .content-area {
+      background: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid purple;
+    }
+    .form-group button {
+      padding: 10px 15px;
+      background: #6a0dad;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .form-group button:hover {
+      background: #9a4dad;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 15px;
+      margin-top: 10px;
+      background: #6a0dad;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
+    .btn:hover {
+      background: #9a4dad;
+    }
+    .link {
+      display: block;
+      margin-top: 10px;
+      text-align: center;
+    }
+    #vendor-details-content {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .content-area {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .content-area .close-btn {
+      background: #fff;
+      color: #6a0dad;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+    #dashboard{
+      height: 100%;
+
+    }
+    #welcome-message{
+      height: 10%;
+      width: 100%;
+      padding: 10px;
+    }
+    .wallet{
+      height: 15%;
+      padding: 10px;
+    }
+    .empty{
+      height: 25%;
+    }
+
+  </style>
 </head>
+
 <body>
   <div id="login-form">
     <h2>Vendor Login</h2>
@@ -2097,6 +2224,44 @@ function closeContentArea() {
       document.getElementById('login-form').style.display = 'block';
     }
 
+
+    async function loginVendor() {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+
+  try {
+    const response = await fetch(`${API_URL}/vendor-login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('vendorDetails', JSON.stringify(data.vendorDetails));
+      showVendorDetails();
+      displayVendorDetails();
+    } else {
+      alert(data.message);
+      // Clear any previously stored details if login fails
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('vendorDetails');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred while logging in.');
+    // Clear any previously stored details if login fails
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('vendorDetails');
+  }
+}
+
+
+/*
     async function loginVendor() {
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
@@ -2125,7 +2290,7 @@ function closeContentArea() {
         alert('An error occurred while logging in.');
       }
     }
-
+*/
     async function fetchVendorDetails() {
       const authToken = localStorage.getItem('authToken');
 
@@ -2237,6 +2402,482 @@ function closeContentArea() {
         displayVendorDetails();
       }
     });
+  </script>
+</body>
+</html>
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor Portal</title>
+  <style>
+    /* Add your styles here */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      width: 40%;
+      height: 60%;
+      margin: auto;
+    }
+    #main-header {
+      background-color: rgb(252, 241, 252);
+      color: purple;
+      padding-top: 30px;
+      min-height: 70px;
+      border-bottom: purple 3px solid;
+    }
+    #main-header h1 {
+      text-align: center;
+      text-transform: uppercase;
+      margin: 0;
+      font-size: 24px;
+    }
+    #login-form {
+      background: #fff;
+      width: 40%;
+      height: 100%;
+      padding: 20px;
+      margin-top: 20%;
+      box-shadow: 0 0 10px #ccc;
+      margin: auto;
+
+    }
+    #login-form input{
+      background: #fff;
+      width: 90%;
+      height: 30px;
+      margin: auto;
+      border: 1px solid purple;
+    }
+    #login-form label{
+      width: 100%;
+      height: 10%;
+      padding: 10px;
+      font-weight: 600;
+      color: purple;
+      margin: auto;
+    }
+    #login-form button{
+      width: 20%;
+      height: 30px;
+      background-color: purple;
+      border: none;
+      margin-top: 10px;
+      padding: 10px;
+      color: white;
+      font-weight: 600;
+    }
+    #login-form h2{
+      text-align: center;
+      color: purple;
+    }
+    .form h2{
+      font-size: 20px;
+      text-align: center;
+      color: purple;
+    }
+    .form-group {
+      margin-bottom: 8px;
+
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 1px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      height: 35px;
+      box-sizing: border-box;
+      border: 1px solid purple;
+    }
+    .form-group button {
+      width: 10px;
+      height: 5px;
+      background: #6a0dad;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .form-group button:hover {
+      background: #9a4dad;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 15px;
+      margin-top: 10px;
+      background: #6a0dad;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
+    .btn:hover {
+      background: #9a4dad;
+    }
+    .link {
+      display: block;
+      padding: 0px 10px;
+      text-align: center;
+    }
+
+    #vendor-details{
+      width: 50%;
+      height: 50%;
+      margin: auto;
+    }
+    .dashboard {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      padding: 20px;
+    }
+    .dashboard p{
+    font-size: 20px;
+    color: purple;
+    font-weight: 600;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+
+    .balance p{
+      height: 15%;
+      padding: 20px;
+      font-size: 30px;
+      font-weight: 800;
+      font-family: 'Times New Roman', Times, serif;
+      color: purple;
+    }
+    .balance p .text{
+      font-size: 16px;
+      font-weight: 500;
+      padding: 0px 50px;
+
+    }
+
+    .content-area {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .content-area .close-btn {
+      background: #fff;
+      color: #6a0dad;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+    #vendor-details{
+      height: 100%;
+
+    }
+    #welcome-message{
+      height: 10%;
+      width: 100%;
+      padding: 10px;
+    }
+    
+    .referralLink{
+      height: 15%;
+    }
+    
+
+  </style>
+</head>
+<body>
+
+  <header id="main-header">
+    <div class="container">
+      <h1>Elitearn Vendor</h1>
+    </div>
+  </header>
+  
+    <div id="login-form">
+      <h2>Vendor Login</h2>
+      <label for="email" >Email</label>
+      <input type="email" id="loginEmail" placeholder="Email" required>
+      <label for="password">Password</label>
+      <input type="password" id="loginPassword" placeholder="Password" required>
+      <button onclick="loginVendor()">Login</button>
+      <button onclick="showRegistrationForm()">Register</button>
+    </div>
+
+<div class="container" id="registration-form" style="display:none;">
+  <div class="form">
+    <h2>Vendor Registration</h2>
+    <div class="form-group">
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName">
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email">
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input type="text" id="phone">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password">
+    </div>
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username">
+    </div>
+    <div class="form-group">
+      <label for="couponCode">Coupon Code</label>
+      <input type="text" id="couponCode" required>
+    </div>
+    <div class="form-group">
+      <label for="companyName">Company Name</label>
+      <input type="text" id="companyName">
+    </div>
+    <div class="form-group">
+      <label for="companyAddress">Company Address</label>
+      <input type="text" id="companyAddress">
+    </div>
+    
+    <button class="btn" onclick="registerVendor()">Register Vendor</button>
+    <span><a class="link" href="#" onclick="showLoginForm()">Existing user? Login here</a></span>
+  </div>
+</div>
+
+  <div id="vendor-details" style="display:none;">
+
+<div class="dashboard">
+  <p>Hi,<span id="vendor-username"></span></p>
+</div>
+    
+<div class="balance">
+  <p>NGN <span id="vendor-wallet"></span> <span class="text">Balance</span></p>
+</div>
+
+
+  <div class="referralLink">
+    <h2> User Referral Link</h2>
+    <p id="referralLink"></p>
+    <button class="btn" onclick="copyReferralLink()">Copy Link</button>
+  </div>
+
+
+<div class="actions">
+  <!--<button class="btn" onclick="showContent('referralLinkContent')">Referral Link</button>-->
+  <button class="btn" onclick="showContent('checkCouponContent')">Check Coupon</button>
+  <button class="btn" onclick="showContent('checkUsersContent')">Profile</button>
+  <button class="btn" onclick="logoutVendor()">Log Out</button>
+</div>
+</div>
+
+
+  </div>
+
+<!--
+  <div id="referralLinkContent" class="content-area">
+    <button class="close-btn" onclick="closeContent('referralLinkContent')">Close</button>
+    <h2> User Referral Link</h2>
+    <p id="referralLink"></p>
+    <button class="btn" onclick="copyReferralLink()">Copy Link</button>
+
+  </div>
+-->
+  <div id="checkCouponContent" class="content-area">
+    <button class="close-btn" onclick="closeContent('checkCouponContent')">Close</button>
+    <h2>Check Coupon</h2>
+
+    <div class="form-group">
+      <label for="couponCode">Coupon Code</label>
+      <input type="text" id="couponCode">
+    </div>
+
+    <button class="btn" onclick="checkCoupon()">Check Coupon</button>
+    <h3>Checked Coupons</h3>
+    <button class="btn" onclick="fetchCheckedCoupons()">Show Checked Coupons</button>
+    <pre id="checked-coupons"></pre>
+  </div>
+
+  <div id="checkUsersContent" class="content-area">
+    <button class="close-btn" onclick="closeContent('checkUsersContent')">Close</button>
+    <h2>Users Using Your Coupons</h2>
+    <pre id="coupon-users"></pre>
+    <pre id="vendor-details-output"></pre>
+  </div>
+
+
+  <script>
+    const API_URL = 'https://elitearn.onrender.com'; // Change to your backend URL
+
+    function showRegistrationForm() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('registration-form').style.display = 'block';
+    }
+
+    function showLoginForm() {
+      document.getElementById('registration-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+    }
+
+    async function loginVendor() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const response = await fetch(`${API_URL}/vendor-login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('vendorDetails', JSON.stringify(data.vendorDetails));
+          showVendorDetails();
+          displayVendorDetails();
+        } else {
+          console.error('Login failed:', data.message);
+          alert(data.message);
+          // Clear any previously stored details if login fails
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('vendorDetails');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while logging in.');
+        // Clear any previously stored details if login fails
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('vendorDetails');
+      }
+    }
+
+    function displayVendorDetails() {
+      const vendorDetails = JSON.parse(localStorage.getItem('vendorDetails'));
+      if (vendorDetails) {
+        document.getElementById('vendor-username').textContent = vendorDetails.username;
+        document.getElementById('vendor-wallet').textContent = vendorDetails.wallet;
+        document.getElementById('referralLink').textContent = vendorDetails.referralLink;
+        document.getElementById('vendor-wallet').textContent = vendorDetails.wallet;
+        document.getElementById('vendor-wallet').textContent = vendorDetails.wallet;
+        document.getElementById('vendor-wallet').textContent = vendorDetails.wallet;
+
+        document.getElementById('vendor-details-output').textContent = JSON.stringify(vendorDetails, null, 2);
+      }
+    }
+
+    
+    // Function to register a vendor
+    async function registerVendor() {
+      const fullName = document.getElementById('fullName').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const password = document.getElementById('password').value;
+      const username = document.getElementById('username').value;
+      const companyName = document.getElementById('companyName').value;
+      const couponCode = document.getElementById('couponCode').value;
+      const companyAddress = document.getElementById('companyAddress').value;
+      const referredBy = document.getElementById('referredBy').value;
+
+      const data = {
+        fullName,
+        email,
+        phone,
+        password,
+        username,
+        companyName,
+        couponCode,
+        companyAddress,
+        referredBy
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/register-vendor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(result.message);
+          // Clear form inputs after successful registration
+          document.getElementById('registration-form').reset();
+        } else {
+          alert(result.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while registering. Please try again.');
+      }
+    }
+
+
+    function logoutVendor() {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('vendorDetails');
+      document.getElementById('vendor-details').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+    }
+
+    function showVendorDetails() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('vendor-details').style.display = 'block';
+    }
+
+    // Auto-login if token and vendor details are stored in localStorage
+    document.addEventListener('DOMContentLoaded', () => {
+      const authToken = localStorage.getItem('authToken');
+      const vendorDetails = localStorage.getItem('vendorDetails');
+      if (authToken && vendorDetails) {
+        showVendorDetails();
+        displayVendorDetails();
+      }
+    });
+
+    function showContent(contentId) {
+      document.getElementById(contentId).style.display = 'block';
+    }
+
+    function closeContent(contentId) {
+      document.getElementById(contentId).style.display = 'none';
+    }
+
+    function copyReferralLink() {
+      const referralLink = document.getElementById("referral-link").textContent;
+      navigator.clipboard.writeText(referralLink).then(() => {
+        alert("User Referral Link copied to clipboard");
+      });
+    }
+
+    function copyVendorReferralLink() {
+      const referralLink = document.getElementById("referral-links").textContent;
+      navigator.clipboard.writeText(referralLink).then(() => {
+        alert("Vendor Referral Link copied to clipboard");
+      });
+    }
+
   </script>
 </body>
 </html>
