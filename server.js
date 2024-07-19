@@ -16,6 +16,7 @@ const User = require("./models/User");
 const Coupon = require("./models/Coupon");
 const Vendor = require("./models/Vendor");
 const Admin = require("./models/Admin");
+const Task = require('../models/Tasks');
 
 app.use(express.json());
 app.use(cors());
@@ -58,7 +59,7 @@ mongoose.connect(process.env.MONGO_URI, {})
     });
   };
 
-
+/*
   const authenticateAdmin = (req, res, next) => {
     if (req.user.role !== 'admin') {
       return res.sendStatus(403);
@@ -79,6 +80,27 @@ mongoose.connect(process.env.MONGO_URI, {})
       next();
     });
   };
+*/
+  const authenticateAdmin = async (req, res, next) => {
+    const token = req.headers['authorization'];
+  
+    if (!token) {
+      return res.status(403).json({ message: 'No token provided' });
+    }
+  
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const admin = await Admin.findById(decoded.id);
+      if (!admin) {
+        return res.status(401).json({ message: 'Admin not found' });
+      }
+  
+      req.admin = admin;
+      next();
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to authenticate token', error });
+    }
+  };
 
   
 // Middleware for authenticating vendor token
@@ -94,6 +116,91 @@ const authenticateVendorToken = (req, res, next) => {
     next();
   });
 };
+
+
+
+
+// Create a new task
+app.post('/create-task', authenticateAdmin, async (req, res) => {
+  try {
+    const { taskId, taskName, description, link, type, userCount } = req.body;
+    const users = await User.aggregate([{ $sample: { size: userCount } }]);
+
+    const newTask = new Task({
+      taskId,
+      taskName,
+      description,
+      link,
+      type,
+      users: users.map(user => user._id)
+    });
+
+    await newTask.save();
+
+    users.forEach(async (user) => {
+      user.selectedTasks.push(newTask._id);
+      await user.save();
+    });
+
+    res.status(200).json({ message: 'Task created and assigned successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating task', error });
+  }
+});
+
+// Fetch all tasks
+app.get('/tasks', authenticateAdmin, async (req, res) => {
+  try {
+    const tasks = await Task.find().populate('users');
+    res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching tasks', error });
+  }
+});
+
+
+
+
+// Fetch user's tasks
+app.get('/task', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('selectedTasks');
+    res.status(200).json(user.selectedTasks);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching tasks', error });
+  }
+});
+
+// Mark task as completed
+app.post('/complete-task/:taskId', authenticateToken, async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const user = await User.findById(req.user.id);
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    // Check if user is eligible for completion
+    if (user.selectedTasks.includes(taskId)) {
+      user.eliteWallet += 0.2;
+      user.completedTasks.push(taskId);
+      user.selectedTasks.pull(taskId);
+
+      await user.save();
+
+      res.status(200).json({ message: 'Task completed successfully' });
+    } else {
+      res.status(400).json({ message: 'User not eligible for this task' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error completing task', error });
+  }
+});
+
+
+
 
 
 
@@ -118,6 +225,8 @@ app.post('/generate-coupon', async (req, res) => {
     res.status(500).json({ message: 'Failed to generate coupon' });
   }
 });
+
+
 
 app.post('/mark-coupon-used', async (req, res) => {
   try {
