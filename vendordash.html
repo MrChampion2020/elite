@@ -2838,7 +2838,7 @@ function closeContentArea() {
       }
     }
 
-    
+    /*
     // Function to register a vendor
     async function registerVendor() {
       const fullName = document.getElementById('fullName').value;
@@ -2887,6 +2887,42 @@ function closeContentArea() {
       }
     }
 
+*/
+
+async function registerVendor() {
+  const fullName = document.getElementById('fullName').value;
+  const email = document.getElementById('email').value;
+  const phone = document.getElementById('phone').value;
+  const password = document.getElementById('password').value;
+  const username = document.getElementById('username').value;
+  const companyName = document.getElementById('companyName').value;
+  const couponCode = document.getElementById('couponCode').value;
+  const companyAddress = document.getElementById('companyAddress').value;
+  const referralLink = document.getElementById('referralLink').value;
+
+  try {
+    const response = await fetch(`${API_URL}/register-vendor`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('Vendor registered successfully:', data);
+      alert('Vendor registered successfully');
+    } else {
+      console.error('Registration failed:', data.message);
+      alert(data.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred during registration.');
+  }
+}
 
     function logoutVendor() {
       localStorage.removeItem('authToken');

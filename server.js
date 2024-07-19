@@ -299,7 +299,7 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
 
 
 
-//vendor referral bonus
+/*/vendor referral bonus
 
 const distributeReferralBonusVendor = async (vendorId, vendorLevel) => {
   if (vendorLevel <= 0) return;
@@ -410,8 +410,42 @@ app.post("/register-vendor", async (req, res) => {
   
 
 
+*/
 
-/*
+
+
+const distributeReferralBonusVendor = async (vendorId, vendorLevel) => {
+  if (vendorLevel <= 0) return;
+
+  try {
+    const vendor = await Vendor.findById(vendorId).populate('referredBy');
+    if (vendor && vendor.referredBy) {
+      const vendorReferrer = vendor.referredBy;
+      let vendorBonusAmount = 0;
+
+      switch (vendorLevel) {
+        case 1:
+          vendorBonusAmount = 4000;
+          break;
+        case 2:
+          vendorBonusAmount = 200;
+          break;
+        case 3:
+          vendorBonusAmount = 100;
+          break;
+      }
+
+      vendorReferrer.wallet = (parseFloat(vendorReferrer.wallet) + vendorBonusAmount).toString();
+      await vendorReferrer.save();
+      console.log(`Added ${vendorBonusAmount} to ${vendorReferrer.username}'s wallet`);
+
+      await distributeReferralBonusVendor(vendorReferrer._id, vendorLevel - 1);
+    }
+  } catch (error) {
+    console.error("Error distributing referral bonus:", error);
+  }
+};
+
 app.post("/register-vendor", async (req, res) => {
   try {
     const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink, accountType = 'naira' } = req.body;
@@ -445,23 +479,23 @@ app.post("/register-vendor", async (req, res) => {
       companyName,
       couponCode,
       companyAddress,
-      verificationToken: crypto.randomBytes(20).toString("hex"),
-      accountType
+      accountType,
+      referralLink: `${process.env.API_URL}/register-vendor?ref=${username}`,
+      active: false,
     });
-
-    // Generate referral link
-    newVendor.referralLink = `${process.env.API_URL}/register-vendor?ref=${username}`;
 
     if (referralLink) {
       const referrer = await User.findOne({ username: referralLink }) || await Vendor.findOne({ username: referralLink });
       if (referrer && referrer.referralLinkActive) {
         newVendor.referredBy = referrer._id;
+        if (!referrer.referrals) referrer.referrals = [];
         referrer.referrals.push(newVendor._id);
 
         // Credit referrer's wallet
         const amountToCredit = referrer.accountType === 'naira' ? 4000 : 4;
-        referrer.wallet += amountToCredit;
+        referrer.wallet = (parseFloat(referrer.wallet) + amountToCredit).toString();
         await referrer.save();
+        console.log(`Credited ${amountToCredit} to referrer ${referrer.username}`);
       } else {
         return res.status(400).json({ message: "Invalid or inactive referral link" });
       }
@@ -481,52 +515,13 @@ app.post("/register-vendor", async (req, res) => {
 
     res.status(200).json({ message: "Vendor registered successfully", vendorId: newVendor._id });
   } catch (error) {
-    console.log("Error registering vendor:", error);
+    console.error("Error registering vendor:", error);
     if (error.code === 11000) {
       return res.status(400).json({ message: "Duplicate key error", error: error.message });
     }
     res.status(500).json({ message: "Registration failed" });
   }
 });
-*/
-
-
-/*
-app.post('/vendor-login', async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required' });
-  }
-
-  try {
-    const vendor = await Vendor.findOne({ email });
-
-    if (!vendor) {
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    if (!vendor.active) {
-      return res.status(403).json({ message: 'Vendor account is not active. Please contact support.' });
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, vendor.password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    // Generate a JWT token for the vendor
-    const token = jwt.sign({ vendorId: vendor._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    res.status(200).json({ token });
-  } catch (error) {
-    console.error('Error logging in vendor:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-*/
-
 
 app.post("/register", async (req, res) => {
   try {
