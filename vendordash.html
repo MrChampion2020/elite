@@ -2412,7 +2412,12 @@ function closeContentArea() {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="icon" href="logo.jpg" type="image/jpg">
   <title>Vendor Portal</title>
   <style>
     /* Add your styles here */
@@ -2526,7 +2531,7 @@ function closeContentArea() {
     }
     .link {
       display: block;
-      padding: 0px 10px;
+      padding: 10px;
       text-align: center;
     }
 
@@ -2594,10 +2599,59 @@ function closeContentArea() {
       padding: 10px;
     }
     
-    .referralLink{
+    .referralLink {
+      margin: auto;
+      width: 90%;
       height: 15%;
+      position: relative;
+      border-radius: 10px;
+      text-align: center;
+      padding: 40px;
+      background-color: white;
     }
-    
+    .referralLink h2{
+      font-size: 16px;
+      color: purple;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+    .referralLink span {
+      font-size: 16px;
+      color: purple;
+    }
+    .referralLink button{
+      border: none;
+      width: 20px;
+      height: 18px;
+      background-color:  rgb(248, 248, 248);
+    }
+    .referralLink button i{
+      font-size: 16px;
+      color: purple;
+    }
+  
+    @media screen and (max-width: 678px){
+
+      #login-form{
+        width: 100%;
+        margin-top: 10%;
+      }
+      #login-form label{
+        padding: 5px;
+      }
+      #login-form input{
+        margin-bottom: 20px;
+      }
+      .container {
+      width: 90%;
+      height: 60%;
+      margin: auto;
+    }
+    #vendor-details{
+      width: 90%;
+      height: 50%;
+      margin: auto;
+    }
+    }
 
   </style>
 </head>
@@ -2673,8 +2727,9 @@ function closeContentArea() {
 
   <div class="referralLink">
     <h2> User Referral Link</h2>
-    <p id="referralLink"></p>
-    <button class="btn" onclick="copyReferralLink()">Copy Link</button>
+    <span id="referralLink"></span>
+    <button onclick="copyReferralLink()"><i class="fa-solid fa-copy"></i></button>
+
   </div>
 
 
@@ -2870,13 +2925,13 @@ function closeContentArea() {
         alert("User Referral Link copied to clipboard");
       });
     }
-
+/*
     function copyVendorReferralLink() {
       const referralLink = document.getElementById("referral-links").textContent;
       navigator.clipboard.writeText(referralLink).then(() => {
         alert("Vendor Referral Link copied to clipboard");
       });
-    }
+    }*/
 
   </script>
 </body>
