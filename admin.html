@@ -20,6 +20,11 @@
       background-color: #f4f4f4;
       height: 100vh;
     }
+    .welcome{
+      font-size: 16px;
+      text-align: center;
+      color: purple;
+    }
     .container {
       background-color: #fff;
       padding: 20px;
@@ -61,7 +66,11 @@
       width: 20%;
     }
     button:hover {
-      background-color: rgb(218, 131, 218);
+      background-color: rgb(255, 255, 255);
+      color: purple;
+      border-radius: 10px;
+      border: 0.2px solid purple;
+      font-weight: 600;
     }
     .error {
       color: red;
@@ -94,8 +103,15 @@
       color: red;
       box-shadow: 1px 1px 4px 2px rgb(226, 223, 223);
     }
+
+    .actions{
+     justify-items: center;
+    }
     .actions button {
-      margin-right: 10px;
+      width: 80px;
+      height: 30px;
+      padding: 5px;
+      font-size: 12px;
     }
 
     @media screen and (max-width: 678px){
@@ -146,9 +162,14 @@
       color: red;
       box-shadow: 1px 1px 4px 2px rgb(226, 223, 223);
     }
+    .actions{
+     padding: 10px;
+    }
     .actions button {
-      padding: 10px;
-      font-size: smaller;
+      width: 80px;
+      height: 20px;
+      margin: auto;
+      font-size: 12px;
     }
     .buttons {
       width: 90%;
@@ -157,7 +178,7 @@
       display: flex;
       justify-content: space-between;
     }
-    button {
+    .buttons button {
       padding: 2px;
       background-color: purple;
       color: white;
@@ -165,11 +186,12 @@
       cursor: pointer;
       border-radius: 4px;
       width: 20%;
-      height: 80%;
-      font-size: 14px;
+      height: 40%;
+      font-size: 12px;
     }
     button:hover {
-      background-color: rgb(221, 169, 221);
+      background-color: rgba(255, 255, 255, 0.692);
+      color: purple;
     }
     }
   </style>
@@ -185,13 +207,14 @@
   </div>
 
   <div class="container dashboard-container" id="dashboardContainer">
-    <div><b id="adminName"></b><p id="adminDetails">Welcome</p></div>
+
+    <div class="welcome"><b id="adminName"></b><p id="adminDetails"></p></div>
 
     <div class="buttons">
-      <button onclick="showSection('userDisplayArea')">View Full List of Users</button>
-      <button onclick="showSection('vendorDisplayArea')">View Full List of Vendors</button>
-      <button onclick="showSection('couponContainer')">View Coupons</button>
-      <button onclick="showSection('withdrawalRequestsArea')">Withdrawal Requests</button>
+      <button onclick="showSection('userDisplayArea')">Users</button>
+      <button onclick="showSection('vendorDisplayArea')">Vendors</button>
+      <button onclick="showSection('couponContainer')">Coupons</button>
+      <button onclick="showSection('withdrawalRequestsArea')">Withdrawals</button>
     </div>
 
 
@@ -450,8 +473,8 @@
               <td>${vendor.phone}</td>
               <td>${vendor.active}</td>
               <td class="actions">
-                <button onclick="setVendorStatus('${vendor._id}', true)">Activate</button>
-                <button onclick="setVendorStatus('${vendor._id}', false)">Deactivate</button>
+                <button onclick="setVendorStatus('${vendor._id}', true)">Approve</button>
+                <button onclick="setVendorStatus('${vendor._id}', false)">Suspend</button>
               </td>
             `;
             vendorTableBody.appendChild(row);
