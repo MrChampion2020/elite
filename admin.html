@@ -896,7 +896,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       async function fetchUsers() {
         try {
-          const response = await fetch('/admin/users');
+          const response = await fetch(`${API_URL}/admin/users`);
           const users = await response.json();
           userSelect.innerHTML = '';
           users.forEach(user => {
@@ -930,7 +930,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-          const response = await fetch('/admin/create-task', {
+          const response = await fetch(`${API_URL}/admin/create-task`,
+ {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -947,7 +948,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       async function fetchTasks() {
         try {
-          const response = await fetch('/admin/tasks');
+          const response = await fetch(`${API_URL}/admin/tasks`); 
           const tasks = await response.json();
           taskList.innerHTML = '';
           tasks.forEach(task => {
@@ -967,7 +968,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       window.deleteTask = async (taskId) => {
         try {
-          const response = await fetch(`/admin/delete-task/${taskId}`, {
+          const response = await fetch(`${API_URL}/admin/delete-task/${taskId}`, {
             method: 'DELETE'
           });
           const result = await response.json();
