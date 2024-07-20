@@ -267,6 +267,22 @@
       margin-top: 20px;}
 
 
+#tasksArea{
+display: none;
+      position: relative;
+      flex-direction: row;
+      height: 70%;
+      width: 80%;
+      margin-top: 15%;
+      background-color: rgb(255, 255, 255);
+      color: purple;
+      margin: auto;
+      position: fixed;
+      padding: 10px;
+      border-radius: 10px;}
+
+
+
 
     @media screen and (max-width: 678px){
       
@@ -496,7 +512,7 @@
         <nav>
           <ul>
             <li><a href="#" id="socialTask">Create Tasks</a></li>
-            <li><a href="#" id="socialTask">Tasks</a></li>
+            <li><a href="#" id="viewTasks">Tasks</a></li>
             <li><a href="#" id="airtime">Set VTU</a></li>
             <li><a href="#" id="setCourse"> Set Course</a></li>
             <li><a href="#" id="openWithdrawal" >Withdraws</a></li>
@@ -542,13 +558,20 @@
       </div>
       <button type="submit">Create Task</button>
     </form>
-    <div>
+   
+</div>
+
+
+<div id="tasksArea">
+
+ <button id="tasksExitButton">Exit</button>
+
+ <div class="tasksView>
       <h2>Tasks</h2>
       <ul id="task-list"></ul>
     </div>
   </div>
 </div>
-
 
   <script>
     const API_URL = 'https://elitearn.onrender.com';
@@ -796,6 +819,9 @@ const setVendorStatus = async (vendorId, status) => {
 
 
 
+
+
+
     document.addEventListener('DOMContentLoaded', function() {
       const openTaskButton = document.getElementById('socialTask');
       const taskPage = document.getElementById('taskArea');
@@ -808,9 +834,9 @@ const setVendorStatus = async (vendorId, status) => {
         dropdown.style.display = 'none';
       });
 
-      taskexitButton.addEventListener('click', function(event) {
+      taskExitButton.addEventListener('click', function(event) {
         event.preventDefault();
-        taksPage.style.display = 'none';
+        taskPage.style.display = 'none';
         dropdown.style.display = 'block';
 
       });
@@ -991,6 +1017,29 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById("loginContainer").style.display = "block";
       
     }
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+      const openTasks= document.getElementById('viewTasks');
+      const tasksArea = document.getElementById('tasksArea');
+      const dropdown = document.getElementById('dropdown-menu');
+      const tasksExitButton = document.getElementById('tasksExitButton');
+
+      openTasks.addEventListener('click', function(event) {
+        event.preventDefault();
+        tasksArea.style.display = 'block';
+        dropdown.style.display = 'none';
+      });
+
+      tasksExitButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        tasksArea.style.display = 'none';
+        dropdown.style.display = 'block';
+
+      });
+    });
   </script>
 </body>
 </html>
