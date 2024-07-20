@@ -533,13 +533,13 @@
       transform: translateX(-50%);
     }
 
-    .message {
+     #spinMessage {
       position: absolute;
       bottom: -70px;
       left: 60%;
       transform: translateX(-50%);
-      font-size: 20px;
-      color: green;
+      font-size: 16px;
+      color: red;
       text-align: center;
     }
 
@@ -989,6 +989,7 @@
         </div>
       </div>
     
+<div id="spinMessage"></div>
   
       </div>
 
@@ -1376,7 +1377,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       async function fetchUserTasks() {
         try {
-          const response = await fetch(`${API_URL}/user/tasks`);
+          const response = await fetch(`${API_URL}/user/task`);
           const tasks = await response.json();
           userTaskList.innerHTML = '';
           tasks.forEach(task => {
@@ -1553,16 +1554,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const lastSpin = localStorage.getItem('lastSpin');
     const now = new Date().getTime();
     
-    if (lastSpin && (now - lastSpin) < 24 * 60 * 60 * 1000) {
+   /* if (lastSpin && (now - lastSpin) < 24 * 60 * 60 * 1000) {
         alert('You can spin again in 24 hours');
-    }
+    }*/
 
     function spinWheel() {
         const lastSpin = localStorage.getItem('lastSpin');
         const now = new Date().getTime();
 
         if (lastSpin && (now - lastSpin) < 24 * 60 * 60 * 1000) {
-            alert('You can spin again in 24 hours');
+
+document.getElementById('spinMessage').innerHTML = "You can spin again in 24 hours";
+            /*alert('You can spin again in 24 hours');*/
             return;
         }
 
