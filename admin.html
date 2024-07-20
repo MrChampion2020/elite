@@ -263,6 +263,11 @@
       display: flex;
       gap: 10px;
     }
+    .task-list {
+      margin-top: 20px;}
+
+
+
     @media screen and (max-width: 678px){
       
       body{
@@ -490,10 +495,11 @@
         </div>
         <nav>
           <ul>
-            <li><a href="#" id="socialTask">Social Tasks</a></li>
-            <li><a href="#" id="airtime">Airtime Price</a></li>
-            <li><a href="#" id="setCourse"> Set Courses</a></li>
-            <li><a href="#" id="openWithdrawal" >Withdrawals</a></li>
+            <li><a href="#" id="socialTask">Create Tasks</a></li>
+            <li><a href="#" id="socialTask">Tasks</a></li>
+            <li><a href="#" id="airtime">Set VTU</a></li>
+            <li><a href="#" id="setCourse"> Set Course</a></li>
+            <li><a href="#" id="openWithdrawal" >Withdraws</a></li>
             <li onclick="logoutUser()"><a href="#">Logout</a></li>
           </ul>
         </nav>
@@ -507,7 +513,7 @@
     <button id="taskExitButton">Exit</button>
 
   <div class="taskcontainer">
-    <form id="task-form">
+    <!--<form id="task-form">
       <input type="text" id="taskId" placeholder="Task ID" required>
       <input type="text" id="taskName" placeholder="Task Name" required>
       <textarea id="description" placeholder="Description" required></textarea>
@@ -518,6 +524,22 @@
         <option value="advertisement">Advertisement</option>
       </select>
       <input type="number" id="userCount" placeholder="Number of Users" required>
+      <button type="submit">Create Task</button>
+    </form>-->
+    <form id="task-form">
+      <input type="text" id="taskId" placeholder="Task ID" required>
+      <input type="text" id="taskName" placeholder="Task Name" required>
+      <textarea id="description" placeholder="Description" required></textarea>
+      <input type="url" id="link" placeholder="Link" required>
+      <select id="type" required>
+        <option value="">Select Type</option>
+        <option value="social">Social</option>
+        <option value="advertisement">Advertisement</option>
+      </select>
+      <label for="selectAll"><input type="checkbox" id="selectAll"> Select All Users</label>
+      <div id="user-select">
+        <!-- User list will be populated here -->
+      </div>
       <button type="submit">Create Task</button>
     </form>
     <div>
@@ -795,6 +817,9 @@ const setVendorStatus = async (vendorId, status) => {
     });
 
 
+
+
+    /*
     document.addEventListener('DOMContentLoaded', () => {
       const taskForm = document.getElementById('task-form');
       const taskList = document.getElementById('task-list');
@@ -861,7 +886,103 @@ const setVendorStatus = async (vendorId, status) => {
 
       fetchTasks();
     });
+*/
 
+document.addEventListener('DOMContentLoaded', () => {
+      const taskForm = document.getElementById('task-form');
+      const taskList = document.getElementById('task-list');
+      const userSelect = document.getElementById('user-select');
+      const selectAllCheckbox = document.getElementById('selectAll');
+
+      async function fetchUsers() {
+        try {
+          const response = await fetch('/admin/users');
+          const users = await response.json();
+          userSelect.innerHTML = '';
+          users.forEach(user => {
+            const label = document.createElement('label');
+            label.innerHTML = `
+              <input type="checkbox" name="users" value="${user._id}"> ${user.username}
+            `;
+            userSelect.appendChild(label);
+          });
+        } catch (error) {
+          console.error('Error fetching users:', error);
+        }
+      }
+
+      selectAllCheckbox.addEventListener('change', (e) => {
+        const checkboxes = userSelect.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = e.target.checked;
+        });
+      });
+
+      taskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const taskData = {
+          taskId: document.getElementById('taskId').value,
+          taskName: document.getElementById('taskName').value,
+          description: document.getElementById('description').value,
+          link: document.getElementById('link').value,
+          type: document.getElementById('type').value,
+          userIds: Array.from(userSelect.querySelectorAll('input[name="users"]:checked')).map(cb => cb.value)
+        };
+
+        try {
+          const response = await fetch('/admin/create-task', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(taskData)
+          });
+          const result = await response.json();
+          alert(result.message);
+          fetchTasks();
+        } catch (error) {
+          console.error('Error creating task:', error);
+        }
+      });
+
+      async function fetchTasks() {
+        try {
+          const response = await fetch('/admin/tasks');
+          const tasks = await response.json();
+          taskList.innerHTML = '';
+          tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              ${task.taskName} - ${task.description}
+              <div class="task-actions">
+                <button onclick="deleteTask('${task._id}')">Delete Task</button>
+              </div>
+            `;
+            taskList.appendChild(li);
+          });
+        } catch (error) {
+          console.error('Error fetching tasks:', error);
+        }
+      }
+
+      window.deleteTask = async (taskId) => {
+        try {
+          const response = await fetch(`/admin/delete-task/${taskId}`, {
+            method: 'DELETE'
+          });
+          const result = await response.json();
+          alert(result.message);
+          fetchTasks();
+        } catch (error) {
+          console.error('Error deleting task:', error);
+        }
+      };
+
+      fetchUsers();
+      fetchTasks();
+    });
+
+    
 
     async function logoutUser() {
       localStorage.removeItem("token");

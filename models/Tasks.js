@@ -10,6 +10,7 @@ const taskSchema = new mongoose.Schema({
   userCount: Number,
   usersAssigned: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   createdAt: { type: Date, default: Date.now },
+  userIds: [mongoose.Schema.Types.ObjectId],
   expiresAt: Date
 });
 

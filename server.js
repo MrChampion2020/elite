@@ -58,7 +58,30 @@ mongoose.connect(process.env.MONGO_URI, {})
       next();
     });
   };
-
+/*
+  const authenticate = async (req, res, next) => {
+    const token = req.header('Authorization').replace('Bearer ', '');
+  
+    if (!token) {
+      return res.status(401).send({ error: 'Not authenticated' });
+    }
+  
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
+  
+      if (!user) {
+        throw new Error();
+      }
+  
+      req.token = token;
+      req.user = user;
+      next();
+    } catch (e) {
+      res.status(401).send({ error: 'Please authenticate' });
+    }
+  };
+  */
 /*
   const authenticateAdmin = (req, res, next) => {
     if (req.user.role !== 'admin') {
@@ -198,10 +221,16 @@ app.get('/admin/tasks', async (req, res) => {
 });
 
 
+
+// Get tasks for a specific user
 app.get('/user/tasks', async (req, res) => {
-  const userId = req.user._id; // Assuming user ID is available in req.user
-  const tasks = await Task.find({ usersAssigned: userId });
-  res.json(tasks);
+  try {
+    const userId = req.session.userId; // Assuming user ID is stored in session
+    const tasks = await Task.find({ userIds: userId });
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching user tasks' });
+  }
 });
 
 
@@ -249,6 +278,34 @@ app.post('/complete-task/:taskId', authenticateToken, async (req, res) => {
 });
 */
 
+
+
+// Protected route example
+app.post('/user/complete-task/:taskId', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const task = await Task.findById(req.params.taskId);
+    
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    const user = await User.findById(userId);
+    if (user) {
+      user.eliteWallet += 0.2;
+      await user.save();
+      res.json({ message: 'Task completed and 0.2 added to elite wallet' });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Error completing task' });
+  }
+});
+
+// Add more routes and apply the `authenticate` middleware as needed
+
+/*
 app.post('/user/complete-task/:taskId', async (req, res) => {
   const { taskId } = req.params;
   const userId = req.user._id; // Assuming user ID is available in req.user
@@ -268,7 +325,7 @@ app.post('/user/complete-task/:taskId', async (req, res) => {
     res.status(404).json({ message: 'Task not found or not assigned to user' });
   }
 });
-
+*/
 
 
 

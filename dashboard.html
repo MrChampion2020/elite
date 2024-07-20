@@ -358,6 +358,19 @@
           text-align: center;
         }
 
+
+        #courseArea{
+        width: 90%;
+        display: none;
+        height: 85%;
+        position: fixed;
+        top: 16%;
+        background-color: purple;
+        margin-left: -5%;
+        padding: 10px;
+        border-radius: 10px;
+      }
+
     @media (max-width: 768px) {
       
       main{
@@ -874,7 +887,7 @@
         <li><a href="#" id="openProfile">Profile</a></li>
         <li><a href="#" id="earnHistory">Airtime</a></li>
         <li><a href="#" id="topEarners">Top Earners</a></li>
-        <li class=""><a href="#">Courses</a></li>
+        <li><a href="#" id="openCourse">Courses</a></li>
         <li><a href="#" id="openWheel" >Lucky Wheel</a></li>
         <li><a href="#" id="openTask">Daily Tasks</a></li>
         <li onclick="logoutUser()"><a href="#">Logout</a></li>
@@ -1022,7 +1035,7 @@
     <button id="socialExitButton">Exit</button>
 
     <h1>social task</h1>
-
+    <ul id="user-task-list"></ul>
     <div class="container">
       <div>
         <h2>Tasks</h2>
@@ -1048,6 +1061,12 @@
         <button class="withdraw-button" onclick="withdrawFunds()">Withdraw</button>
 
   </div>
+
+
+  <div id="courseArea">
+
+
+  </div>
   </main>
   
   <footer>
@@ -1055,11 +1074,55 @@
   </footer>
 
   <script>
-const API_URL = `https://elitearn.onrender.com`; //url
+const API_URL = `https://elitearn.onrender.com`; 
 
 
-//function to fetch user data
+// Function to fetch user data
 const fetchUserData = async () => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/user-details`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('fullName').textContent = data.user.fullName;
+            document.getElementById('email').textContent = data.user.email;
+            document.getElementById('phone').textContent = data.user.phone;
+            document.getElementById('username').textContent = data.user.username;
+            document.getElementById('wallet').textContent = data.user.wallet;
+            document.getElementById('referralWallet').textContent = data.user.referralWallet;
+            document.getElementById('referralLink').textContent = data.user.referralLink;
+            document.getElementById('referralLink').href = data.user.referralLink;
+        } else {
+            alert('Login to access your dashboard');
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        alert('An error occurred while fetching user data');
+        localStorage.removeItem('token');
+        window.location.href = 'login.html';
+    }
+};
+
+// Fetch user data when the page loads
+window.onload = fetchUserData;
+
+
+
+/*const fetchUserData = async () => {
     const token = localStorage.getItem('token');
 
     if (!token) {
@@ -1099,6 +1162,27 @@ const fetchUserData = async () => {
 
 // Fetch user data when the page loads
 window.onload = fetchUserData;
+*/
+
+document.addEventListener('DOMContentLoaded', function() {
+      const openCourse = document.getElementById('openCourse');
+      const courseArea = document.getElementById('courseArea');
+      const dropdown = document.getElementById('dropdown-menu');
+      const exitCourse = document.getElementById('exitCourse');
+
+      openCourse.addEventListener('click', function(event) {
+        event.preventDefault();
+        courseArea.style.display = 'block';
+        dropdown.style.display = 'none';
+      });
+
+      exitCourse.addEventListener('click', function(event) {
+        event.preventDefault();
+        courseArea.style.display = 'none';
+        dropdown.style.display = 'block';
+
+      });
+    });
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1164,6 +1248,126 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
 
+/*document.addEventListener('DOMContentLoaded', function() {
+    const openProfile = document.getElementById('openProfile');
+    const profilePage = document.getElementById('profilePage');
+    const dropdown = document.getElementById('dropdown-menu');
+    const exitProfile = document.getElementById('exitProfile');
+
+    if (openProfile && profilePage && dropdown && exitProfile) {
+        openProfile.addEventListener('click', function(event) {
+            event.preventDefault();
+            profilePage.style.display = 'block';
+            dropdown.style.display = 'none';
+        });
+
+        exitProfile.addEventListener('click', function(event) {
+            event.preventDefault();
+            profilePage.style.display = 'none';
+            dropdown.style.display = 'block';
+        });
+    }
+});
+*/
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const userTaskList = document.getElementById('user-task-list');
+
+    async function fetchUserTasks() {
+        try {
+            const response = await fetch(`${API_URL}/user/tasks`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch tasks');
+            }
+            const tasks = await response.json();
+            userTaskList.innerHTML = '';
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${task.taskName} - ${task.description}
+                    <button onclick="completeUserTask('${task._id}')">Complete Task</button>
+                `;
+                userTaskList.appendChild(li);
+            });
+        } catch (error) {
+            console.error('Error fetching user tasks:', error);
+        }
+    }
+
+    window.completeUserTask = async (taskId) => {
+        try {
+            const response = await fetch(`${API_URL}/user/complete-task/${taskId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to complete task');
+            }
+            const result = await response.json();
+            alert(result.message);
+            fetchUserTasks();
+        } catch (error) {
+            console.error('Error completing user task:', error);
+        }
+    };
+
+    fetchUserTasks();
+});
+
+/*
+
+document.addEventListener('DOMContentLoaded', () => {
+      const userTaskList = document.getElementById('user-task-list');
+
+      async function fetchUserTasks() {
+        try {
+          const response = await fetch('/user/tasks');
+          const tasks = await response.json();
+          userTaskList.innerHTML = '';
+          tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <span>${task.taskName} - ${task.description} - <a href="${task.link}" target="_blank">${task.link}</a></span>
+              <button onclick="completeUserTask('${task._id}')">Complete Task</button>
+            `;
+            userTaskList.appendChild(li);
+          });
+        } catch (error) {
+          console.error('Error fetching user tasks:', error);
+        }
+      }
+
+      window.completeUserTask = async (taskId) => {
+        try {
+          const response = await fetch(`/user/complete-task/${taskId}`, {
+            method: 'POST'
+          });
+          const result = await response.json();
+          alert(result.message);
+          fetchUserTasks();
+        } catch (error) {
+          console.error('Error completing task:', error);
+        }
+      };
+
+      fetchUserTasks();
+    });
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1203,8 +1407,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
       fetchUserTasks();
     });
+*/
 
 
+/*
 document.addEventListener('DOMContentLoaded', function() {
       const openWheelButton = document.getElementById('openWheel');
       const wheelPage = document.getElementById('wheelPage');
@@ -1336,6 +1542,65 @@ document.addEventListener('DOMContentLoaded', function() {
       wheel.addEventListener('click', spinWheel);
       wheel.addEventListener('touchend', spinWheel);
     });
+*/
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const wheel = document.getElementById('wheel');
+
+    const lastSpin = localStorage.getItem('lastSpin');
+    const now = new Date().getTime();
+    
+    if (lastSpin && (now - lastSpin) < 24 * 60 * 60 * 1000) {
+        alert('You can spin again in 24 hours');
+    }
+
+    function spinWheel() {
+        const lastSpin = localStorage.getItem('lastSpin');
+        const now = new Date().getTime();
+
+        if (lastSpin && (now - lastSpin) < 24 * 60 * 60 * 1000) {
+            alert('You can spin again in 24 hours');
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * 17);
+        const degrees = (360 / 17) * randomIndex + (360 * 10); // Spin multiple times for effect
+        wheel.style.transform = `rotate(${degrees}deg)`;
+
+        setTimeout(() => {
+            const selectedValue = wheel.querySelector(`.segment:nth-child(${randomIndex + 1})`).textContent;
+            alert(`You won ${selectedValue}!`);
+            updateReferralWallet(selectedValue);
+            localStorage.setItem('lastSpin', new Date().getTime());
+        }, 10000); // Delay matches the transition time
+    }
+
+    function updateReferralWallet(amount) {
+        fetch(`${API_URL}/spin`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adjust as needed
+            },
+            body: JSON.stringify({ amount: parseInt(amount, 10) }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    wheel.addEventListener('click', spinWheel);
+    wheel.addEventListener('touchend', spinWheel);
+});
+
 
     function copyReferralLink() {
       const referralLink = document.getElementById("referralLink").innerText;
@@ -1344,6 +1609,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(err => console.error("Error copying referral link:", err));
     }
 
+
+    /*
     async function withdrawFunds() {
       const userId = document.getElementById('user-id').value;
       const name = document.getElementById('name').value;
@@ -1382,6 +1649,50 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('An error occurred. Please try again later.');
       }
     }
+*/
+
+async function withdrawFunds() {
+    const userId = document.getElementById('user-id').value;
+    const name = document.getElementById('name').value;
+    const bankName = document.getElementById('bank-name').value;
+    const phone = document.getElementById('phone').value;
+    const email = document.getElementById('email').value;
+    const accountNumber = document.getElementById('account-number').value;
+    const amount = document.getElementById('withdraw-amount').value;
+    const walletType = document.getElementById('wallet-type').value;
+
+    if (amount <= 0) {
+        alert('Please enter a valid amount.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/withdraw`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+            body: JSON.stringify({ userId, name, bankName, phone, email, accountNumber, amount, walletType })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('Withdrawal successful.');
+            console.log('Receipt:', data.receipt);
+            closeWithdrawForm();
+        } else {
+            alert('Withdrawal failed: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+    }
+}
+
+
+
 
     async function logoutUser() {
       localStorage.removeItem("token");
