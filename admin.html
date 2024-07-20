@@ -825,19 +825,19 @@ const setVendorStatus = async (vendorId, status) => {
     document.addEventListener('DOMContentLoaded', function() {
       const openTaskButton = document.getElementById('socialTask');
       const taskPage = document.getElementById('taskArea');
-      const dropdown = document.getElementById('dropdown-menu');
+      const dashboard = document.getElementById('dashboardContainer');
       const taskExitButton = document.getElementById('taskExitButton');
 
       openTaskButton.addEventListener('click', function(event) {
         event.preventDefault();
         taskPage.style.display = 'block';
-        dropdown.style.display = 'none';
+        dashboard.style.display = 'none';
       });
 
       taskExitButton.addEventListener('click', function(event) {
         event.preventDefault();
         taskPage.style.display = 'none';
-        dropdown.style.display = 'block';
+        dashboard.style.display = 'block';
 
       });
     });
@@ -1024,19 +1024,19 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', function() {
       const openTasks= document.getElementById('viewTasks');
       const tasksArea = document.getElementById('tasksArea');
-      const dropdown = document.getElementById('dropdown-menu');
+      const dashboard = document.getElementById('dashboardContainer');
       const tasksExitButton = document.getElementById('tasksExitButton');
 
       openTasks.addEventListener('click', function(event) {
         event.preventDefault();
         tasksArea.style.display = 'block';
-        dropdown.style.display = 'none';
+        dashboard.style.display = 'none';
       });
 
       tasksExitButton.addEventListener('click', function(event) {
         event.preventDefault();
         tasksArea.style.display = 'none';
-        dropdown.style.display = 'block';
+        dashboard.style.display = 'block';
 
       });
     });
