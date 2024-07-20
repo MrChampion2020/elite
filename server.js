@@ -16,7 +16,7 @@ const User = require("./models/User");
 const Coupon = require("./models/Coupon");
 const Vendor = require("./models/Vendor");
 const Admin = require("./models/Admin");
-const Task = require('../models/Tasks');
+const Task = require('./models/Tasks');
 
 app.use(express.json());
 app.use(cors());
