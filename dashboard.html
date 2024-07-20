@@ -379,227 +379,7 @@
       color: purple;
       text-align: center;
     }
-
-    @media (max-width: 768px) {
-      
-      main{
-        width: 100%;
-      }
-      .logo {
-        width: 60%;
-        height: 100%;
-      }
-      .profile{
-        height: 50%;
-        width: 10%;
-        padding: 0px 5px;
-      }
-      .profile img {
-        height: 85%;
-        width: 70%;
-         margin: auto;
-         object-fit: cover;
-      }
-      .user-welcome b {
-      height: 50%;
-      width: 40%;
-      text-align: left;
-      color: purple;
-      font-size: 14px;
-      font-family: 'Times New Roman', Times, serif;
-    }
-    .referralLink a{
-      font-size: 12px;
-    }
-      
-      footer {
-        width: 100%;
-        height: 10%;
-        text-align: center;
-        
-      }
-      footer p {
-        margin: 50px auto;
-        font-size: 14px;
-        font-family: 'Times New Roman', Times, serif;
-      }
-
-      /* query for wheel*/
-      .message {
-        font-size: 3vw;
-        bottom: -50px;
-      }
-      .segment {
-        font-size: 3vw;
-      }
-
-      .profilePage{
-        width: 100%;
-        display: none;
-        height: 85%;
-        position: fixed;
-        top: 16%;
-        padding: 10px;
-        
-      }
-      #exitProfile{
-          padding: 6px 20px;
-          font-size: 16px;
-          background-color: purple;
-          color: white;
-          border: none;
-        }
-        .profileData{
-          width: 100%;
-          margin: auto;
-          font-size: 14px;
-        }
-
-      #wheelPage {
-            width: 90%;
-            height: 100%;
-            background-color: white;
-            z-index: 1000;
-            margin: auto;
-        }
-        #exitButton{
-          padding: 6px 10px;
-          font-size: 14px;
-          background-color: purple;
-          color: white;
-          border: none;
-        }
-    
-
-        .wheel-container {
-      position: relative;
-      width: 30%;
-      height: 40%;
-      margin: auto;
-      padding: 10px;
-      margin-top: 5%;
-    }
-
-    .basement {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: radial-gradient(circle, gold 30%, transparent 31%), radial-gradient(circle, gold 30%, transparent 31%);
-      background-size: 20px 20px;
-      background-position: 0 0, 10px 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .inner-basement {
-      width: 90%;
-      height: 90%;
-      border-radius: 50%;
-      background: linear-gradient(to bottom, #ffd700, #ffac1c);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .wheel {
-      width: 85%;
-      height: 85%;
-      border-radius: 50%;
-      background: purple;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      transform: rotate(0deg);
-      transition: transform 20s cubic-bezier(0.33, 1, 0.68, 1);
-    }
-
-    .segment {
-      position: absolute;
-      width: 30%;
-      height: 30%;
-      background: purple;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      clip-path: polygon(100% 0, 0 0, 50% 100%);
-      border: 4px solid gold;
-      transform: rotate(calc(360deg / 17 * var(--i))) translateY(-100%);
-    }
-
-    .stopper {
-      position: absolute;
-      top: -10px;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-bottom: 20px solid white;
-      transform: translateX(-50%);
-    }
-
-     #spinMessage {
-      position: absolute;
-      top: 75%;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 16px;
-      color: purple;
-      text-align: center;
-    }
-
-    .ribbon {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background-color: red;
-      animation: spread 2s ease-out;
-      opacity: 0;
-    }
-
-
-      /*query for withdrawal form*/
-      .withdraw-form {
-      width: 100%;
-      border-radius: 10px;
-    }
-
-    #dailyTask{
-      display: none;
-      height: 85%;
-      width: 100%;
-      margin-top: 15%;
-      background-color: rgb(255, 255, 255);
-      color: purple;
-      margin: auto;
-      position: fixed;
-      padding: 10px;
-      border-radius: 10px;
-    }
-    #courseArea{
-        width: 100%;
-        display: none;
-        height: 75%;
-        position: fixed;
-        top: 16%;
-        background-color: purple;
-        margin-left: -5%;
-        padding: 10px;
-        border-radius: 10px;
-      }
-
-
-    }
-
-
-
-
-
-    .spin-wheel, .earn-bonus {
+.spin-wheel, .earn-bonus {
       display: none;
       position: fixed;
       top: 50%;
@@ -621,30 +401,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
-        #exitButton{
-          padding: 6px 20px;
-          font-size: 16px;
-          background-color: purple;
-          color: white;
-          border: none;
-        }
-    
-
-    @keyframes spread {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(10);
-        opacity: 0;
-      }
-    }
-
-
-
-    #dailyTask{
+  #dailyTask{
       display: none;
       position: relative;
       flex-direction: row;
@@ -846,6 +603,264 @@
       background-color: rgb(158, 27, 158);
     }
 
+
+        #exitButton{
+          padding: 6px 20px;
+          font-size: 16px;
+          background-color: purple;
+          color: white;
+          border: none;
+        }
+    
+
+
+
+
+
+
+    @media (max-width: 768px) {
+      
+      main{
+        width: 100%;
+      }
+      .logo {
+        width: 60%;
+        height: 100%;
+      }
+      .profile{
+        height: 50%;
+        width: 10%;
+        padding: 0px 5px;
+      }
+      .profile img {
+        height: 85%;
+        width: 70%;
+         margin: auto;
+         object-fit: cover;
+      }
+      .user-welcome b {
+      height: 50%;
+      width: 40%;
+      text-align: left;
+      color: purple;
+      font-size: 14px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+    .referralLink a{
+      font-size: 12px;
+    }
+      
+      footer {
+        width: 100%;
+        height: 10%;
+        text-align: center;
+        
+      }
+      footer p {
+        margin: 50px auto;
+        font-size: 14px;
+        font-family: 'Times New Roman', Times, serif;
+      }
+
+      /* query for wheel*/
+      .message {
+        font-size: 3vw;
+        bottom: -50px;
+      }
+      .segment {
+        font-size: 3vw;
+      }
+
+      .profilePage{
+        width: 100%;
+        display: none;
+        height: 85%;
+        position: fixed;
+        top: 16%;
+        padding: 10px;
+        
+      }
+      #exitProfile{
+          padding: 6px 20px;
+          font-size: 16px;
+          background-color: purple;
+          color: white;
+          border: none;
+        }
+        .profileData{
+          width: 100%;
+          margin: auto;
+          font-size: 14px;
+        }
+
+      #wheelPage {
+            width: 90%;
+            height: 100%;
+            background-color: white;
+            z-index: 1000;
+            margin: auto;
+        }
+        #exitButton{
+          padding: 6px 10px;
+          font-size: 14px;
+          background-color: purple;
+          color: white;
+          border: none;
+        }
+    
+
+        .wheel-container {
+      position: relative;
+      width: 30%;
+      height: 40%;
+      margin: auto;
+      padding: 10px;
+      margin-top: 5%;
+    }
+
+    .basement {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle, gold 30%, transparent 31%), radial-gradient(circle, gold 30%, transparent 31%);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .inner-basement {
+      width: 90%;
+      height: 90%;
+      border-radius: 50%;
+      background: linear-gradient(to bottom, #ffd700, #ffac1c);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .wheel {
+      width: 85%;
+      height: 85%;
+      border-radius: 50%;
+      background: purple;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      transform: rotate(0deg);
+      transition: transform 20s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+
+    .segment {
+      position: absolute;
+      width: 30%;
+      height: 30%;
+      background: purple;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      clip-path: polygon(100% 0, 0 0, 50% 100%);
+      border: 4px solid gold;
+      transform: rotate(calc(360deg / 17 * var(--i))) translateY(-100%);
+    }
+
+    .stopper {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 20px solid white;
+      transform: translateX(-50%);
+    }
+
+     #spinMessage {
+      position: absolute;
+      top: 75%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      color: purple;
+      text-align: center;
+    }
+
+    .ribbon {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      animation: spread 2s ease-out;
+      opacity: 0;
+    }
+
+
+      /*query for withdrawal form*/
+      .withdraw-form {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    #dailyTask{
+      display: none;
+      height: 85%;
+      width: 100%;
+      margin-top: 15%;
+      background-color: rgb(255, 255, 255);
+      color: purple;
+      margin: auto;
+      position: fixed;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .taskarea{
+      width: 100%;
+      height: 90%;
+      display: flex;
+      flex-direction: row;
+      
+    }
+    #courseArea{
+        width: 100%;
+        display: none;
+        height: 75%;
+        position: fixed;
+        top: 16%;
+        background-color: purple;
+        margin-left: -5%;
+        padding: 10px;
+        border-radius: 10px;
+      }
+
+
+    }
+
+
+
+
+
+    
+
+    @keyframes spread {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(10);
+        opacity: 0;
+      }
+    }
+
+
+
+  
     /* Media queries for responsive design */
     @media screen and (max-width: 600px) {
       .wheel-container {
@@ -882,6 +897,8 @@
         padding: 6px 12px;
       }
     }
+
+
   </style>
 </head>
 
