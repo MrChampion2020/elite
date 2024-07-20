@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+j<!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -292,7 +292,12 @@ width: 80%;
 height: 90%;
 color: purple;
 }
-
+.tasksView h1{
+font-size: 16px;
+color: purple;
+}
+.tasksView ul{
+color: purple;
 
 
     @media screen and (max-width: 678px){
@@ -565,6 +570,7 @@ color: purple;
     <button id="taskExitButton">Exit</button>
 
   <div class="taskcontainer">
+
     <!--<form id="task-form">
       <input type="text" id="taskId" placeholder="Task ID" required>
       <input type="text" id="taskName" placeholder="Task Name" required>
@@ -589,6 +595,7 @@ color: purple;
         <option value="advertisement">Advertisement</option>
       </select>
       <label for="selectAll"><input type="checkbox" id="selectAll"> Select All Users</label>
+
       <div id="user-select">
         <!-- User list will be populated here -->
       </div>
@@ -597,17 +604,26 @@ color: purple;
    
 </div>
 
+</div>
+
+
+
 
 <div id="tasksArea">
 
  <button id="tasksExitButton">Exit</button>
 
  <div class="tasksView>
-      <h2>Tasks</h2>
+
+      <h1>Tasks</h1>
+
       <ul id="task-list"></ul>
+
     </div>
-  </div>
+
+
 </div>
+
 
   <script>
     const API_URL = 'https://elitearn.onrender.com';
