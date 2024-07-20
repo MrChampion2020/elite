@@ -611,7 +611,9 @@
 
     #dailyTask{
       display: none;
-      height: 85%;
+      position: relative;
+      flex-direction: row;
+      height: 70%;
       width: 80%;
       margin-top: 15%;
       background-color: rgb(255, 255, 255);
@@ -628,7 +630,82 @@
       color: white;
       border-radius: 5px;
     }
-
+    .taskarea{
+      width: 90%;
+      height: 90%;
+      display: flex;
+      flex-direction: row;
+      
+    }
+    .adspace{
+      height: 50%;
+      width: 50%;
+    }
+    .taskspace{
+      height: 50%;
+      width: 50%;
+    }
+    #taskArea{
+      display: none;
+      height: 70%;
+      width: 80%;
+      margin-top: 15%;
+      background-color: rgb(255, 255, 255);
+      color: purple;
+      margin: auto;
+      position: fixed;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .container h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .container ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .container ul li {
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .container button {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    .container button:hover {
+      background-color: #0056b3;
+    }
+    #socialTask{
+      display: none;
+      height: 70%;
+      width: 80%;
+      margin-top: 15%;
+      background-color: rgb(255, 255, 255);
+      color: purple;
+      margin: auto;
+      position: fixed;
+      padding: 10px;
+      border-radius: 10px;
+    }
     #wheelPage {
       display: none;
       position: fixed;
@@ -906,12 +983,53 @@
 <div id="dailyTask">
   <button id="exitTask">Exit</button>
 
+  <div class="taskarea">
 
-  <h1>coming soon...</h1>
+<span class="adspace">
+  <h1>Ads</h1>
+  <p>check for new ads, complete tasks to gain income and withraw monthly</p>
+  <button id="takSpace">view</button>
+
+</span>
+
+<span class="taskspace">
+
+
+
+  <h1>Social</h1>
+
+  <p>follow, like and share to get paid in dollars, you can withdraw cash per month</p>
+
+  <button id="taskSocial">view</button>
+
+</span>
 
 </div>
+</div>
 
-   
+
+<!--task area-->
+   <div id="taskArea">
+    
+    <button id="taskExitButton">Exit</button>
+    <h1>welcome to tasks</h1></div>
+
+
+
+    <!--social task area-->
+    <div id="socialTask">
+
+    <button id="socialExitButton">Exit</button>
+
+    <h1>social task</h1>
+
+    <div class="container">
+      <div>
+        <h2>Tasks</h2>
+        <ul id="user-task-list"></ul>
+      </div>
+    </div>
+   </div>
 
   <div id="withdraw-form" class="withdraw-form"> 
 
@@ -1002,6 +1120,90 @@ document.addEventListener('DOMContentLoaded', function() {
 
       });
     });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const openTaskButton = document.getElementById('taskSpace');
+      const TaskPage = document.getElementById('taskArea');
+      const dailyTask = document.getElementById('dailyTask');
+      const taskExitButton = document.getElementById('taskExitButton');
+
+      openTaskButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        TaskPage.style.display = 'block';
+        dailyTask.style.display = 'none';
+      });
+
+      taskExitButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        TaskPage.style.display = 'none';
+        dailyTask.style.display = 'block';
+
+      });
+    });
+
+
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const opensocialButton = document.getElementById('taskSocial');
+      const socialPage = document.getElementById('socialTask');
+      const dailyTask = document.getElementById('dailyTask');
+      const socialExitButton = document.getElementById('socialExitButton');
+
+      opensocialButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        socialPage.style.display = 'block';
+        dailyTask.style.display = 'none';
+      });
+
+      socialExitButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        socialPage.style.display = 'none';
+        dailyTask.style.display = 'block';
+
+      });
+    });
+
+
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const userTaskList = document.getElementById('user-task-list');
+
+      async function fetchUserTasks() {
+        try {
+          const response = await fetch(`${API_URL}/user/tasks`);
+          const tasks = await response.json();
+          userTaskList.innerHTML = '';
+          tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              ${task.taskName} - ${task.description}
+              <button onclick="completeUserTask('${task._id}')" >Complete Task</button>
+            `;
+            userTaskList.appendChild(li);
+          });
+        } catch (error) {
+          console.error('Error fetching user tasks:', error);
+        }
+      }
+
+      window.completeUserTask = async (taskId) => {
+        try {
+          const response = await fetch(`${API_URL}/user/complete-task/${taskId}`, {
+            method: 'POST'
+          });
+          const result = await response.json();
+          alert(result.message);
+          fetchUserTasks();
+        } catch (error) {
+          console.error('Error completing user task:', error);
+        }
+      };
+
+      fetchUserTasks();
+    });
+
 
 document.addEventListener('DOMContentLoaded', function() {
       const openWheelButton = document.getElementById('openWheel');
@@ -1114,7 +1316,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       function updateReferralWallet(amount) {
-        fetch('/spin', {
+        fetch(`${API_URL}/spin`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1158,7 +1360,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       try {
-        const response = await fetch('/withdraw', {
+        const response = await fetch(`${API_URL}/withdraw`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

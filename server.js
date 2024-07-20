@@ -121,6 +121,28 @@ const authenticateVendorToken = (req, res, next) => {
 
 
 // Create a new task
+
+app.post('/admin/create-task', async (req, res) => {
+  const { taskId, taskName, description, link, type, userCount } = req.body;
+  const users = await User.find().limit(userCount); // Fetch users to assign the task
+
+  const newTask = new Task({
+    taskId,
+    taskName,
+    description,
+    link,
+    type,
+    userCount,
+    usersAssigned: users.map(user => user._id),
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
+  });
+
+  await newTask.save();
+  res.json({ message: 'Task created successfully' });
+});
+
+
+/*
 app.post('/create-task', authenticateAdmin, async (req, res) => {
   try {
     const { taskId, taskName, description, link, type, userCount } = req.body;
@@ -147,7 +169,7 @@ app.post('/create-task', authenticateAdmin, async (req, res) => {
     res.status(500).json({ message: 'Error creating task', error });
   }
 });
-
+*/
 // Fetch all tasks
 app.get('/tasks', authenticateAdmin, async (req, res) => {
   try {
@@ -162,16 +184,43 @@ app.get('/tasks', authenticateAdmin, async (req, res) => {
 
 
 // Fetch user's tasks
-app.get('/task', authenticateToken, async (req, res) => {
+/*app.get('/task', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate('selectedTasks');
     res.status(200).json(user.selectedTasks);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching tasks', error });
   }
+});*/
+app.get('/admin/tasks', async (req, res) => {
+  const tasks = await Task.find();
+  res.json(tasks);
 });
 
+
+app.get('/user/tasks', async (req, res) => {
+  const userId = req.user._id; // Assuming user ID is available in req.user
+  const tasks = await Task.find({ usersAssigned: userId });
+  res.json(tasks);
+});
+
+
 // Mark task as completed
+app.post('/admin/complete-task/:taskId', async (req, res) => {
+  const { taskId } = req.params;
+  const task = await Task.findById(taskId);
+
+  if (task) {
+    task.status = 'completed';
+    await task.save();
+    res.json({ message: 'Task marked as completed' });
+  } else {
+    res.status(404).json({ message: 'Task not found' });
+  }
+});
+
+
+/*
 app.post('/complete-task/:taskId', authenticateToken, async (req, res) => {
   try {
     const { taskId } = req.params;
@@ -196,6 +245,27 @@ app.post('/complete-task/:taskId', authenticateToken, async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: 'Error completing task', error });
+  }
+});
+*/
+
+app.post('/user/complete-task/:taskId', async (req, res) => {
+  const { taskId } = req.params;
+  const userId = req.user._id; // Assuming user ID is available in req.user
+  const task = await Task.findById(taskId);
+
+  if (task && task.usersAssigned.includes(userId)) {
+    // Mark task as completed for this user and add to their eliteWallet
+    const user = await User.findById(userId);
+    user.eliteWallet += 0.2; // Adding $0.2 to user's wallet
+    await user.save();
+
+    // Optionally, mark the task completed for the user
+    // (this can be implemented as per your specific requirement)
+
+    res.json({ message: 'Task marked as completed and $0.2 added to eliteWallet' });
+  } else {
+    res.status(404).json({ message: 'Task not found or not assigned to user' });
   }
 });
 
