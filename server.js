@@ -66,7 +66,7 @@ mongoose.connect(process.env.MONGO_URI, {})
     }
     next();
   };
-  
+  */
   // Middleware to authenticate admin token
   const authenticateAdminToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
@@ -80,7 +80,7 @@ mongoose.connect(process.env.MONGO_URI, {})
       next();
     });
   };
-*/
+
   const authenticateAdmin = async (req, res, next) => {
     const token = req.headers['authorization'];
   
