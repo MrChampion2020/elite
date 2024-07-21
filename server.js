@@ -214,22 +214,14 @@ app.get('/admin/tasks', async (req, res) => {
 });
 
 
-
-// Get tasks for a specific user
-/*app.get('/user/tasks', async (req, res) => {
-  try {
-    const userId = req.session.userId; // Assuming user ID is stored in session
-    const tasks = await Task.find({ userIds: userId });
-    res.json(tasks);
-  } catch (error) {
-    res.status(500).json({ error: 'Error fetching user tasks' });
-  }
-});*/
-
+//user tasks
 app.get('/user/tasks', async (req, res) => {
   try {
-      const userId = req.user._id; // Assume user is authenticated and user ID is available
+      const userId = req.user._id;
       const user = await User.findById(userId).populate('tasks');
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
 
       res.json(user.tasks);
   } catch (error) {
@@ -253,38 +245,34 @@ app.post('/admin/complete-task/:taskId', async (req, res) => {
 });
 
 
-/*
-app.post('/complete-task/:taskId', authenticateToken, async (req, res) => {
-  try {
-    const { taskId } = req.params;
-    const user = await User.findById(req.user.id);
-    const task = await Task.findById(taskId);
-
-    if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
-    }
-
-    // Check if user is eligible for completion
-    if (user.selectedTasks.includes(taskId)) {
-      user.eliteWallet += 0.2;
-      user.completedTasks.push(taskId);
-      user.selectedTasks.pull(taskId);
-
-      await user.save();
-
-      res.status(200).json({ message: 'Task completed successfully' });
-    } else {
-      res.status(400).json({ message: 'User not eligible for this task' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'Error completing task', error });
-  }
-});
-*/
-
-
 
 // Protected route example
+
+app.post('/user/complete-task/:taskId', async (req, res) => {
+  try {
+      const { taskId } = req.params;
+      const userId = req.user._id;
+
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      const taskIndex = user.tasks.indexOf(taskId);
+      if (taskIndex > -1) {
+          user.tasks.splice(taskIndex, 1);
+          user.elitewallet += 0.2;
+          await user.save();
+          return res.status(200).json({ message: 'Task completed and user rewarded' });
+      } else {
+          return res.status(404).json({ message: 'Task not found for user' });
+      }
+  } catch (error) {
+      res.status(500).json({ message: 'Error completing task', error });
+  }
+});
+
+/*
 app.post('/user/complete-task/:taskId', async (req, res) => {
   try {
       const userId = req.user._id;
@@ -307,32 +295,7 @@ app.post('/user/complete-task/:taskId', async (req, res) => {
   } catch (error) {
       res.status(500).json({ message: 'Error completing task', error });
   }
-});
-/*
-app.post('/user/complete-task/:taskId', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const task = await Task.findById(req.params.taskId);
-    
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    const user = await User.findById(userId);
-    if (user) {
-      user.eliteWallet += 0.2;
-      await user.save();
-      res.json({ message: 'Task completed and 0.2 added to elite wallet' });
-    } else {
-      res.status(404).json({ error: 'User not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: 'Error completing task' });
-  }
-});
-*/
-
-
+});*/
 
 
 
