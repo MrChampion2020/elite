@@ -9,172 +9,317 @@
   <title>ElitEarn</title>
   <link rel="icon" href="logo.jpg" type="image/jpg">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-
-    <style>
-     body, html {
-      width: 100%;
-      margin: auto;
+  <style>
+    body, html {
+      margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 90%;
-    }
-    a{
+      height: 100%;
+      overflow-x: hidden;
       text-decoration: none;
-      padding: 5px;
-      color: purple;
+      background-color: purple;
     }
-    a:hover{
-      color: purple;
+    a {
+      text-decoration: none;
     }
-    .welcome{
-      font-size: 16px;
-      text-align: center;
-      color: purple;
-    }
-    .container {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 1200px;
-      width: 90%;
-      margin: auto;
-      box-shadow: 1px 1px 4px 2px rgb(226, 223, 223);
-    }
-    .login-container{
-      width: 60%;
-      margin: auto;
-    }
-    .login-container, .dashboard-container {
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    h1, h2 {
-      text-align: center;
-    }
-    input[type="text"], input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    .buttons {
-      width: 90%;
-      margin: auto;
+    
+    header {
+      height: 15%;
       display: flex;
       justify-content: space-between;
-    }
-    button {
-      padding: 10px;
-      background-color: purple;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-      width: 20%;
-    }
-    button:hover {
-      background-color: rgb(255, 255, 255);
-      color: purple;
+      align-items: center;
+      padding: 0 20px;
+      background: purple;
+      color: #fff;
+      border-bottom: 0.2px solid white;
       border-radius: 10px;
-      border: 0.2px solid purple;
-      font-weight: 600;
     }
-    .error {
-      color: red;
-      text-align: center;
-      margin-top: 10px;
+    .logo {
+      width: 30%;
+      height: 100%;
+      font-size: 1.2em;
     }
-    table {
+    .logo img {
       width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+      height: 100%;
+      object-fit: cover;
     }
-    table, th, td {
-      border: 1px solid #ddd;
+    .user-header {
+      width: 30%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
     }
-    th, td {
-      padding: 10px;
-      text-align: left;
+    .menu-icon {
+      width: 80%;
+      font-size: 40px;
+      cursor: pointer;
+      padding: 20px;
+      text-align: right;
     }
-    .display-area {
-      display: none;
-      width: 90%;
-      height: 90%;
-      margin: auto;
-    }
-    .close-button {
-      margin-top: 20px;
-      font-weight: 800;
-      font-size: 16;
-      background-color: white;
-      color: red;
-      box-shadow: 1px 1px 4px 2px rgb(226, 223, 223);
-    }
-
-    .actions{
-     justify-items: center;
-    }
-    .actions button {
-      width: 80px;
-      height: 30px;
-      padding: 5px;
-      font-size: 12px;
-    }
-
     #dropdown-menu {
      position: fixed;
       top: 0;
       left: -100%;
       width: 100%;
-      height: 60%;
+      height: 100%;
       background: purple;
       color: white;
       transition: left 0.3s ease;
       z-index: 1000;
     }
-   
+    .dropdown-header {
+      height: 15%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: purple;
+      border-bottom: 2px solid white;
+    }
+    .close-icon {
+      cursor: pointer;
+      color: white;
+      font-size: 40px;
+      padding: 20px;
+      
+    }
     nav ul {
-      width: 80%;
-      height: 60%;
       list-style: none;
       padding: 20px;
       margin: 0;
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
+      flex-direction: column;
+      align-items: left;
       margin: auto;
-      list-style-type: none;
-    
     }
     nav ul li {
-      width: 25%;
-      height: 80%;
       margin: 20px auto;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 20px;
       font-family: 'Times New Roman', Times, serif;
       text-decoration: none;
       font-weight: 600;
-      color: purple;
-      border: 1px solid purple;
-      padding: 5%;
-      border-radius: 30px;
+      color: white;
+    }
+    nav ul .register {
+      width: 30%;
+      height: 40%;
+      border-radius: 10px;
+      margin: auto;
+      justify-content: center;
       text-align: center;
-      list-style-type: none;
+    }
+    nav ul .register a {
+      width: 100%;
+      color: purple;
+      text-align: center;
+      margin: auto;
     }
     nav ul li a {
-      width: auto;
-      border: 1px solid purple;
+      color: white;
+    }
+    main {
+      margin: auto;
+      height: 68%;
+      width: 80%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background-color: rgb(248, 216, 248);
+      border-radius: 10px;
+      position: relative;
+      top: 10px;
+      margin-bottom: 20px;
+    }
+    .user-welcome {
+      height: 10%;
+      width: 85%;
+      margin: 0 auto;
+      padding: 5px;
+      display: flex;
+      flex-direction: row;
+    }
+    .profile {
+      width: 4%;
+      height: 60%;
+      object-fit: cover;
+      margin-top: 10px;
+    }
+    .profile img {
+      width: 60%;
+      height: 80%;
+      border: 2px solid white;
+      border-radius: 50%;
+      object-fit: cover;
+      padding: 5px;
+      background-color: purple;
+      box-shadow: 1px 1px 4px 2px rgb(211, 209, 210);
+    }
+    .user-welcome b {
+      height: 50%;
+      width: 40%;
+      text-align: left;
       color: purple;
+      font-size: 16px;
+      font-family: 'Times New Roman', Times, serif;
+      padding: 20px 10px;
+    }
+    .profile-top {
+      display: flex;
+      flex-direction: column;
+      width: 95%;
+      margin: auto;
+      height: 90%;
+      border: none;
+      padding: 10px;
+    }
+    .profile-top h1 {
+      font-size: 16;
       text-align: center;
-      border-radius: 30px;
+      color: purple;
+      grid-column: 1 / -1;
+    }
+    .wallet {
+      margin: auto;
+      width: 90%;
+      height: 40%;
+      position: relative;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px;
+      color: purple;
+      border-bottom: 0.2px solid purple;
+    }
+    .wallet h3{
+      font-size: 24px;
+      margin: 0;
+      font-weight: 600;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+    .wallet .withdraw-button {
+      align-self: flex-end;
+      padding: 6px 10px;
+      background: purple;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .withdraw-form {
+      display: none;
+      position: fixed;
+      top: 50%;
+      width: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: purple;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    .withdraw-form h3{
+      margin: auto;
+      text-align: center;
+      color: white;
+    }
+    .withdraw-form input, select{
+      display: block;
+      width: 80%;
+      padding: 10px;
+      margin: 10px auto;
+      border-radius: 10px;
+      border: none;
+    }
+    .withdraw-form .close-button {
+      padding: 5px 10px;
+      background: rgb(255, 255, 255);
+      color: purple;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 10%;
+    }
+    .withdraw-form .withdraw-button{
+      padding: 5px 10px;
+      background-color: rgba(128, 0, 128, 0.705);
+      color: white;
+      border: 1px solid white;
+      border-radius: 10px;
+      margin-left: 1%;
+    }
+    .referralLink {
+      margin: auto;
+      width: 90%;
+      height: 15%;
+      position: relative;
+      border-radius: 10px;
+      text-align: center;
+      padding: 10px;
+    }
+    .referralLink span {
+      font-size: 16px;
+      color: purple;
+    }
+    .referralLink button{
+      border: none;
+      width: 20px;
+      height: 18px;
+      background-color:  rgb(248, 216, 248);
+    }
+    .referralLink button i{
+      font-size: 16px;
+      color: purple;
+    }
+    .social {
+      margin: auto;
+      width: 90%;
+      height: 40%;
+      position: relative;
+      border-radius: 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      /*border-bottom: 0.1px solid purple;*/
+    }
+    .social b {
+      font-size: 16px;
+      padding: 0 2px;
+      height: 10%;
+      color: purple;
+    }
+    .social-logo {
+      display: flex;
+      flex-direction: row;
+      height: 90%;
+      width: 70%;
+      position: relative;
+      margin: auto;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .social-logo a {
+      font-size: 30px;
+      cursor: pointer;
+      color: purple;
+    }
+
+    footer{
+      margin: auto;
+      width: 80%;
+      height: 10%;
+      background-color: purple;
+      border-top: 0.2px solid purple;
+      text-align: center;
+      color: rgb(255, 255, 255);
+      border-radius: 10px;
+      border-top: 0.2px solid white;
+    }
+    footer p {
+      margin: 50px auto;
       font-size: 20px;
       font-family: 'Times New Roman', Times, serif;
     }
@@ -579,7 +724,7 @@
     }
     .taskspace{
       height: 50%;
-      width: 80%;
+      width: 0%;
       margin: auto;
     }
 
@@ -640,15 +785,19 @@
       transform: translate(-50%, -50%);
       background: white;
       padding: 20px;
-    }
-    nav ul li a:hover {
-      width: auto;
-      background-color: purple;
-      border: none;
-      color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      z-index: 1000;
       text-align: center;
-      border-radius: 30px;
-
+    }
+    .spin-wheel .close-button, .earn-bonus .close-button {
+      margin-top: 10px;
+      padding: 5px 10px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
     #spinMessage {
       position: absolute;
@@ -682,8 +831,6 @@
 
 
     #dailyTask{
-
-  
       display: none;
       position: relative;
       flex-direction: row;
@@ -733,9 +880,8 @@
       border-radius: 10px;
       margin: auto;
     }
-  
-    .taskcontainer {
-
+    
+    .container {
       max-width: 1200px;
       margin: 20px auto;
       padding: 20px;
@@ -743,34 +889,15 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    .taskcontainer h1, h2 {
+    .container h1, h2 {
       text-align: center;
       margin-bottom: 20px;
     }
-    .taskcontainer form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .taskcontainer input, select, textarea, button {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .taskcontainer button {
-      background-color: #28a745;
-      color: white;
-      cursor: pointer;
-    }
-    .taskcontainer button:hover {
-      background-color: #218838;
-    }
-    .taskcontainer ul {
+    .container ul {
       list-style-type: none;
       padding: 0;
     }
-    .taskcontainer ul li {
+    .container ul li {
       padding: 10px;
       margin-bottom: 10px;
       background: #f9f9f9;
@@ -780,14 +907,19 @@
       justify-content: space-between;
       align-items: center;
     }
-    .taskcontainer .task-actions {
-      display: flex;
-      gap: 10px;
+    .container button {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
     }
-    #tasksView{
+    .container button:hover {
+      background-color: #0056b3;
+    }
+    #socialTask{
       display: none;
-      position: relative;
-      flex-direction: row;
       height: 70%;
       width: 80%;
       margin-top: 15%;
@@ -798,163 +930,146 @@
       padding: 10px;
       border-radius: 10px;
     }
-    #tasksExitButton{
-      padding: 8px 16px;
-      border: none;
-      background-color: purple;
-      color: white;
-      border-radius: 5px;
-    }
-    .tasksContainer{
-      width: 60%;
-      height: 80%;
-
-    }
-    .tasksContainer h1{
-      font-size: 16px;
-      color: purple;
-      border-bottom: 3px solid purple;
-    }
-    .task-list {
-      margin-top: 20px;
-    margin: auto;
-    padding: 5%;
-  }
-      
-
-
-
-    @media screen and (max-width: 678px){
-      
-      body{
-        width: 100%;
-        height: 98%;
-        margin: auto;
-
-      }
-      .container{
-        width: 90%;
-        margin: auto;
-      }
-      .login-container, .dashboard-container {
+    #wheelPage {
       display: none;
-      flex-direction: column;
+      position: fixed;
+      top: 16%;
+      left: 0;
+      width: 100%;
+      height: 85%;
+      background: rgb(255, 255, 255);
+      display: none;
       justify-content: center;
       align-items: center;
-      width: 100%;
-      height: 100%;
+      z-index: 999;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    #wheelPage .wheel-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
       margin: auto;
     }
-    .display-area {
-      display: none;
+    #wheelPage .wheel-container img {
+      width: 100%;
+      height: 100%;
+    }
+    
+
+    .basement {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle, gold 30%, transparent 31%), radial-gradient(circle, gold 30%, transparent 31%);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .inner-basement {
       width: 90%;
       height: 90%;
-      margin: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      font-size: 14px;
-    }
-    table, th, td {
-      border: 1px solid #ddd;
-    }
-    th, td {
-      padding: 5px;
-      text-align: left;
-      font-size: 14px;
-    }
-    .close-button {
-      margin-top: 10px;
-      font-weight: 500;
-      font-size: 14px;
-      background-color: white;
-      color: red;
-      box-shadow: 1px 1px 4px 2px rgb(226, 223, 223);
-    }
-    .actions{
-     padding: 5px;
-    }
-    .actions button {
-      width: 60px;
-      height: 20px;
-      margin: auto;
-      font-size: 12px;
-      margin-top: 2%;
-    }
-    .buttons {
-      width: 90%;
-      height: 10%;
-      margin: auto;
+      border-radius: 50%;
+      background: linear-gradient(to bottom, #ffd700, #ffac1c);
       display: flex;
-      justify-content: space-between;
-    }
-    .buttons button {
-      padding: 10px;
-      background-color: purple;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-      width: 23%;
-      height: 45%;
-      font-size: 12px;
-    }
-    .buttons button .menuicon{
-      width: 15%;
-    }
-    button:hover {
-      background-color: rgba(255, 255, 255, 0.692);
-      color: purple;
-      font-weight: 600;
-      border: 0.2px solid purple;
-    }
-    nav ul {
-      width: 100%;
-      height: 60%;
-      list-style: none;
-      padding: 10px;
-      display: flex;
-      flex-wrap: wrap;
+      justify-content: center;
       align-items: center;
-      margin: auto;
-    
     }
-    nav ul li {
-      width: 30%;
-      height: 100%;
-      margin: 10px auto;
-      cursor: pointer;
-      font-size: 12px;
-      font-family: 'Times New Roman', Times, serif;
-      text-decoration: none;
-      font-weight: 500;
-      color: purple;
-      border: 1px solid purple;
-      border-radius: 30px;
-      text-align: center;
-    }
-  
-    nav ul li a {
-      width: auto;
-      border: 1px solid purple;
-      color: purple;
-      text-align: center;
-      border-radius: 30px;
-      font-size: 14px;
-      padding: 5px;
 
+    .wheel {
+      width: 85%;
+      height: 85%;
+      border-radius: 50%;
+      background: purple;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      transform: rotate(0deg);
+      transition: transform 10s cubic-bezier(0.33, 1, 0.68, 1);
     }
-    nav ul li a:hover {
-      width: auto;
-      background-color: purple;
-      border: none;
+
+    .segment {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      background: purple;
       color: white;
-      text-align: center;
-      border-radius: 30px;
-
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      clip-path: polygon(100% 0, 0 0, 50% 100%);
+      border: 4px solid gold;
+      transform: rotate(calc(360deg / 17 * var(--i))) translateY(-100%);
     }
+
+    .stopper {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 20px solid white;
+      transform: translateX(-50%);
+    }
+
+
+
+    button:disabled {
+      background-color: grey;
+      cursor: not-allowed;
+    }
+    button:active {
+      background-color: rgb(158, 27, 158);
+    }
+
+    /* Media queries for responsive design */
+    @media screen and (max-width: 600px) {
+      .wheel-container {
+        width: 250px;
+        height: 250px;
+      }
+
+      .wheel {
+        width: 90%;
+        height: 90%;
+      }
+
+      #exitbutton {
+        bottom: -30px;
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+    }
+
+    @media screen and (max-width: 400px) {
+      .wheel-container {
+        width: 200px;
+        height: 200px;
+      }
+
+      .wheel {
+        width: 95%;
+        height: 95%;
+      }
+
+      button {
+        bottom: -20px;
+        font-size: 12px;
+        padding: 6px 12px;
+      }
     }
   </style>
 </head>
@@ -1350,7 +1465,57 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
 
+/*
+document.addEventListener('DOMContentLoaded', function() {
+    const userTaskList = document.getElementById('user-task-list');
 
+    async function fetchUserTasks() {
+        try {
+            const response = await fetch(`${API_URL}/user/tasks`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch tasks');
+            }
+            const tasks = await response.json();
+            userTaskList.innerHTML = '';
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${task.taskName} - ${task.description}
+                    <button onclick="completeUserTask('${task._id}')">Complete Task</button>
+                `;
+                userTaskList.appendChild(li);
+            });
+        } catch (error) {
+            console.error('Error fetching user tasks:', error);
+        }
+    }
+
+    window.completeUserTask = async (taskId) => {
+        try {
+            const response = await fetch(`${API_URL}/user/complete-task/${taskId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to complete task');
+            }
+            const result = await response.json();
+            alert(result.message);
+            fetchUserTasks();
+        } catch (error) {
+            console.error('Error completing user task:', error);
+        }
+    };
+
+    fetchUserTasks();
+});
+*/
 
 document.addEventListener('DOMContentLoaded', () => {
     const userTasksContainer = document.getElementById('user-tasks');
@@ -1400,8 +1565,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchUserTasks(); // Fetch tasks when the page loads
 });
-
-
 
 
 
@@ -1485,6 +1648,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
+
 document.addEventListener('DOMContentLoaded', function() {
     const wheel = document.getElementById('wheel');
 
@@ -1549,6 +1713,46 @@ document.getElementById('spinMessage').innerHTML = "You can spin again in 24 hou
     }
 
 
+    /*
+    async function withdrawFunds() {
+      const userId = document.getElementById('user-id').value;
+      const name = document.getElementById('name').value;
+      const bankName = document.getElementById('bank-name').value;
+      const phone = document.getElementById('phone').value;
+      const email = document.getElementById('email').value;
+      const accountNumber = document.getElementById('account-number').value;
+      const amount = document.getElementById('withdraw-amount').value;
+      const walletType = document.getElementById('wallet-type').value;
+
+      if (amount <= 0) {
+        alert('Please enter a valid amount.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/withdraw`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId, name, bankName, phone, email, accountNumber, amount, walletType })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Withdrawal successful.');
+          console.log('Receipt:', data.receipt);
+          closeWithdrawForm();
+        } else {
+          alert('Withdrawal failed: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    }
+*/
 
 async function withdrawFunds() {
     const userId = document.getElementById('user-id').value;
