@@ -137,10 +137,12 @@
       transition: left 0.3s ease;
       z-index: 1000;
     }
-   
+   nav{
+margin-top: 10%;
+height: 60%;}
     nav ul {
       width: 80%;
-      height: 60%;
+      height: 80%;
       list-style: none;
       padding: 20px;
       margin: 0;
@@ -152,8 +154,13 @@
     
     }
     nav ul li {
+<<<<<<< HEAD
       width: 25%;
       height: 80%;
+=======
+      width: 30%;
+      height: 8%;
+>>>>>>> d507cb5b31d781a28c34997b9f98ca09ad88588e
       margin: 20px auto;
       cursor: pointer;
       font-size: 16px;
@@ -165,8 +172,13 @@
       padding: 5%;
       border-radius: 30px;
       text-align: center;
+<<<<<<< HEAD
       list-style-type: none;
     }
+=======
+    }
+    
+>>>>>>> d507cb5b31d781a28c34997b9f98ca09ad88588e
     nav ul li a {
       width: auto;
       border: 1px solid purple;
@@ -295,6 +307,38 @@
       
 
 
+#tasksArea{
+display: none;
+      position: relative;
+      flex-direction: row;
+      height: 70%;
+      width: 80%;
+      margin-top: 15%;
+      background-color: rgb(255, 255, 255);
+      color: purple;
+      margin: auto;
+      position: fixed;
+      padding: 10px;
+      border-radius: 10px;}
+#tasksExitButton{
+      padding: 8px 16px;
+      border: none;
+      background-color: purple;
+      color: white;
+      border-radius: 5px;
+    }
+.tasksView{
+width: 80%;
+height: 90%;
+color: purple;
+}
+.tasksView h1{
+font-size: 16px;
+color: purple;
+}
+.tasksView ul{
+color: purple;}
+
 
     @media screen and (max-width: 678px){
       
@@ -382,9 +426,12 @@
       font-weight: 600;
       border: 0.2px solid purple;
     }
+nav{
+height: 60%;}
+
     nav ul {
       width: 100%;
-      height: 60%;
+      height: 80%;
       list-style: none;
       padding: 10px;
       display: flex;
@@ -395,7 +442,7 @@
     }
     nav ul li {
       width: 30%;
-      height: 100%;
+      height: 8%;
       margin: 10px auto;
       cursor: pointer;
       font-size: 12px;
@@ -427,6 +474,32 @@
       border-radius: 30px;
 
     }
+
+#tasksArea{
+display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      background-color: rgb(255, 255, 255);
+      color: purple;
+      margin: auto;
+      position: fixed;
+      padding: 10px;
+      border-radius: 10px;}
+
+#tasksExitButton{
+      padding: 8px 16px;
+      border: none;
+      background-color: purple;
+      color: white;
+      border-radius: 5px;
+    }
+.tasksView{
+width: 100%;
+height: 90%;
+color: purple;
+}
+
     }
   </style>
 </head>
@@ -525,7 +598,11 @@
         </div>
         <nav>
           <ul>
+<<<<<<< HEAD
             <li><a href="#" id="socialTask">Task Lab</a></li>
+=======
+            <li><a href="#" id="socialTask">Create Tasks</a></li>
+>>>>>>> d507cb5b31d781a28c34997b9f98ca09ad88588e
             <li><a href="#" id="viewTasks">Tasks</a></li>
             <li><a href="#" id="airtime">Set VTU</a></li>
             <li><a href="#" id="openWithdrawal" >Withdraws</a></li>
@@ -542,7 +619,24 @@
     <button id="taskExitButton">Exit</button>
 
   <div class="taskcontainer">
+<<<<<<< HEAD
   
+=======
+
+    <!--<form id="task-form">
+      <input type="text" id="taskId" placeholder="Task ID" required>
+      <input type="text" id="taskName" placeholder="Task Name" required>
+      <textarea id="description" placeholder="Description" required></textarea>
+      <input type="url" id="link" placeholder="Link" required>
+      <select id="type" required>
+        <option value="">Select Type</option>
+        <option value="social">Social</option>
+        <option value="advertisement">Advertisement</option>
+      </select>
+      <input type="number" id="userCount" placeholder="Number of Users" required>
+      <button type="submit">Create Task</button>
+    </form>-->
+>>>>>>> d507cb5b31d781a28c34997b9f98ca09ad88588e
     <form id="task-form">
       <input type="text" id="taskId" placeholder="Task ID" required>
       <input type="text" id="taskName" placeholder="Task Name" required>
@@ -554,13 +648,38 @@
         <option value="advertisement">Advertisement</option>
       </select>
       <label for="selectAll"><input type="checkbox" id="selectAll"> Select All Users</label>
+
       <div id="user-select">
         <!-- User list will be populated here -->
       </div>
       <button type="submit">Create Task</button>
     </form>
+<<<<<<< HEAD
     
   </div>
+=======
+   
+</div>
+
+</div>
+
+
+
+
+<div id="tasksArea">
+
+ <button id="tasksExitButton">Exit</button>
+
+ <div class="tasksView>
+
+      <h1>Tasks</h1>
+
+      <ul id="task-list"></ul>
+
+    </div>
+
+
+>>>>>>> d507cb5b31d781a28c34997b9f98ca09ad88588e
 </div>
 
 <div id="tasksView">
@@ -819,22 +938,29 @@ const setVendorStatus = async (vendorId, status) => {
 
 
 
+
+
+
     document.addEventListener('DOMContentLoaded', function() {
       const openTaskButton = document.getElementById('socialTask');
       const taskPage = document.getElementById('taskArea');
-      const dropdown = document.getElementById('dropdown-menu');
+      const dashboard = document.getElementById('dashboardContainer');
       const taskExitButton = document.getElementById('taskExitButton');
 
       openTaskButton.addEventListener('click', function(event) {
         event.preventDefault();
         taskPage.style.display = 'block';
-        dropdown.style.display = 'none';
+        dashboard.style.display = 'none';
       });
 
       taskExitButton.addEventListener('click', function(event) {
         event.preventDefault();
         taskPage.style.display = 'none';
+<<<<<<< HEAD
         dropdown.style.display = 'block';
+=======
+        dashboard.style.display = 'block';
+>>>>>>> d507cb5b31d781a28c34997b9f98ca09ad88588e
 
       });
     });
@@ -1068,6 +1194,104 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       };
 
+<<<<<<< HEAD
+=======
+      fetchTasks();
+    });
+*/
+
+document.addEventListener('DOMContentLoaded', () => {
+      const taskForm = document.getElementById('task-form');
+      const taskList = document.getElementById('task-list');
+      const userSelect = document.getElementById('user-select');
+      const selectAllCheckbox = document.getElementById('selectAll');
+
+      async function fetchUsers() {
+        try {
+          const response = await fetch(`${API_URL}/admin/users`);
+          const users = await response.json();
+          userSelect.innerHTML = '';
+          users.forEach(user => {
+            const label = document.createElement('label');
+            label.innerHTML = `
+              <input type="checkbox" name="users" value="${user._id}"> ${user.username}
+            `;
+            userSelect.appendChild(label);
+          });
+        } catch (error) {
+          console.error('Error fetching users:', error);
+        }
+      }
+
+      selectAllCheckbox.addEventListener('change', (e) => {
+        const checkboxes = userSelect.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = e.target.checked;
+        });
+      });
+
+      taskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const taskData = {
+          taskId: document.getElementById('taskId').value,
+          taskName: document.getElementById('taskName').value,
+          description: document.getElementById('description').value,
+          link: document.getElementById('link').value,
+          type: document.getElementById('type').value,
+          userIds: Array.from(userSelect.querySelectorAll('input[name="users"]:checked')).map(cb => cb.value)
+        };
+
+        try {
+          const response = await fetch(`${API_URL}/admin/create-task`,
+ {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(taskData)
+          });
+          const result = await response.json();
+          alert(result.message);
+          fetchTasks();
+        } catch (error) {
+          console.error('Error creating task:', error);
+        }
+      });
+
+      async function fetchTasks() {
+        try {
+          const response = await fetch(`${API_URL}/admin/tasks`); 
+          const tasks = await response.json();
+          taskList.innerHTML = '';
+          tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              ${task.taskName} - ${task.description}
+              <div class="task-actions">
+                <button onclick="deleteTask('${task._id}')">Delete Task</button>
+              </div>
+            `;
+            taskList.appendChild(li);
+          });
+        } catch (error) {
+          console.error('Error fetching tasks:', error);
+        }
+      }
+
+      window.deleteTask = async (taskId) => {
+        try {
+          const response = await fetch(`${API_URL}/admin/delete-task/${taskId}`, {
+            method: 'DELETE'
+          });
+          const result = await response.json();
+          alert(result.message);
+          fetchTasks();
+        } catch (error) {
+          console.error('Error deleting task:', error);
+        }
+      };
+
+>>>>>>> d507cb5b31d781a28c34997b9f98ca09ad88588e
       fetchUsers();
       fetchTasks();
     });*/
@@ -1080,6 +1304,29 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById("loginContainer").style.display = "block";
       
     }
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+      const openTasks= document.getElementById('viewTasks');
+      const tasksArea = document.getElementById('tasksArea');
+      const dashboard = document.getElementById('dashboardContainer');
+      const tasksExitButton = document.getElementById('tasksExitButton');
+
+      openTasks.addEventListener('click', function(event) {
+        event.preventDefault();
+        tasksArea.style.display = 'block';
+        dashboard.style.display = 'none';
+      });
+
+      tasksExitButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        tasksArea.style.display = 'none';
+        dashboard.style.display = 'block';
+
+      });
+    });
   </script>
 </body>
 </html>
