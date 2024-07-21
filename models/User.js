@@ -16,6 +16,7 @@ const UserSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   referralWallet: { type: Number, default: 3000 },
   eliteWallet: { type: Number, default: 0 },
+  tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
   selectedTasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
   completedTasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
   referralLink: { type: String, unique: true },

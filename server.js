@@ -144,7 +144,26 @@ const authenticateVendorToken = (req, res, next) => {
 
 
 // Create a new task
+app.post('/admin/create-task', async (req, res) => {
+  try {
+      const { taskId, taskName, description, link, type, userIds } = req.body;
+      const newTask = new Task({ taskId, taskName, description, link, type, userIds });
 
+      await newTask.save();
+
+      // Assign task to selected users
+      await User.updateMany(
+          { _id: { $in: userIds } },
+          { $push: { tasks: newTask._id } }
+      );
+
+      res.status(201).json({ message: 'Task created and assigned to users' });
+  } catch (error) {
+      res.status(500).json({ message: 'Error creating task', error });
+  }
+});
+
+/*
 app.post('/admin/create-task', async (req, res) => {
   const { taskId, taskName, description, link, type, userCount } = req.body;
   const users = await User.find().limit(userCount); // Fetch users to assign the task
@@ -163,36 +182,10 @@ app.post('/admin/create-task', async (req, res) => {
   await newTask.save();
   res.json({ message: 'Task created successfully' });
 });
-
-
-/*
-app.post('/create-task', authenticateAdmin, async (req, res) => {
-  try {
-    const { taskId, taskName, description, link, type, userCount } = req.body;
-    const users = await User.aggregate([{ $sample: { size: userCount } }]);
-
-    const newTask = new Task({
-      taskId,
-      taskName,
-      description,
-      link,
-      type,
-      users: users.map(user => user._id)
-    });
-
-    await newTask.save();
-
-    users.forEach(async (user) => {
-      user.selectedTasks.push(newTask._id);
-      await user.save();
-    });
-
-    res.status(200).json({ message: 'Task created and assigned successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating task', error });
-  }
-});
 */
+
+
+
 // Fetch all tasks
 app.get('/tasks', authenticateAdmin, async (req, res) => {
   try {
@@ -223,13 +216,24 @@ app.get('/admin/tasks', async (req, res) => {
 
 
 // Get tasks for a specific user
-app.get('/user/tasks', async (req, res) => {
+/*app.get('/user/tasks', async (req, res) => {
   try {
     const userId = req.session.userId; // Assuming user ID is stored in session
     const tasks = await Task.find({ userIds: userId });
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: 'Error fetching user tasks' });
+  }
+});*/
+
+app.get('/user/tasks', async (req, res) => {
+  try {
+      const userId = req.user._id; // Assume user is authenticated and user ID is available
+      const user = await User.findById(userId).populate('tasks');
+
+      res.json(user.tasks);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching tasks', error });
   }
 });
 
@@ -281,6 +285,30 @@ app.post('/complete-task/:taskId', authenticateToken, async (req, res) => {
 
 
 // Protected route example
+app.post('/user/complete-task/:taskId', async (req, res) => {
+  try {
+      const userId = req.user._id;
+      const taskId = req.params.taskId;
+
+      // Find the user and update their tasks
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Remove the completed task from the user's task list
+      user.tasks = user.tasks.filter(task => task.toString() !== taskId);
+
+      // Logic to reward the user
+      user.elitewallet = (user.elitewallet || 0) + 0.2; // Ensure elitewallet exists and add 0.2
+      await user.save();
+
+      res.json({ message: 'Task completed and user rewarded' });
+  } catch (error) {
+      res.status(500).json({ message: 'Error completing task', error });
+  }
+});
+/*
 app.post('/user/complete-task/:taskId', authenticateToken, async (req, res) => {
   try {
     const userId = req.user._id;
@@ -302,31 +330,7 @@ app.post('/user/complete-task/:taskId', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Error completing task' });
   }
 });
-
-// Add more routes and apply the `authenticate` middleware as needed
-
-/*
-app.post('/user/complete-task/:taskId', async (req, res) => {
-  const { taskId } = req.params;
-  const userId = req.user._id; // Assuming user ID is available in req.user
-  const task = await Task.findById(taskId);
-
-  if (task && task.usersAssigned.includes(userId)) {
-    // Mark task as completed for this user and add to their eliteWallet
-    const user = await User.findById(userId);
-    user.eliteWallet += 0.2; // Adding $0.2 to user's wallet
-    await user.save();
-
-    // Optionally, mark the task completed for the user
-    // (this can be implemented as per your specific requirement)
-
-    res.json({ message: 'Task marked as completed and $0.2 added to eliteWallet' });
-  } else {
-    res.status(404).json({ message: 'Task not found or not assigned to user' });
-  }
-});
 */
-
 
 
 

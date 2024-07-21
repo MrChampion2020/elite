@@ -42,6 +42,10 @@
       margin: auto;
       box-shadow: 1px 1px 4px 2px rgb(226, 223, 223);
     }
+    .login-container{
+      width: 60%;
+      margin: auto;
+    }
     .login-container, .dashboard-container {
       display: none;
       flex-direction: column;
@@ -144,10 +148,11 @@
       flex-wrap: wrap;
       align-items: center;
       margin: auto;
+      list-style-type: none;
     
     }
     nav ul li {
-      width: 30%;
+      width: 25%;
       height: 80%;
       margin: 20px auto;
       cursor: pointer;
@@ -160,20 +165,7 @@
       padding: 5%;
       border-radius: 30px;
       text-align: center;
-    }
-    nav ul .register {
-      width: 30%;
-      height: 40%;
-      border-radius: 10px;
-      margin: auto;
-      justify-content: center;
-      text-align: center;
-    }
-    nav ul .register a {
-      width: 100%;
-      color: purple;
-      text-align: center;
-      margin: auto;
+      list-style-type: none;
     }
     nav ul li a {
       width: auto;
@@ -181,7 +173,8 @@
       color: purple;
       text-align: center;
       border-radius: 30px;
-
+      font-size: 20px;
+      padding: 20px;
     }
     nav ul li a:hover {
       width: auto;
@@ -263,8 +256,43 @@
       display: flex;
       gap: 10px;
     }
+    #tasksView{
+      display: none;
+      position: relative;
+      flex-direction: row;
+      height: 70%;
+      width: 80%;
+      margin-top: 15%;
+      background-color: rgb(255, 255, 255);
+      color: purple;
+      margin: auto;
+      position: fixed;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    #tasksExitButton{
+      padding: 8px 16px;
+      border: none;
+      background-color: purple;
+      color: white;
+      border-radius: 5px;
+    }
+    .tasksContainer{
+      width: 60%;
+      height: 80%;
+
+    }
+    .tasksContainer h1{
+      font-size: 16px;
+      color: purple;
+      border-bottom: 3px solid purple;
+    }
     .task-list {
-      margin-top: 20px;}
+      margin-top: 20px;
+    margin: auto;
+    padding: 5px;
+  }
+      
 
 
 
@@ -386,6 +414,8 @@
       color: purple;
       text-align: center;
       border-radius: 30px;
+      font-size: 14px;
+      padding: 5px;
 
     }
     nav ul li a:hover {
@@ -495,10 +525,9 @@
         </div>
         <nav>
           <ul>
-            <li><a href="#" id="socialTask">Create Tasks</a></li>
-            <li><a href="#" id="socialTask">Tasks</a></li>
+            <li><a href="#" id="socialTask">Task Lab</a></li>
+            <li><a href="#" id="viewTasks">Tasks</a></li>
             <li><a href="#" id="airtime">Set VTU</a></li>
-            <li><a href="#" id="setCourse"> Set Course</a></li>
             <li><a href="#" id="openWithdrawal" >Withdraws</a></li>
             <li onclick="logoutUser()"><a href="#">Logout</a></li>
           </ul>
@@ -513,19 +542,7 @@
     <button id="taskExitButton">Exit</button>
 
   <div class="taskcontainer">
-    <!--<form id="task-form">
-      <input type="text" id="taskId" placeholder="Task ID" required>
-      <input type="text" id="taskName" placeholder="Task Name" required>
-      <textarea id="description" placeholder="Description" required></textarea>
-      <input type="url" id="link" placeholder="Link" required>
-      <select id="type" required>
-        <option value="">Select Type</option>
-        <option value="social">Social</option>
-        <option value="advertisement">Advertisement</option>
-      </select>
-      <input type="number" id="userCount" placeholder="Number of Users" required>
-      <button type="submit">Create Task</button>
-    </form>-->
+  
     <form id="task-form">
       <input type="text" id="taskId" placeholder="Task ID" required>
       <input type="text" id="taskName" placeholder="Task Name" required>
@@ -542,13 +559,19 @@
       </div>
       <button type="submit">Create Task</button>
     </form>
-    <div>
-      <h2>Tasks</h2>
-      <ul id="task-list"></ul>
-    </div>
+    
   </div>
 </div>
 
+<div id="tasksView">
+
+  <button id="tasksExitButton">Exit</button>
+
+  <div class="tasksContainer">
+    <h2>Tasks</h2>
+    <ul id="task-list"></ul>
+  </div>
+</div>
 
   <script>
     const API_URL = 'https://elitearn.onrender.com';
@@ -808,9 +831,9 @@ const setVendorStatus = async (vendorId, status) => {
         dropdown.style.display = 'none';
       });
 
-      taskexitButton.addEventListener('click', function(event) {
+      taskExitButton.addEventListener('click', function(event) {
         event.preventDefault();
-        taksPage.style.display = 'none';
+        taskPage.style.display = 'none';
         dropdown.style.display = 'block';
 
       });
@@ -818,11 +841,172 @@ const setVendorStatus = async (vendorId, status) => {
 
 
 
+    document.addEventListener('DOMContentLoaded', function() {
+      const openTasksView = document.getElementById('viewTasks');
+      const tasksPage = document.getElementById('tasksView');
+      const dropdown = document.getElementById('dropdown-menu');
+      const tasksExitButton = document.getElementById('tasksExitButton');
 
-    /*
+      openTasksView.addEventListener('click', function(event) {
+        event.preventDefault();
+        tasksPage.style.display = 'block';
+        dropdown.style.display = 'none';
+      });
+
+      tasksExitButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        tasksPage.style.display = 'none';
+        dropdown.style.display = 'block';
+
+      });
+    });
+
+
     document.addEventListener('DOMContentLoaded', () => {
+    const taskForm = document.getElementById('task-form');
+    const taskList = document.getElementById('task-list');
+    const userSelect = document.getElementById('user-select');
+    const selectAllCheckbox = document.getElementById('selectAll');
+
+    // Function to fetch users
+    const fetchUsers = async () => {
+        try {
+            const response = await fetch(`${API_URL}/admin/users`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            const users = await response.json();
+
+            userSelect.innerHTML = ''; // Clear existing users
+            users.forEach(user => {
+                const label = document.createElement('label');
+                label.innerHTML = `
+                    <input type="checkbox" name="users" value="${user._id}"> ${user.username}
+                `;
+                userSelect.appendChild(label);
+            });
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
+
+    // Handle "Select All" checkbox
+    selectAllCheckbox.addEventListener('change', (e) => {
+        const checkboxes = userSelect.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = e.target.checked;
+        });
+    });
+
+    // Handle task form submission
+    taskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const taskData = {
+            taskId: document.getElementById('taskId').value,
+            taskName: document.getElementById('taskName').value,
+            description: document.getElementById('description').value,
+            link: document.getElementById('link').value,
+            type: document.getElementById('type').value,
+            userIds: Array.from(userSelect.querySelectorAll('input[name="users"]:checked')).map(cb => cb.value)
+        };
+
+        try {
+            const response = await fetch(`${API_URL}/admin/create-task`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(taskData)
+            });
+            const result = await response.json();
+            alert(result.message);
+            fetchTasks(); // Refresh the task list
+        } catch (error) {
+            console.error('Error creating task:', error);
+        }
+    });
+
+    // Fetch and display tasks
+    const fetchTasks = async () => {
+        try {
+            const response = await fetch(`${API_URL}/admin/tasks`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            const tasks = await response.json();
+            taskList.innerHTML = '';
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${task.taskName} - ${task.description}
+                    <div class="task-actions">
+                        <button onclick="deleteTask('${task._id}')">Delete Task</button>
+                    </div>
+                `;
+                taskList.appendChild(li);
+            });
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
+        }
+    };
+
+    // Delete a task
+    window.deleteTask = async (taskId) => {
+        try {
+            const response = await fetch(`${API_URL}/admin/delete-task/${taskId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            const result = await response.json();
+            alert(result.message);
+            fetchTasks(); // Refresh the task list
+        } catch (error) {
+            console.error('Error deleting task:', error);
+        }
+    };
+
+    fetchUsers(); // Fetch users when the page loads
+    fetchTasks(); // Fetch tasks when the page loads
+});
+
+  
+
+
+/*
+document.addEventListener('DOMContentLoaded', () => {
       const taskForm = document.getElementById('task-form');
       const taskList = document.getElementById('task-list');
+      const userSelect = document.getElementById('user-select');
+      const selectAllCheckbox = document.getElementById('selectAll');
+
+      async function fetchUsers() {
+        try {
+          const response = await fetch(`${API_URL}/admin/users`);
+          const users = await response.json();
+          userSelect.innerHTML = '';
+          users.forEach(user => {
+            const label = document.createElement('label');
+            label.innerHTML = `
+              <input type="checkbox" name="users" value="${user._id}"> ${user.username}
+            `;
+            userSelect.appendChild(label);
+          });
+        } catch (error) {
+          console.error('Error fetching users:', error);
+        }
+      }
+
+      selectAllCheckbox.addEventListener('change', (e) => {
+        const checkboxes = userSelect.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = e.target.checked;
+        });
+      });
 
       taskForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -832,7 +1016,7 @@ const setVendorStatus = async (vendorId, status) => {
           description: document.getElementById('description').value,
           link: document.getElementById('link').value,
           type: document.getElementById('type').value,
-          userCount: parseInt(document.getElementById('userCount').value)
+          userIds: Array.from(userSelect.querySelectorAll('input[name="users"]:checked')).map(cb => cb.value)
         };
 
         try {
@@ -884,103 +1068,9 @@ const setVendorStatus = async (vendorId, status) => {
         }
       };
 
-      fetchTasks();
-    });
-*/
-
-document.addEventListener('DOMContentLoaded', () => {
-      const taskForm = document.getElementById('task-form');
-      const taskList = document.getElementById('task-list');
-      const userSelect = document.getElementById('user-select');
-      const selectAllCheckbox = document.getElementById('selectAll');
-
-      async function fetchUsers() {
-        try {
-          const response = await fetch('/admin/users');
-          const users = await response.json();
-          userSelect.innerHTML = '';
-          users.forEach(user => {
-            const label = document.createElement('label');
-            label.innerHTML = `
-              <input type="checkbox" name="users" value="${user._id}"> ${user.username}
-            `;
-            userSelect.appendChild(label);
-          });
-        } catch (error) {
-          console.error('Error fetching users:', error);
-        }
-      }
-
-      selectAllCheckbox.addEventListener('change', (e) => {
-        const checkboxes = userSelect.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-          checkbox.checked = e.target.checked;
-        });
-      });
-
-      taskForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const taskData = {
-          taskId: document.getElementById('taskId').value,
-          taskName: document.getElementById('taskName').value,
-          description: document.getElementById('description').value,
-          link: document.getElementById('link').value,
-          type: document.getElementById('type').value,
-          userIds: Array.from(userSelect.querySelectorAll('input[name="users"]:checked')).map(cb => cb.value)
-        };
-
-        try {
-          const response = await fetch('/admin/create-task', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(taskData)
-          });
-          const result = await response.json();
-          alert(result.message);
-          fetchTasks();
-        } catch (error) {
-          console.error('Error creating task:', error);
-        }
-      });
-
-      async function fetchTasks() {
-        try {
-          const response = await fetch('/admin/tasks');
-          const tasks = await response.json();
-          taskList.innerHTML = '';
-          tasks.forEach(task => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-              ${task.taskName} - ${task.description}
-              <div class="task-actions">
-                <button onclick="deleteTask('${task._id}')">Delete Task</button>
-              </div>
-            `;
-            taskList.appendChild(li);
-          });
-        } catch (error) {
-          console.error('Error fetching tasks:', error);
-        }
-      }
-
-      window.deleteTask = async (taskId) => {
-        try {
-          const response = await fetch(`/admin/delete-task/${taskId}`, {
-            method: 'DELETE'
-          });
-          const result = await response.json();
-          alert(result.message);
-          fetchTasks();
-        } catch (error) {
-          console.error('Error deleting task:', error);
-        }
-      };
-
       fetchUsers();
       fetchTasks();
-    });
+    });*/
 
     
 
