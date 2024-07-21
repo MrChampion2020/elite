@@ -58,38 +58,8 @@ mongoose.connect(process.env.MONGO_URI, {})
       next();
     });
   };
-/*
-  const authenticate = async (req, res, next) => {
-    const token = req.header('Authorization').replace('Bearer ', '');
-  
-    if (!token) {
-      return res.status(401).send({ error: 'Not authenticated' });
-    }
-  
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
-  
-      if (!user) {
-        throw new Error();
-      }
-  
-      req.token = token;
-      req.user = user;
-      next();
-    } catch (e) {
-      res.status(401).send({ error: 'Please authenticate' });
-    }
-  };
-  */
-/*
-  const authenticateAdmin = (req, res, next) => {
-    if (req.user.role !== 'admin') {
-      return res.sendStatus(403);
-    }
-    next();
-  };
-  */
+
+
   // Middleware to authenticate admin token
   const authenticateAdminToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
@@ -163,27 +133,6 @@ app.post('/admin/create-task', async (req, res) => {
   }
 });
 
-/*
-app.post('/admin/create-task', async (req, res) => {
-  const { taskId, taskName, description, link, type, userCount } = req.body;
-  const users = await User.find().limit(userCount); // Fetch users to assign the task
-
-  const newTask = new Task({
-    taskId,
-    taskName,
-    description,
-    link,
-    type,
-    userCount,
-    usersAssigned: users.map(user => user._id),
-    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
-  });
-
-  await newTask.save();
-  res.json({ message: 'Task created successfully' });
-});
-*/
-
 
 
 // Fetch all tasks
@@ -199,15 +148,7 @@ app.get('/tasks', authenticateAdmin, async (req, res) => {
 
 
 
-// Fetch user's tasks
-/*app.get('/task', authenticateToken, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).populate('selectedTasks');
-    res.status(200).json(user.selectedTasks);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching tasks', error });
-  }
-});*/
+
 app.get('/admin/tasks', async (req, res) => {
   const tasks = await Task.find();
   res.json(tasks);
@@ -272,30 +213,7 @@ app.post('/user/complete-task/:taskId', async (req, res) => {
   }
 });
 
-/*
-app.post('/user/complete-task/:taskId', async (req, res) => {
-  try {
-      const userId = req.user._id;
-      const taskId = req.params.taskId;
 
-      // Find the user and update their tasks
-      const user = await User.findById(userId);
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
-
-      // Remove the completed task from the user's task list
-      user.tasks = user.tasks.filter(task => task.toString() !== taskId);
-
-      // Logic to reward the user
-      user.elitewallet = (user.elitewallet || 0) + 0.2; // Ensure elitewallet exists and add 0.2
-      await user.save();
-
-      res.json({ message: 'Task completed and user rewarded' });
-  } catch (error) {
-      res.status(500).json({ message: 'Error completing task', error });
-  }
-});*/
 
 
 
@@ -500,120 +418,6 @@ const distributeReferralBonusUser = async (userId, userLevel, vendorLevel) => {
   }
 };
 
-
-
-/*/vendor referral bonus
-
-const distributeReferralBonusVendor = async (vendorId, vendorLevel) => {
-  if (vendorLevel <= 0) return;
-
-  const vendor = await Vendor.findById(vendorId).populate('referredBy');
-  if (vendor && vendor.referredBy) {
-    const vendorReferrer = vendor.referredBy;
-    let vendorBonusAmount;
-
-    if (vendorLevel > 0) {
-      switch (vendorLevel) {
-        case 1:
-          vendorBonusAmount = 4000;
-          vendorReferrer.wallet = (parseFloat(vendorReferrer.wallet) + vendorBonusAmount).toString();
-          break;
-        case 2:
-          vendorBonusAmount = 200;
-          vendorReferrer.wallet = (parseFloat(vendorReferrer.wallet) + vendorBonusAmount).toString();
-          break;
-        case 3:
-          vendorBonusAmount = 100;
-          vendorReferrer.wallet = (parseFloat(vendorReferrer.wallet) + vendorBonusAmount).toString();
-          break;
-      }
-
-      await vendorReferrer.save();
-      await distributeReferralBonusVendor(vendorReferrer._id, vendorLevel - 1);
-    }
-  }
-};
-
-
-app.post("/register-vendor", async (req, res) => {
-  try {
-    const { fullName, email, phone, password, username, companyName, couponCode, companyAddress, referralLink, accountType = 'naira' } = req.body;
-
-    if (!username) {
-      return res.status(400).json({ message: "Username is required" });
-    }
-
-    const existingVendor = await Vendor.findOne({ email });
-    if (existingVendor) {
-      return res.status(400).json({ message: "Email already registered" });
-    }
-
-    const existingUsername = await Vendor.findOne({ username });
-    if (existingUsername) {
-      return res.status(400).json({ message: "Username already taken" });
-    }
-
-    const coupon = await Coupon.findOne({ code: couponCode });
-    if (!coupon || !coupon.isActive || coupon.isUsed) {
-      return res.status(400).json({ message: "Invalid or inactive coupon code" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newVendor = new Vendor({
-      fullName,
-      email,
-      phone,
-      password: hashedPassword,
-      username,
-      companyName,
-      couponCode,
-      companyAddress,
-      accountType,
-      referralLink: `${process.env.API_URL}/register-vendor?ref=${username}`,
-      active: false,
-    });
-
-    if (referralLink) {
-      const referrer = await User.findOne({ username: referralLink }) || await Vendor.findOne({ username: referralLink });
-      if (referrer && referrer.referralLinkActive) {
-        newVendor.referredBy = referrer._id;
-        if (!referrer.referrals) referrer.referrals = [];
-        referrer.referrals.push(newVendor._id);
-
-        // Credit referrer's wallet
-        const amountToCredit = referrer.accountType === 'naira' ? 4000 : 4;
-        referrer.wallet = (parseFloat(referrer.wallet) + amountToCredit).toString();
-        await referrer.save();
-      } else {
-        return res.status(400).json({ message: "Invalid or inactive referral link" });
-      }
-    }
-
-    await newVendor.save();
-    await sendVerificationEmail(newVendor.email, newVendor.verificationToken);
-
-    // Mark coupon as used
-    coupon.isUsed = true;
-    coupon.isActive = false;
-    coupon.usedBy = { email: newVendor.email, username: newVendor.username, phone: newVendor.phone };
-    await coupon.save();
-
-    // Distribute referral bonuses
-    await distributeReferralBonusVendor(newVendor._id, 3); // Assuming 3 levels of referral bonus for vendors
-
-    res.status(200).json({ message: "Vendor registered successfully", vendorId: newVendor._id });
-  } catch (error) {
-    console.log("Error registering vendor:", error);
-    if (error.code === 11000) {
-      return res.status(400).json({ message: "Duplicate key error", error: error.message });
-    }
-    res.status(500).json({ message: "Registration failed" });
-  }
-});
-  
-
-
-*/
 
 
 
@@ -1164,32 +968,7 @@ app.get('/vendor-details', authenticateVendorToken, async (req, res) => {
 });
 
 
-/*
-// Vendor details endpoint
-app.post('/vendor-details', authenticateVendorToken, async (req, res) => {
-  try {
-    const vendor = await Vendor.findById(req.vendor.userId);
-    if (!vendor) {
-      return res.status(404).json({ message: 'Vendor not found' });
-    }
-    res.json({
-      fullName: vendor.fullName,
-      email: vendor.email,
-      phone: vendor.phone,
-      username: vendor.username,
-      companyName: vendor.companyName,
-      companyAddress: vendor.companyAddress,
-      wallet: vendor.wallet,
-      referralLink: vendor.referralLink
 
-    });
-  } catch (err) {
-    console.error('Error fetching vendor details:', err);
-    res.status(500).json({ message: 'Error fetching vendor details' });
-  }
-});
-
-*/
 
 app.get('/vendor-referrals', authenticateVendorToken, async (req, res) => {
   try {
@@ -1252,6 +1031,39 @@ app.get('/vendor/protected', authenticateVendorToken, (req, res) => {
   res.status(200).json({ message: 'This is a protected vendor route' });
 });
 
+
+
+// Endpoint to fetch top earners within the last 48 hours
+app.get('/top-earners', authenticateToken, async (req, res) => {
+  try {
+      const now = new Date();
+      const past48Hours = new Date(now - 48 * 60 * 60 * 1000); // 48 hours ago
+
+      // Assuming you have a timestamp field 'lastEarningUpdate' to track the latest earnings update
+      const users = await User.aggregate([
+          {
+              $match: {
+                  lastEarningUpdate: { $gte: past48Hours } // Adjust this field name according to your schema
+              }
+          },
+          {
+              $project: {
+                  username: 1,
+                  totalEarnings: {
+                      $sum: ["$wallet", "$referralWallet", "$eliteWallet"]
+                  }
+              }
+          },
+          {
+              $sort: { totalEarnings: -1 }
+          }
+      ]).limit(10); // Fetch top 10 earners
+
+      res.json(users);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching top earners', error });
+  }
+});
 
 
 app.listen(port, () => {
