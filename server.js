@@ -122,7 +122,7 @@ app.get('/tasks', authenticateAdmin, async (req, res) => {
     res.status(500).json({ message: 'Error fetching tasks', error });
   }
 });
-
+/*
 // Fetch tasks for user
 app.get('/user/:userId/tasks', authenticateToken, async (req, res) => {
   const { userId } = req.params;
@@ -146,7 +146,7 @@ app.get('/user/tasks', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Error fetching user tasks', error });
   }
 });
-
+*/
 
 app.get('/admin/tasks', async (req, res) => {
   const tasks = await Task.find();
@@ -347,7 +347,7 @@ const createTask = async (taskData, userIds, session) => {
 };
 */
 
-
+/*
 app.post('/admin/create-task', authenticateAdmin, async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -390,6 +390,35 @@ app.post('/admin/create-task', authenticateAdmin, async (req, res) => {
     await session.abortTransaction();
     session.endSession();
     res.status(500).json({ message: 'Error creating task', error });
+  }
+});
+
+*/
+
+
+app.post('/admin/create-task', async (req, res) => {
+  const { taskId, taskName, description, link, type, userIds } = req.body;
+  try {
+    const task = new Task({
+      taskId,
+      taskName,
+      description,
+      link,
+      type,
+      assignedUsers: userIds
+    });
+    await task.save();
+
+    // Optional: Send task to each user
+    userIds.forEach(async (userId) => {
+      const user = await User.findById(userId);
+      user.tasks.push(task._id);
+      await user.save();
+    });
+
+    res.json({ message: 'Task created successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating task' });
   }
 });
 
