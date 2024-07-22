@@ -299,17 +299,22 @@ app.post('/admin/create-task', async (req, res) => {
 // Create a new task and assign to users
 
 app.post('/admin/create-task', async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const { taskName, description, link, type, userIds } = req.body;
 
     // Validate userIds
     if (!Array.isArray(userIds) || userIds.length === 0) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(400).json({ message: 'userIds must be a non-empty array' });
     }
 
     // Create and save the new task
     const newTask = new Task({ taskName, description, link, type });
-    await newTask.save();
+    await newTask.save({ session });
     console.log('Task saved:', newTask);
 
     // Assign task to selected users
@@ -326,18 +331,23 @@ app.post('/admin/create-task', async (req, res) => {
             assignedAt: new Date(),
           },
         },
-      }
+      },
+      { session }
     );
 
     console.log('Users updated:', updateResult);
 
+    await session.commitTransaction();
+    session.endSession();
+
     res.status(201).json({ message: 'Task created and assigned to users' });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     console.error('Error creating task:', error);
     res.status(500).json({ message: 'Error creating task', error });
   }
 });
-
 
 /*
 const MAX_RETRY_COUNT = 3; // Maximum number of retries for transient errors
