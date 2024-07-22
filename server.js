@@ -298,9 +298,48 @@ app.post('/admin/create-task', async (req, res) => {
 
 // Create a new task and assign to users
 
+app.post('/admin/create-task', async (req, res) => {
+  try {
+    const { taskName, description, link, type, userIds } = req.body;
+
+    // Validate userIds
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      return res.status(400).json({ message: 'userIds must be a non-empty array' });
+    }
+
+    // Create and save the new task
+    const newTask = new Task({ taskName, description, link, type });
+    await newTask.save();
+    console.log('Task saved:', newTask);
+
+    // Assign task to selected users
+    const updateResult = await User.updateMany(
+      { _id: { $in: userIds } },
+      {
+        $push: {
+          tasks: {
+            taskId: newTask._id,
+            taskName,
+            description,
+            link,
+            type,
+            assignedAt: new Date(),
+          },
+        },
+      }
+    );
+
+    console.log('Users updated:', updateResult);
+
+    res.status(201).json({ message: 'Task created and assigned to users' });
+  } catch (error) {
+    console.error('Error creating task:', error);
+    res.status(500).json({ message: 'Error creating task', error });
+  }
+});
 
 
-
+/*
 const MAX_RETRY_COUNT = 3; // Maximum number of retries for transient errors
 
 
@@ -382,7 +421,7 @@ app.post('/admin/create-task', async (req, res) => {
     console.error('Error creating task:', error);
     res.status(500).json({ message: 'Error creating task', error });
   }
-});
+});*/
 
 
 /*
@@ -1029,6 +1068,7 @@ app.get("/user-details", authenticateToken, async (req, res) => {
         phone: user.phone,
         wallet: user.wallet,
         referralWallet: user.referralWallet,
+        eliteWallet: user.eliteWallet,
         referrals: user.referrals,
         referralLink: user.referralLink,
       }
