@@ -112,7 +112,7 @@ const authenticateVendorToken = (req, res, next) => {
 
 
 
-
+/*
 // Create a new task
 app.post('/admin/create-task', async (req, res) => {
   try {
@@ -133,7 +133,7 @@ app.post('/admin/create-task', async (req, res) => {
   }
 });
 
-
+*/
 
 // Fetch all tasks
 app.get('/tasks', authenticateAdmin, async (req, res) => {
@@ -213,7 +213,7 @@ app.post('/user/complete-task/:taskId', async (req, res) => {
   }
 });
 
-*/
+
 
 // Fetch tasks for authenticated user
 app.get('/user/tasks', authenticateToken, async (req, res) => {
@@ -261,6 +261,131 @@ app.post('/user/complete-task/:taskId', authenticateToken, async (req, res) => {
       res.status(500).json({ message: 'Error completing task', error });
   }
 });
+
+
+*/
+
+// Create a new task and assign to users
+app.post('/admin/create-task', async (req, res) => {
+  try {
+    const { taskId, taskName, description, link, type, userIds } = req.body;
+    const newTask = new Task({ taskId, taskName, description, link, type, userIds });
+
+    await newTask.save();
+
+    // Assign task to selected users
+    await User.updateMany(
+      { _id: { $in: userIds } },
+      {
+        $push: {
+          tasks: {
+            taskId: newTask._id,
+            taskName,
+            description,
+            link,
+            type,
+            assignedAt: new Date(),
+          },
+        },
+      }
+    );
+
+    res.status(201).json({ message: 'Task created and assigned to users' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating task', error });
+  }
+});
+
+// Fetch tasks for authenticated user
+app.get('/user/tasks', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+
+    if (!user || user.tasks.length === 0) {
+      return res.status(404).json({ message: 'No tasks found yet, always check for updated daily tasks' });
+    }
+
+    res.json(user.tasks);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching tasks', error });
+  }
+});
+
+// Mark task as completed and update user's elitewallet
+app.post('/user/complete-task/:taskId', authenticateToken, async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const taskIndex = user.tasks.findIndex(task => task.taskId.equals(taskId));
+    if (taskIndex > -1) {
+      user.tasks.splice(taskIndex, 1);
+      user.eliteWallet += 0.2;
+      await user.save();
+
+      // Mark task as completed
+      const task = await Task.findById(taskId);
+      task.status = 'completed';
+      await task.save();
+
+      return res.status(200).json({ message: 'Task completed and user rewarded' });
+    } else {
+      return res.status(404).json({ message: 'Task not found for user' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error completing task', error });
+  }
+});
+
+
+/*
+// Schedule a job to check for tasks assigned for more than 24 hours
+cron.schedule('* * * * *', async () => {
+  try {
+    const users = await User.find();
+
+    users.forEach(async user => {
+      const currentTime = new Date();
+      user.tasks = user.tasks.filter(async task => {
+        const taskAge = currentTime - new Date(task.assignedAt);
+        if (taskAge > 24 * 60 * 60 * 1000) {
+          // Task is older than 24 hours, mark it as completed and reward user
+          user.elitewallet += 0.2;
+
+          const dbTask = await Task.findById(task.taskId);
+          if (dbTask) {
+            dbTask.status = 'completed';
+            await dbTask.save();
+          }
+
+          return false; // Remove task from user's task list
+        }
+        return true; // Keep task in user's task list
+      });
+      await user.save();
+    });
+  } catch (error) {
+    console.error('Error in scheduled task:', error);
+  }
+});*/
+/*
+// Middleware for authenticating user token
+function authenticateToken(req, res, next) {
+  const token = req.headers['authorization'];
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}*/
 
 
 

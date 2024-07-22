@@ -9,6 +9,7 @@ const taskSchema = new mongoose.Schema({
   type: String,
   userCount: Number,
   usersAssigned: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  status: { type: String, default: 'pending' },
   createdAt: { type: Date, default: Date.now },
   userIds: [mongoose.Schema.Types.ObjectId],
   expiresAt: Date

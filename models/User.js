@@ -30,6 +30,16 @@ const UserSchema = new mongoose.Schema({
     bankName: String,
     accountHolderName: String,
   },
+  tasks: [
+    {
+      taskId: mongoose.Schema.Types.ObjectId,
+      taskName: String,
+      description: String,
+      link: String,
+      type: String,
+      assignedAt: Date,
+    },
+  ],
   lastLogin: { type: Date, default: null },
   lastSpin: { type: Date, default: null }
 
