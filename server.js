@@ -298,6 +298,88 @@ app.post('/admin/create-task', async (req, res) => {
 
 // Create a new task and assign to users
 
+
+const MAX_RETRY_COUNT = 3; // Maximum number of retries for transient errors
+
+app.post('/admin/create-task', async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { taskName, description, link, type, userIds } = req.body;
+
+    // Validate userIds
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      return res.status(400).json({ message: 'userIds must be a non-empty array' });
+    }
+
+    // Create a new task
+    const newTask = new Task({ taskName, description, link, type });
+    await newTask.save({ session });
+    console.log('Task saved:', newTask);
+
+    let updateResult;
+    let retryCount = 0;
+    let success = false;
+
+    while (retryCount < MAX_RETRY_COUNT && !success) {
+      try {
+        // Assign task to selected users
+        updateResult = await User.updateMany(
+          { _id: { $in: userIds } },
+          {
+            $push: {
+              tasks: {
+                taskId: newTask._id,
+                taskName,
+                description,
+                link,
+                type,
+                assignedAt: new Date(),
+              },
+            },
+          },
+          { session }
+        );
+
+        console.log('Users updated:', updateResult);
+
+        // Check if any users were actually updated
+        if (updateResult.modifiedCount === 0) {
+          console.warn('No users were updated. Check if the userIds are correct.');
+          await session.abortTransaction();
+          return res.status(404).json({ message: 'No users found to update' });
+        }
+
+        success = true;
+      } catch (error) {
+        if (error.errorLabels && error.errorLabels.includes('TransientTransactionError')) {
+          console.warn('TransientTransactionError detected, retrying...', retryCount + 1);
+          retryCount++;
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    if (!success) {
+      await session.abortTransaction();
+      return res.status(500).json({ message: 'Failed to update users after multiple retries' });
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(201).json({ message: 'Task created and assigned to users' });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Error creating task:', error);
+    res.status(500).json({ message: 'Error creating task', error });
+  }
+});
+
+/*
 app.post('/admin/create-task', async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -354,7 +436,7 @@ app.post('/admin/create-task', async (req, res) => {
   }
 });
 
-/*
+
 app.post('/admin/create-task', async (req, res) => {
   try {
     const { taskId, taskName, description, link, type, userIds } = req.body;
