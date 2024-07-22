@@ -112,7 +112,6 @@ const authenticateVendorToken = (req, res, next) => {
 
 
 
-/*
 // Create a new task
 app.post('/admin/create-task', async (req, res) => {
   try {
@@ -124,7 +123,16 @@ app.post('/admin/create-task', async (req, res) => {
       // Assign task to selected users
       await User.updateMany(
           { _id: { $in: userIds } },
-          { $push: { tasks: newTask._id } }
+          { $push: {
+            tasks: {
+              taskId: newTask._id,
+              taskName,
+              description,
+              link,
+              type,
+              assignedAt: new Date(),
+            },
+          } }
       );
 
       res.status(201).json({ message: 'Task created and assigned to users' });
@@ -132,6 +140,42 @@ app.post('/admin/create-task', async (req, res) => {
       res.status(500).json({ message: 'Error creating task', error });
   }
 });
+
+/*
+// Create a new task and assign to users
+app.post('/admin/create-task', async (req, res) => {
+  try {
+    const { taskId, taskName, description, link, type, userIds } = req.body;
+    const newTask = new Task({ taskId, taskName, description, link, type, userIds });
+
+    await newTask.save();
+    console.log('Task saved:', newTask);
+
+    // Assign task to selected users
+    const updateResult = await User.updateMany(
+      { _id: { $in: userIds } },
+      {
+        $push: {
+          tasks: {
+            taskId: newTask._id,
+            taskName,
+            description,
+            link,
+            type,
+            assignedAt: new Date(),
+          },
+        },
+      }
+    );
+    console.log('Users updated:', updateResult);
+
+    res.status(201).json({ message: 'Task created and assigned to users' });
+  } catch (error) {
+    console.error('Error creating task:', error);
+    res.status(500).json({ message: 'Error creating task', error });
+  }
+});
+
 
 */
 
@@ -186,6 +230,7 @@ app.post('/admin/complete-task/:taskId', async (req, res) => {
 });
 
 
+
 /*
 // Protected route example
 
@@ -212,6 +257,7 @@ app.post('/user/complete-task/:taskId', async (req, res) => {
       res.status(500).json({ message: 'Error completing task', error });
   }
 });
+
 
 
 
@@ -264,40 +310,6 @@ app.post('/user/complete-task/:taskId', authenticateToken, async (req, res) => {
 
 
 */
-
-// Create a new task and assign to users
-app.post('/admin/create-task', async (req, res) => {
-  try {
-    const { taskId, taskName, description, link, type, userIds } = req.body;
-    const newTask = new Task({ taskId, taskName, description, link, type, userIds });
-
-    await newTask.save();
-    console.log('Task saved:', newTask);
-
-    // Assign task to selected users
-    const updateResult = await User.updateMany(
-      { _id: { $in: userIds } },
-      {
-        $push: {
-          tasks: {
-            taskId: newTask._id,
-            taskName,
-            description,
-            link,
-            type,
-            assignedAt: new Date(),
-          },
-        },
-      }
-    );
-    console.log('Users updated:', updateResult);
-
-    res.status(201).json({ message: 'Task created and assigned to users' });
-  } catch (error) {
-    console.error('Error creating task:', error);
-    res.status(500).json({ message: 'Error creating task', error });
-  }
-});
 
 
 // Fetch tasks for authenticated user
