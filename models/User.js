@@ -29,6 +29,13 @@ const UserSchema = new mongoose.Schema({
     bankName: String,
     accountHolderName: String,
   },
+  tasks: [taskSchema],
+  status: {
+    type: String,
+    enum: ['pending', 'active', 'inactive'],
+    default: 'pending'
+  },
+  /*
   tasks: [
     {
       taskId: mongoose.Schema.Types.ObjectId,
@@ -38,7 +45,7 @@ const UserSchema = new mongoose.Schema({
       type: String,
       assignedAt: { type: Date, default: Date.now },
     },
-  ],
+  ],*/
   lastLogin: { type: Date, default: null },
   lastSpin: { type: Date, default: null }
 }, { timestamps: true });
