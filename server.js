@@ -298,44 +298,67 @@ app.post('/admin/create-task', async (req, res) => {
 
 // Create a new task and assign to users
 
+const createTask = async (taskData, userIds, session) => {
+  // Create and save the new task
+  const newTask = new Task(taskData);
+  await newTask.save({ session });
+  console.log('Task saved:', newTask);
+
+  // Assign task to selected users
+  const updateResult = await User.updateMany(
+    { _id: { $in: userIds } },
+    {
+      $push: {
+        tasks: {
+          taskId: newTask._id,
+          ...taskData,
+          assignedAt: new Date(),
+        },
+      },
+    },
+    { session }
+  );
+
+  console.log('Users updated:', updateResult);
+
+  return newTask;
+};
+
 app.post('/admin/create-task', async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
-  try {
-    const { taskName, description, link, type, userIds } = req.body;
+  const { taskName, description, link, type, userIds } = req.body;
+  const taskData = { taskName, description, link, type };
 
-    // Validate userIds
-    if (!Array.isArray(userIds) || userIds.length === 0) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(400).json({ message: 'userIds must be a non-empty array' });
+  // Validate userIds
+  if (!Array.isArray(userIds) || userIds.length === 0) {
+    await session.abortTransaction();
+    session.endSession();
+    return res.status(400).json({ message: 'userIds must be a non-empty array' });
+  }
+
+  try {
+    let attempt = 0;
+    let task;
+
+    while (attempt < 3) {
+      try {
+        task = await createTask(taskData, userIds, session);
+        break;
+      } catch (error) {
+        if (error.code === 112) {
+          attempt++;
+          console.log(`TransientTransactionError detected, retrying... ${attempt}`);
+        } else {
+          throw error;
+        }
+      }
     }
 
-    // Create and save the new task
-    const newTask = new Task({ taskName, description, link, type });
-    await newTask.save({ session });
-    console.log('Task saved:', newTask);
-
-    // Assign task to selected users
-    const updateResult = await User.updateMany(
-      { _id: { $in: userIds } },
-      {
-        $push: {
-          tasks: {
-            taskId: newTask._id,
-            taskName,
-            description,
-            link,
-            type,
-            assignedAt: new Date(),
-          },
-        },
-      },
-      { session }
-    );
-
-    console.log('Users updated:', updateResult);
+    if (!task) {
+      throw new Error('Failed to create task after multiple attempts');
+    }
 
     await session.commitTransaction();
     session.endSession();
@@ -348,6 +371,9 @@ app.post('/admin/create-task', async (req, res) => {
     res.status(500).json({ message: 'Error creating task', error });
   }
 });
+
+
+
 
 /*
 const MAX_RETRY_COUNT = 3; // Maximum number of retries for transient errors
