@@ -123,7 +123,16 @@ app.get('/tasks', authenticateAdmin, async (req, res) => {
   }
 });
 
-
+// Fetch tasks for user
+app.get('/user/:userId/tasks', authenticateToken, async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const user = await User.findById(userId).populate('tasks.taskId');
+    res.status(200).json(user.tasks);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user tasks', error });
+  }
+});
 
 
 
@@ -132,11 +141,30 @@ app.get('/admin/tasks', async (req, res) => {
   res.json(tasks);
 });
 
-app.get('/user/tasks', async (req, res) => {
-  const tasks = await Task.find();
-  res.json(tasks);
-});
+app.post('/user/:userId/complete-task/:taskId', authenticateToken, async (req, res) => {
+  const { userId, taskId } = req.params;
 
+  try {
+    const user = await User.findById(userId);
+    const task = user.tasks.find(t => t.taskId.equals(taskId));
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    task.status = 'completed';
+    user.eliteWallet += 0.2;
+    await user.save();
+
+    const dbTask = await Task.findById(taskId);
+    dbTask.status = 'completed';
+    await dbTask.save();
+
+    res.status(200).json({ message: 'Task marked as completed and eliteWallet updated', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Error completing task', error });
+  }
+});
 
 // Mark task as completed
 app.post('/admin/complete-task/:taskId', async (req, res) => {
@@ -235,7 +263,7 @@ cron.schedule('* * * * *', async () => {
   }
 });*/
 
-
+/*
 app.post('/admin/create-task', async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -305,7 +333,53 @@ const createTask = async (taskData, userIds, session) => {
   console.log('Users updated:', updateResult);
   return newTask;
 };
+*/
 
+
+app.post('/admin/create-task', authenticateAdmin, async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  const { taskName, description, link, type, userIds } = req.body;
+  const taskData = { taskName, description, link, type, status: 'pending' };
+
+  if (!Array.isArray(userIds) || userIds.length === 0) {
+    await session.abortTransaction();
+    session.endSession();
+    return res.status(400).json({ message: 'userIds must be a non-empty array' });
+  }
+
+  try {
+    const newTask = new Task(taskData);
+    await newTask.save({ session });
+
+    await User.updateMany(
+      { _id: { $in: userIds } },
+      {
+        $push: {
+          tasks: {
+            taskId: newTask._id,
+            taskName: taskData.taskName,
+            description: taskData.description,
+            link: taskData.link,
+            type: taskData.type,
+            status: taskData.status,
+            assignedAt: new Date(),
+          },
+        },
+      },
+      { session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+    res.status(201).json({ message: 'Task created and assigned to users', task: newTask });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    res.status(500).json({ message: 'Error creating task', error });
+  }
+});
 // Fetch and display tasks for users and admin
 app.get('/tasks', async (req, res) => {
   try {
