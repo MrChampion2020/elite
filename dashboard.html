@@ -1312,7 +1312,7 @@
     <h2>complete Tasks and come back to collect reward</h2>
 
 
-    <div id="tasks-container"> <ul id="taskList"></ul></div>
+    <div id="tasks-container">  <ul id="taskList"> </div>
   
   </div>
 
@@ -1498,77 +1498,130 @@ const fetchUserData = async () => {
 window.onload = fetchUserData;
 */
 
-// Function to fetch user data
+
+// Function to fetch user details
 const fetchUserData = async () => {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        window.location.href = 'login.html';
-        return;
-      }
+            const token = localStorage.getItem('token');
 
-      try {
-        const response = await fetch(`${API_URL}/user-details`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
 
-        if (response.ok) {
-          const data = await response.json();
-          document.getElementById('fullName').textContent = data.user.fullName;
-          document.getElementById('email').textContent = data.user.email;
-          document.getElementById('phone').textContent = data.user.phone;
-          document.getElementById('username').textContent = data.user.username;
-          document.getElementById('wallet').textContent = data.user.wallet;
-          document.getElementById('referralWallet').textContent = data.user.referralWallet;
-          document.getElementById('referralLink').textContent = data.user.referralLink;
-          document.getElementById('referralLink').href = data.user.referralLink;
-          
-          // Fetch and display user tasks
-          fetchUserTasks(data.user._id);
-        } else {
-          alert('Login to access your dashboard');
-          localStorage.removeItem('token');
-          window.location.href = 'login.html';
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        alert('An error occurred while fetching user data');
-        localStorage.removeItem('token');
-        window.location.href = 'login.html';
-      }
-    };
+            try {
+                const response = await fetch(`${API_URL}/user-details`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
 
-    // Function to fetch user tasks
-    const fetchUserTasks = async (userId) => {
-      const token = localStorage.getItem('token');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('fullName').textContent = data.user.fullName;
+                    document.getElementById('email').textContent = data.user.email;
+                    document.getElementById('phone').textContent = data.user.phone;
+                    document.getElementById('username').textContent = data.user.username;
+                    document.getElementById('wallet').textContent = data.user.wallet;
+                    document.getElementById('eliteWallet').textContent = data.user.eliteWallet;
+                    document.getElementById('referralWallet').textContent = data.user.referralWallet;
+                    document.getElementById('referralLink').textContent = data.user.referralLink;
+                    document.getElementById('referralLink').href = data.user.referralLink;
+                } else {
+                    alert('Login to access your dashboard');
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                alert('An error occurred while fetching user data');
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+            }
+        };
 
-      try {
-        const response = await fetch(`${API_URL}/user/${userId}/tasks`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-        });
+        // Function to fetch and display tasks
+        const fetchTasks = async () => {
+            const token = localStorage.getItem('token');
 
-        if (response.ok) {
-          const tasks = await response.json();
-          const taskList = document.getElementById('taskList');
-          tasks.forEach(task => {
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `<a href="${task.taskId.link}">${task.taskId.taskName}</a>`;
-            taskList.appendChild(listItem);
-          });
-        } else {
-          const errorData = await response.json();
-          alert('Error: ' + errorData.message);
-        }
-      } catch (error) {
-        alert('Error fetching tasks: ' + error.message);
-      }
-    };
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
 
-    // Fetch user data and tasks when the page loads
-    window.onload = fetchUserData;
+            try {
+                const response = await fetch(`${API_URL}/user-tasks`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const taskList = document.getElementById('taskList');
+
+                    if (data.tasks.length === 0) {
+                        alert('No tasks yet');
+                        return;
+                    }
+
+                    taskList.innerHTML = '';
+                    data.tasks.forEach(task => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <a href="${task.link}">${task.taskName}</a>
+                            <button onclick="completeTask('${task.taskId}')">Complete Task</button>
+                        `;
+                        taskList.appendChild(listItem);
+                    });
+                } else {
+                    alert('Error fetching tasks');
+                }
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+                alert('An error occurred while fetching tasks');
+            }
+        };
+
+        // Function to complete a task
+        const completeTask = async (taskId) => {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/user/complete-task/${taskId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(result.message);
+                    fetchTasks(); // Refresh the tasks list after completion
+                } else {
+                    const errorData = await response.json();
+                    alert('Error: ' + errorData.message);
+                }
+            } catch (error) {
+                console.error('Error completing task:', error);
+                alert('Error completing task');
+            }
+        };
+
+        // Fetch user data and tasks when the page loads
+        window.onload = () => {
+            fetchUserData();
+            fetchTasks();
+        };
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
       const openCourse = document.getElementById('openCourse');
@@ -1635,31 +1688,6 @@ Top earners
 */
  
 
-
-// Function to complete a task
-const completeTask = async (taskId) => {
-    const token = localStorage.getItem('token');
-
-    try {
-        const response = await fetch(`${API_URL}/user/complete-task/${taskId}`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            document.getElementById(`task-${taskId}`).remove();
-            alert('Task completed successfully! 0.2 has been added to your elitewallet.');
-        } else {
-            const error = await response.json();
-            console.error('Error completing task:', error);
-        }
-    } catch (error) {
-        console.error('Error completing task:', error);
-    }
-};
 
 
 

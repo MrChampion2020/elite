@@ -134,6 +134,18 @@ app.get('/user/:userId/tasks', authenticateToken, async (req, res) => {
   }
 });
 
+// Fetch user tasks for authenticated user
+app.get('/user/tasks', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate('tasks.taskId');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    res.status(200).json(user.tasks);
+  } catch (error) {
+    console.error('Error fetching user tasks:', error);
+    res.status(500).json({ message: 'Error fetching user tasks', error });
+  }
+});
 
 
 app.get('/admin/tasks', async (req, res) => {
@@ -380,6 +392,8 @@ app.post('/admin/create-task', authenticateAdmin, async (req, res) => {
     res.status(500).json({ message: 'Error creating task', error });
   }
 });
+
+
 // Fetch and display tasks for users and admin
 app.get('/tasks', async (req, res) => {
   try {
@@ -402,6 +416,18 @@ app.get('/user/:userId/tasks', async (req, res) => {
   }
 });
 
+// Fetch all tasks
+app.get('/user-tasks', async (req, res) => {
+  try {
+    const tasks = await Task.find(); // Fetch all tasks from the database
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    res.status(500).json({ message: 'Error fetching tasks', error });
+  }
+});
+
+/*
 // Add logic to remove tasks from user table after 24 hours
 const removeExpiredTasks = async () => {
   const users = await User.find({ "tasks.assignedAt": { $lte: new Date(Date.now() - 24 * 60 * 60 * 1000) } });
@@ -413,7 +439,26 @@ const removeExpiredTasks = async () => {
 };
 
 setInterval(removeExpiredTasks, 60 * 60 * 1000); // Run every hour
+*/
 
+
+
+// Remove tasks older than 24 hours
+const removeExpiredTasks = async () => {
+  const currentTime = new Date();
+  const users = await User.find({ 'tasks.assignedAt': { $lte: new Date(currentTime - 24 * 60 * 60 * 1000) } });
+
+  for (const user of users) {
+    user.tasks = user.tasks.filter(task => task.assignedAt > new Date(currentTime - 24 * 60 * 60 * 1000));
+    await user.save();
+  }
+};
+
+setInterval(removeExpiredTasks, 60 * 60 * 1000); // Run every hour
+
+
+
+/*
 // Add logic to add 0.2 to user eliteWallet if task is completed
 app.post('/user/:userId/complete-task/:taskId', async (req, res) => {
   const { userId, taskId } = req.params;
@@ -436,6 +481,59 @@ app.post('/user/:userId/complete-task/:taskId', async (req, res) => {
     res.status(500).json({ message: 'Error completing task', error });
   }
 });
+*/
+// Mark task as completed and update user's eliteWallet
+app.post('/user/:userId/complete-task/:taskId', async (req, res) => {
+  const { userId, taskId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const taskIndex = user.tasks.findIndex(task => task.taskId.equals(taskId));
+    if (taskIndex > -1) {
+      // Remove the task from the user's task list
+      user.tasks.splice(taskIndex, 1);
+      // Update the user's eliteWallet
+      user.eliteWallet += 0.2;
+      await user.save();
+
+      // Mark the task as completed in the Task collection
+      const task = await Task.findById(taskId);
+      if (task) {
+        task.status = 'completed';
+        await task.save();
+      }
+
+      return res.status(200).json({ message: 'Task completed and eliteWallet updated' });
+    } else {
+      return res.status(404).json({ message: 'Task not found for user' });
+    }
+  } catch (error) {
+    console.error('Error completing task:', error);
+    res.status(500).json({ message: 'Error completing task', error });
+  }
+});
+
+// Fetch user details including eliteWallet
+app.get('/user/:userId/details', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId).select('eliteWallet');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    res.status(500).json({ message: 'Error fetching user details', error });
+  }
+});
+
+
 
   //User Endpoints
 
@@ -457,6 +555,8 @@ app.post('/generate-coupon', async (req, res) => {
     res.status(500).json({ message: 'Failed to generate coupon' });
   }
 });
+
+
 
 
 
