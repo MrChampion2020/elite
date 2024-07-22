@@ -42,7 +42,7 @@ mongoose.connect(process.env.MONGO_URI, {})
   .catch((error) => console.log("Error connecting to MongoDB:", error));
 
 
-  // Auths
+  const API_URL = process.env.API_URL;
 
 //user
 
@@ -344,6 +344,7 @@ app.post(`${API_URL}/reset-password/request`, async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 app.post(`${API_URL}/reset-password`, async (req, res) => {
   const { token, email, newPassword } = req.body;
