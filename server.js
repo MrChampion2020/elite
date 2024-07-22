@@ -272,9 +272,10 @@ app.post('/admin/create-task', async (req, res) => {
     const newTask = new Task({ taskId, taskName, description, link, type, userIds });
 
     await newTask.save();
+    console.log('Task saved:', newTask);
 
     // Assign task to selected users
-    await User.updateMany(
+    const updateResult = await User.updateMany(
       { _id: { $in: userIds } },
       {
         $push: {
@@ -289,12 +290,15 @@ app.post('/admin/create-task', async (req, res) => {
         },
       }
     );
+    console.log('Users updated:', updateResult);
 
     res.status(201).json({ message: 'Task created and assigned to users' });
   } catch (error) {
+    console.error('Error creating task:', error);
     res.status(500).json({ message: 'Error creating task', error });
   }
 });
+
 
 // Fetch tasks for authenticated user
 app.get('/user/tasks', authenticateToken, async (req, res) => {
