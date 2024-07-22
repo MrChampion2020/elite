@@ -299,12 +299,10 @@ app.post('/admin/create-task', async (req, res) => {
 // Create a new task and assign to users
 
 const createTask = async (taskData, userIds, session) => {
-  // Create and save the new task
   const newTask = new Task(taskData);
   await newTask.save({ session });
   console.log('Task saved:', newTask);
 
-  // Assign task to selected users
   const updateResult = await User.updateMany(
     { _id: { $in: userIds } },
     {
@@ -320,7 +318,6 @@ const createTask = async (taskData, userIds, session) => {
   );
 
   console.log('Users updated:', updateResult);
-
   return newTask;
 };
 
@@ -339,31 +336,28 @@ app.post('/admin/create-task', async (req, res) => {
   }
 
   try {
-    let attempt = 0;
     let task;
-
-    while (attempt < 3) {
+    for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         task = await createTask(taskData, userIds, session);
-        break;
+        await session.commitTransaction();
+        session.endSession();
+        return res.status(201).json({ message: 'Task created and assigned to users', task });
       } catch (error) {
-        if (error.code === 112) {
-          attempt++;
+        console.log(`Attempt ${attempt} failed with error: ${error.message}`);
+        if (attempt < 3 && error.errorLabels && error.errorLabels.includes('TransientTransactionError')) {
           console.log(`TransientTransactionError detected, retrying... ${attempt}`);
+          await session.abortTransaction();
+          await new Promise(res => setTimeout(res, 1000)); // Wait before retrying
+          session.startTransaction();
         } else {
           throw error;
         }
       }
     }
 
-    if (!task) {
-      throw new Error('Failed to create task after multiple attempts');
-    }
-
-    await session.commitTransaction();
-    session.endSession();
-
-    res.status(201).json({ message: 'Task created and assigned to users' });
+    // If we reach here, it means all attempts have failed
+    throw new Error('Failed to create task after multiple attempts');
   } catch (error) {
     await session.abortTransaction();
     session.endSession();

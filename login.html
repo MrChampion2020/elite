@@ -28,6 +28,7 @@
       box-shadow: 1px 1px 4px 2px rgb(226, 223, 223);
     }
     .form-group {
+      position: relative;
       width: 100%;
       margin-bottom: 15px;
       margin: 0 10%;
@@ -56,13 +57,34 @@
       border-radius: 4px;
       margin: 10px 0;
     }
-    .password-container .eye-icon {
-      position: absolute;
+    .form-group .password-container {
+      position: relative;
       top: 15px;
-      right: 10px;
+      margin-left: 300px;
       cursor: pointer;
       color: purple;
     }
+    password-container {
+  position: relative;
+}
+
+.input-container {
+  position: relative;
+}
+
+.input-container input {
+  width: 100%;
+  padding-left: 40px; /* Adjust the padding to make space for the icon */
+}
+
+.eye-icon {
+  position: absolute;
+  top: 50%;
+  left: 73%; /* Adjust this value to place the icon correctly */
+  transform: translateY(-0%);
+  cursor: pointer;
+  color: purple;
+}
     button {
       padding: 10px 15px;
       background-color: purple;
@@ -95,6 +117,14 @@
         margin-top: 2%;
         margin-bottom: 4%;
       }
+      .eye-icon {
+  position: absolute;
+  top: 50%;
+  left: 80%; /* Adjust this value to place the icon correctly */
+  transform: translateY(-0%);
+  cursor: pointer;
+  color: purple;
+}
       button {
         width: 90%;
         margin-top: 2%;
@@ -111,8 +141,8 @@
     </div>
     <div class="form-group password-container">
       <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
-      <i class="fas fa-eye eye-icon" id="togglePassword"></i>
+      <input type="password" id="password" name="password" required> <i class="fas fa-eye eye-icon" id="togglePassword"></i></input>
+      
     </div>
     <div class="form-group">
       <button type="submit">Login</button>
@@ -212,6 +242,14 @@
         resetAlert.style.borderColor = 'purple';
         resetAlert.innerText = data.message || 'Failed to send password reset link';
       }
+    });
+
+    document.getElementById('togglePassword').addEventListener('click', function () {
+      const passwordField = document.getElementById('password');
+      const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordField.setAttribute('type', type);
+      this.classList.toggle('fa-eye');
+      this.classList.toggle('fa-eye-slash');
     });
   </script>
 </body>

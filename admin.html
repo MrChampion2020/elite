@@ -330,6 +330,36 @@ color: purple;
 color: purple;}
 
 
+.password-container {
+      position: relative;
+      top: 15px;
+      margin-left: 300px;
+      cursor: pointer;
+      color: purple;
+    }
+    password-container {
+  position: relative;
+}
+
+.input-container {
+  position: relative;
+}
+
+.input-container input {
+  width: 100%;
+  padding-left: 40px; /* Adjust the padding to make space for the icon */
+}
+
+.eye-icon {
+  position: absolute;
+  top: 55%;
+  left: 78%; /* Adjust this value to place the icon correctly */
+  transform: translateY(-0%);
+  cursor: pointer;
+  color: purple;
+}
+
+
     @media screen and (max-width: 678px){
       
       body{
@@ -499,6 +529,35 @@ height: 90%;
 color: purple;
 }
 
+.password-container {
+      position: relative;
+      top: 15px;
+      margin-left: 300px;
+      cursor: pointer;
+      color: purple;
+    }
+    password-container {
+  position: relative;
+}
+
+.input-container {
+  position: relative;
+}
+
+.input-container input {
+  width: 100%;
+  padding-left: 40px; /* Adjust the padding to make space for the icon */
+}
+
+.eye-icon {
+  position: absolute;
+  top: 58%;
+  left: 85%; /* Adjust this value to place the icon correctly */
+  transform: translateY(-0%);
+  cursor: pointer;
+  color: purple;
+}
+
     }
   </style>
 </head>
@@ -507,7 +566,9 @@ color: purple;
     <h1>Welcome Admin</h1>
     <p>Login to access your dashboard</p>
     <input type="text" id="username" placeholder="Username" required>
-    <input type="password" id="password" placeholder="Password" required>
+    <input class="password-container" type="password" id="password" placeholder="Password" required>
+    <i class="fas fa-eye eye-icon" id="togglePassword"></i></input>
+      
     <button onclick="login()">Login</button>
     <div class="error" id="error"></div>
   </div>
@@ -1300,6 +1361,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
       });
     });
+
+
+    document.getElementById('togglePassword').addEventListener('click', function () {
+      const passwordField = document.getElementById('password');
+      const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordField.setAttribute('type', type);
+      this.classList.toggle('fa-eye');
+      this.classList.toggle('fa-eye-slash');
+    });
+
   </script>
 </body>
 </html>
