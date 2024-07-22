@@ -410,16 +410,17 @@
             margin: 10px 0;
             color: purple;
         }
-        .course-item div h2{
+        .course-item div span{
+          padding: 0px 5%;
            text-align: center;
-           font-size: 20px;
+           font-size: 16px;
+           font-weight: 600;
            font-family: Georgia, 'Times New Roman', Times, serif;
         }
-        .course-item div h2{
+        .course-item div p{
            text-align: center;
            font-size: 14px;
            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-           line-height: 5px;
           }
 
         .course-item button {
@@ -684,34 +685,29 @@
       .withdraw-form {
       width: 100%;
       border-radius: 10px;
-    }
+      }
 
-    #dailyTask{
+      #dailyTask{
       display: none;
-      height: 80%;
-      width: 100%;
-      margin-top: 15%;
-      background-color: rgb(255, 255, 255);
-      color: purple;
-      margin: auto;
       position: fixed;
-      padding: 10px;
-      border-radius: 10px;
-    }
-    #taskArea{
+      top: 16%;
+
+      width: 100%;
+      height: 50%;
+      background: rgb(255, 255, 255);
       display: none;
-      height: 65%;
-      width: 100%;
-      margin-top: 15%;
-      background-color: rgb(255, 255, 255);
-      color: purple;
-      margin: auto;
-      position: fixed;
-      padding: 10px;
-      border-radius: 10px;
-      margin: auto;
+      justify-content: center;
+      align-items: center;
+
     }
-    .taskarea{
+    #exitTask{
+      padding: 8px 16px;
+      border: none;
+      background-color: purple;
+      color: white;
+      border-radius: 5px;
+    }
+    /*.taskarea{
       width: 100%;
       height: 90%;
       display: flex;
@@ -720,15 +716,65 @@
     }
     .adspace{
       height: 50%;
-      width: 80%;
+      width: 100%;
     }
     .taskspace{
       height: 50%;
-      width: 0%;
+      width: 50%;
       margin: auto;
     }
-
-
+    #taskArea{
+      display: none;
+      height: 70%;
+      width: 80%;
+      margin-top: 15%;
+      background-color: rgb(255, 255, 255);
+      color: purple;
+      margin: auto;
+      position: fixed;
+      padding: 10px;
+      border-radius: 10px;
+      margin: auto;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .container h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .container ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    #tasks-container{
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .container button {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    .container button:hover {
+      background-color: #0056b3;
+    }
+   */
     #courseArea{
         width: 100%;
         display: none;
@@ -777,14 +823,17 @@
             margin: 10px 0;
             color: purple;
         }
-        .course-item div h2{
+        .course-item div span{
+          padding: 0px 5%;
            text-align: center;
            font-size: 16px;
            font-family: Georgia, 'Times New Roman', Times, serif;
         }
         .course-item div p{
+          width: 80%;
+          padding: 2px;
            text-align: center;
-           font-size: 14px;
+           font-size: 12px;
            font-family: 'Times New Roman', Times, serif;
            font-weight: lighter;
          
@@ -879,15 +928,16 @@
 
     #dailyTask{
       display: none;
-      position: relative;
-      flex-direction: row;
-      height: 70%;
-      width: 80%;
-      margin-top: 15%;
-      background-color: rgb(255, 255, 255);
-      color: purple;
-      margin: auto;
       position: fixed;
+      top: 16%;
+      left: 5%;
+      width: 85%;
+      height: 70%;
+      background: rgb(255, 255, 255);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
       padding: 10px;
       border-radius: 10px;
     }
@@ -898,7 +948,7 @@
       color: white;
       border-radius: 5px;
     }
-    .taskarea{
+    /*.taskarea{
       width: 90%;
       height: 90%;
       display: flex;
@@ -944,7 +994,7 @@
       list-style-type: none;
       padding: 0;
     }
-    .container ul li {
+    #tasks-container{
       padding: 10px;
       margin-bottom: 10px;
       background: #f9f9f9;
@@ -965,18 +1015,7 @@
     .container button:hover {
       background-color: #0056b3;
     }
-    #socialTask{
-      display: none;
-      height: 70%;
-      width: 80%;
-      margin-top: 15%;
-      background-color: rgb(255, 255, 255);
-      color: purple;
-      margin: auto;
-      position: fixed;
-      padding: 10px;
-      border-radius: 10px;
-    }
+   */
     #wheelPage {
       display: none;
       position: fixed;
@@ -1163,7 +1202,7 @@
 
 
 
-  <main>
+  <main >
 
     <div class="user-welcome">
       <span class="profile">
@@ -1173,7 +1212,7 @@
     </div>
 
 
-    <section class="profile-top">
+    <section class="profile-top" id="main">
       <div class="wallet">
        <h3>NGN: <b id="wallet"></b>  <!--<b class="balance">Balance</b>--></h3>
        <h4 > EC: <b id="referralWallet"></b>   <!--<b class="bonus">Bonus</b>--></h4>
@@ -1261,27 +1300,44 @@
 
 
 
-<div id="dailyTask">
+<span id="dailyTask">
 
   <button id="exitTask">Exit</button>
 
-  <div class="taskarea">
+  <div>
+    
+    <p>follow, like and share to get paid in dollars, you can withdraw cash per month</p>
+
+
+
+    <h2>complete Tasks and come back to collect reward</h2>
+
+
+    <div id="tasks-container"></div>
+  
+  </div>
+
+  
+
+</span>
+  <!--<div class="taskarea">
 
 <span class="taskspace">
 
   <p>follow, like and share to get paid in dollars, you can withdraw cash per month</p>
 
 
-  <div class="container">
+  <div class="taskscontainer">
 
 
     <h2>complete Tasks and come back to collect reward</h2>
 
 
-    <ul id="tasks-container"></ul>
+    <div id="tasks-container"></div>
 
-    <h1>Top Earners in the Last 48 Hours</h1>
-    <ul id="top-earners-list"></ul>
+<!-<h1>Top Earners in the Last 48 Hours</h1>
+    <ul id="top-earners-list"></ul>--
+    
 
 
 
@@ -1289,9 +1345,8 @@
 
 </span>
 
-</div>
+</div>-->
 
-</div>
 
 
 
@@ -1322,25 +1377,25 @@
       <div class="course-item" id="course1">
           <img src="ecomm.jpg" alt="Course 1">
           <div>
-              <h2>Elite E-commerce</h2>
-              <p>E-commerce: Use ELITEARN to promote your authentic products and attract a high-quality audience (Customers).
-                  All users and non-users are welcome to display their products and services and reach a niche market at a reasonable cost.</p>
+              <span>Elite E-commerce</span>
+              <p>Promote your authentic products and attract a high-quality audience.
+                  Users and non-users are welcome to display their products and services and reach a niche market at a reasonable cost.</p>
           </div>
           <button>Register</button>
       </div>
       <div class="course-item" id="course2">
           <img src="academy.jpg" alt="Course 2">
           <div>
-              <h2>Academic Writing</h2>
-              <p>Academic writings:Users have the opportunity to utilize their earnings to purchase courses on academic project writing, including master's theses, undergraduate projects, and more. Additionally, they can monetize their written works.</p>
+              <span>Academic Writing</span>
+              <p>Users have the opportunity to utilize their earnings to purchase courses on academic project writing, including master's theses, undergraduate projects, and more. Additionally, they can monetize their written works.</p>
           </div>
           <button>Register</button>
       </div>
       <div class="course-item" id="course3">
           <img src="trades.jpg" alt="Course 3">
           <div>
-              <h2>Elite Trading</h2>
-              <p>Trading: users can buy stock, forex, and cryptocurrency courses using their earnings. It enables them become profitable.</p>
+              <span>Elite Trading</span>
+              <p>users can buy stock, forex, and cryptocurrency courses using their earnings. It enables them become profitable.</p>
           </div>
           <button>Register</button>
       </div>
@@ -1481,7 +1536,8 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
 
-
+/*
+Top earners
     document.addEventListener('DOMContentLoaded', function() {
       const openTaskButton = document.getElementById('taskSpace');
       const TaskPage = document.getElementById('taskArea');
@@ -1501,98 +1557,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
       });
     });
-
-
-    
-    document.addEventListener('DOMContentLoaded', function() {
-      const opensocialButton = document.getElementById('taskSocial');
-      const socialPage = document.getElementById('socialTask');
-      const dailyTask = document.getElementById('dailyTask');
-      const socialExitButton = document.getElementById('socialExitButton');
-
-      opensocialButton.addEventListener('click', function(event) {
-        event.preventDefault();
-        socialPage.style.display = 'block';
-        dailyTask.style.display = 'none';
-      });
-
-      socialExitButton.addEventListener('click', function(event) {
-        event.preventDefault();
-        socialPage.style.display = 'none';
-        dailyTask.style.display = 'block';
-
-      });
-    });
-
-
-    /*
-document.addEventListener('DOMContentLoaded', () => {
-    const tasksContainer = document.getElementById('tasks-container');
-
-    const fetchTasks = async () => {
-        try {
-            const response = await fetch(`${API_URL}/user/tasks`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            const tasks = await response.json();
-            displayTasks(tasks);
-        } catch (error) {
-            console.error('Error fetching tasks:', error);
-        }
-    };
-
-    const displayTasks = (tasks) => {
-        if (tasks.length === 0) {
-            tasksContainer.innerHTML = '<p>No tasks assigned.</p>';
-            return;
-        }
-
-        tasksContainer.innerHTML = tasks.map(task => `
-            <div class="task" id="task-${task._id}">
-                <h3>${task.name}</h3>
-                <p>${task.description}</p>
-                <a href="${task.link}" target="_blank" rel="noopener noreferrer">${task.link}</a>
-                <button class="complete-button" onclick="completeTask('${task._id}')">Complete Task</button>
-            </div>
-        `).join('');
-    };
-
-    window.completeTask = async (taskId) => {
-        try {
-            const response = await fetch(`${API_URL}/user/complete-task/${taskId}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            const result = await response.json();
-            if (response.ok) {
-                document.getElementById(`task-${taskId}`).remove();
-                alert('Task completed and user rewarded');
-            } else {
-                alert(result.message);
-            }
-        } catch (error) {
-            console.error('Error completing task:', error);
-        }
-    };
-
-    fetchTasks();
-});
 */
 
+
+/*
 document.addEventListener('DOMContentLoaded', () => {
-  
+
     const tasksContainer = document.getElementById('tasks-container');
 
     const fetchTasks = async () => {
         try {
             const response = await fetch(`${API_URL}/user/tasks`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`, //`Bearer ${localStorage.getItem('token')}`
                 }
             });
             const tasks = await response.json();
@@ -1626,7 +1603,7 @@ const completeTask = async (taskId) => {
         const response = await fetch(`${API_URL}/tasks/${taskId}/complete`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Authorization': `Bearer ${token}`, //`Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json'
             }
         });
@@ -1642,6 +1619,73 @@ const completeTask = async (taskId) => {
     }
 };
 
+*/
+
+// Function to fetch tasks
+const fetchTasks = async () => {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`${API_URL}/user/tasks`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+
+        if (response.ok) {
+            const tasks = await response.json();
+            displayTasks(tasks);
+        } else {
+            const error = await response.json();
+            console.error('Error fetching tasks:', error);
+        }
+    } catch (error) {
+        console.error('Error fetching tasks:', error);
+    }
+};
+
+// Function to display tasks
+const displayTasks = (tasks) => {
+    const tasksContainer = document.getElementById('tasks-container');
+    
+    if (tasks.length === 0) {
+        tasksContainer.innerHTML = '<p>No tasks assigned.</p>';
+        return;
+    }
+
+    tasksContainer.innerHTML = tasks.map(task => `
+        <div class="task" id="task-${task._id}">
+            <h3>${task.taskName}</h3>
+            <p><a href="${task.link}" target="_blank" rel="noopener noreferrer">${task.description}</a></p>
+            <button class="complete-button" onclick="completeTask('${task._id}')">Complete Task</button>
+        </div>
+    `).join('');
+};
+
+// Function to complete a task
+const completeTask = async (taskId) => {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`${API_URL}/user/complete-task/${taskId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            document.getElementById(`task-${taskId}`).remove();
+            alert('Task completed successfully! 0.2 has been added to your elitewallet.');
+        } else {
+            const error = await response.json();
+            console.error('Error completing task:', error);
+        }
+    } catch (error) {
+        console.error('Error completing task:', error);
+    }
+};
 
 
 
@@ -1906,7 +1950,7 @@ async function withdrawFunds() {
             try {
                 const response = await fetch(`${API_URL}/top-earners`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`, //`Bearer ${localStorage.getItem('token')}`
                     }
                 });
                 const topEarners = await response.json();

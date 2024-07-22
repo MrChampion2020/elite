@@ -154,22 +154,8 @@ app.get('/admin/tasks', async (req, res) => {
   res.json(tasks);
 });
 
+
 /*
-//user tasks
-app.get('/user/tasks', async (req, res) => {
-  try {
-      const userId = req.user._id;
-      const user = await User.findById(userId).populate('tasks');
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
-
-      res.json(user.tasks);
-  } catch (error) {
-      res.status(500).json({ message: 'Error fetching tasks', error });
-  }
-});*/
-
 app.get('/user/tasks', authenticateToken, async (req, res) => {
   try {
       const userId = req.user._id;
@@ -184,7 +170,7 @@ app.get('/user/tasks', authenticateToken, async (req, res) => {
       res.status(500).json({ message: 'Error fetching tasks', error });
   }
 });
-
+*/
 // Mark task as completed
 app.post('/admin/complete-task/:taskId', async (req, res) => {
   const { taskId } = req.params;
@@ -200,7 +186,7 @@ app.post('/admin/complete-task/:taskId', async (req, res) => {
 });
 
 
-
+/*
 // Protected route example
 
 app.post('/user/complete-task/:taskId', async (req, res) => {
@@ -227,7 +213,54 @@ app.post('/user/complete-task/:taskId', async (req, res) => {
   }
 });
 
+*/
 
+// Fetch tasks for authenticated user
+app.get('/user/tasks', authenticateToken, async (req, res) => {
+  try {
+      const userId = req.user._id;
+      const tasks = await Task.find({ userIds: userId });
+
+      if (tasks.length === 0) {
+          return res.status(404).json({ message: 'No tasks found yet, always check for updated daily tasks' });
+      }
+
+      res.json(tasks);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching tasks', error });
+  }
+});
+
+// Mark task as completed and update user's elitewallet
+app.post('/user/complete-task/:taskId', authenticateToken, async (req, res) => {
+  try {
+      const { taskId } = req.params;
+      const userId = req.user._id;
+
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      const taskIndex = user.tasks.indexOf(taskId);
+      if (taskIndex > -1) {
+          user.tasks.splice(taskIndex, 1);
+          user.elitewallet += 0.2;
+          await user.save();
+
+          // Mark task as completed
+          const task = await Task.findById(taskId);
+          task.status = 'completed';
+          await task.save();
+
+          return res.status(200).json({ message: 'Task completed and user rewarded' });
+      } else {
+          return res.status(404).json({ message: 'Task not found for user' });
+      }
+  } catch (error) {
+      res.status(500).json({ message: 'Error completing task', error });
+  }
+});
 
 
 

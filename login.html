@@ -344,7 +344,7 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
         return;
       }
 
-      const response = await fetch(`${API_URL}/api/reset-password/request`, {
+      const response = await fetch(`${API_URL}/reset-password/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
