@@ -154,7 +154,7 @@ app.get('/admin/tasks', async (req, res) => {
   res.json(tasks);
 });
 
-
+/*
 //user tasks
 app.get('/user/tasks', async (req, res) => {
   try {
@@ -168,8 +168,22 @@ app.get('/user/tasks', async (req, res) => {
   } catch (error) {
       res.status(500).json({ message: 'Error fetching tasks', error });
   }
-});
+});*/
 
+app.get('/user/tasks', authenticateToken, async (req, res) => {
+  try {
+      const userId = req.user._id;
+      const tasks = await Task.find({ userIds: userId });
+
+      if (tasks.length === 0) {
+          return res.status(404).json({ message: 'No tasks found yet, always check for updated daily tasks' });
+      }
+
+      res.json(tasks);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching tasks', error });
+  }
+});
 
 // Mark task as completed
 app.post('/admin/complete-task/:taskId', async (req, res) => {
@@ -295,7 +309,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
 };
 
 
-app.post('/api/reset-password/request', async (req, res) => {
+app.post(`${API_URL}/reset-password/request`, async (req, res) => {
   const { email } = req.body;
 
   try {
@@ -313,7 +327,7 @@ app.post('/api/reset-password/request', async (req, res) => {
     user.resetTokenExpiry = resetTokenExpiry;
     await user.save();
 
-    const resetLink = `https://www.elitearn.com/reset-password?token=${resetToken}&email=${email}`;
+    const resetLink = `${API_URL}/reset-password?token=${resetToken}&email=${email}`;
 
     const mailOption = {
       from: 'Elitearn',
@@ -331,7 +345,7 @@ app.post('/api/reset-password/request', async (req, res) => {
   }
 });
 
-app.post('/api/reset-password', async (req, res) => {
+app.post(`${API_URL}/reset-password`, async (req, res) => {
   const { token, email, newPassword } = req.body;
 
   try {

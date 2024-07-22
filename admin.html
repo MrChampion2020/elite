@@ -138,7 +138,7 @@
       z-index: 1000;
     }
    nav{
-margin-top: 10%;
+margin-top: 4%;
 height: 60%;}
     nav ul {
       width: 80%;
@@ -156,15 +156,12 @@ height: 60%;}
     nav ul li {
       width: 25%;
       height: 80%;
-
-      width: 30%;
-      height: 8%;
       margin: 20px auto;
       cursor: pointer;
       font-size: 16px;
       font-family: 'Times New Roman', Times, serif;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 800;
       color: purple;
       border: 1px solid purple;
       padding: 5%;
@@ -177,9 +174,9 @@ height: 60%;}
       border: 1px solid purple;
       color: purple;
       text-align: center;
-      border-radius: 30px;
+      border-radius: 20px;
       font-size: 20px;
-      padding: 20px;
+      padding:  20px 20%;
     }
     nav ul li a:hover {
       width: auto;
@@ -236,7 +233,7 @@ height: 60%;}
       border-radius: 4px;
     }
     .taskcontainer button {
-      background-color: #28a745;
+      background-color: purple;
       color: white;
       cursor: pointer;
     }
@@ -420,7 +417,8 @@ color: purple;}
       border: 0.2px solid purple;
     }
 nav{
-height: 60%;}
+height: 60%;
+margin-top: 4%;}
 
     nav ul {
       width: 100%;
@@ -455,7 +453,7 @@ height: 60%;}
       text-align: center;
       border-radius: 30px;
       font-size: 14px;
-      padding: 5px;
+      padding: 5px 15%;
 
     }
     nav ul li a:hover {
@@ -487,6 +485,14 @@ display: none;
       color: white;
       border-radius: 5px;
     }
+    #tasksArea .taskButton, button{
+      padding: 8px 16px;
+      border: none;
+      background-color: purple;
+      color: white;
+      border-radius: 5px;
+    }
+
 .tasksView{
 width: 100%;
 height: 90%;
@@ -591,11 +597,7 @@ color: purple;
         </div>
         <nav>
           <ul>
-
             <li><a href="#" id="socialTask">Task Lab</a></li>
-
-            <li><a href="#" id="socialTask">Create Tasks</a></li>
-
             <li><a href="#" id="viewTasks">Tasks</a></li>
             <li><a href="#" id="airtime">Set VTU</a></li>
             <li><a href="#" id="openWithdrawal" >Withdraws</a></li>
@@ -628,7 +630,7 @@ color: purple;
       <div id="user-select">
         <!-- User list will be populated here -->
       </div>
-      <button type="submit">Create Task</button>
+      <button type="submit" class="taskButton">Create</button>
     </form>
 
   </div>
