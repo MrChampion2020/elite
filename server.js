@@ -299,8 +299,11 @@ app.post('/admin/create-task', async (req, res) => {
 // Create a new task and assign to users
 
 app.post('/admin/create-task', async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const { taskId, taskName, description, link, type, userIds } = req.body;
+    const { taskName, description, link, type, userIds } = req.body;
 
     // Validate userIds
     if (!Array.isArray(userIds) || userIds.length === 0) {
@@ -308,8 +311,8 @@ app.post('/admin/create-task', async (req, res) => {
     }
 
     // Create a new task
-    const newTask = new Task({ taskId, taskName, description, link, type });
-    await newTask.save();
+    const newTask = new Task({ taskName, description, link, type });
+    await newTask.save({ session });
     console.log('Task saved:', newTask);
 
     // Assign task to selected users
@@ -326,7 +329,8 @@ app.post('/admin/create-task', async (req, res) => {
             assignedAt: new Date(),
           },
         },
-      }
+      },
+      { session }
     );
 
     console.log('Users updated:', updateResult);
@@ -334,11 +338,17 @@ app.post('/admin/create-task', async (req, res) => {
     // Check if any users were actually updated
     if (updateResult.modifiedCount === 0) {
       console.warn('No users were updated. Check if the userIds are correct.');
+      await session.abortTransaction();
       return res.status(404).json({ message: 'No users found to update' });
     }
 
+    await session.commitTransaction();
+    session.endSession();
+
     res.status(201).json({ message: 'Task created and assigned to users' });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     console.error('Error creating task:', error);
     res.status(500).json({ message: 'Error creating task', error });
   }

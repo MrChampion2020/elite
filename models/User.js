@@ -1,28 +1,42 @@
-
+// Task.js
 const mongoose = require('mongoose');
 
-const taskSchema = new mongoose.Schema({
-  taskId: mongoose.Schema.Types.ObjectId,
+const TaskSchema = new mongoose.Schema({
   taskName: String,
   description: String,
   link: String,
   type: String,
-  assignedAt: { type: Date, default: Date.now },
+  usersAssigned: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  status: { type: String, enum: ['pending', 'completed'], default: 'pending' }
+}, { timestamps: true });
+
+module.exports = mongoose.model('Task', TaskSchema);
+
+// User.js
+const mongoose = require('mongoose');
+
+const TaskAssignmentSchema = new mongoose.Schema({
+  taskId: { type: mongoose.Schema.Types.ObjectId, ref: 'Task' },
+  taskName: String,
+  description: String,
+  link: String,
+  type: String,
+  assignedAt: { type: Date, default: Date.now }
 });
 
 const UserSchema = new mongoose.Schema({
   name: String,
-  email: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
-  resetPasswordToken: String,
-  resetPasswordExpires: Date,
+  email: { type: String, unique: true },
+  password: String,
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
   wallet: { type: Number, default: 0 },
   fullName: String,
-  username: { type: String, unique: true, required: true },
+  username: { type: String, unique: true },
   phone: String,
   couponCode: String,
   packageOption: String,
-  verificationToken: String,
+  verificationToken: { type: String },
   isVerified: { type: Boolean, default: false },
   referralWallet: { type: Number, default: 3000 },
   eliteWallet: { type: Number, default: 0 },
@@ -39,25 +53,24 @@ const UserSchema = new mongoose.Schema({
     bankName: String,
     accountHolderName: String,
   },
-  tasks: [taskSchema],
+  tasks: [TaskAssignmentSchema],
   status: {
     type: String,
     enum: ['pending', 'active', 'inactive'],
-    default: 'pending',
+    default: 'pending'
   },
   lastLogin: { type: Date, default: null },
   lastSpin: { type: Date, default: null }
 }, { timestamps: true });
 
 UserSchema.pre('save', function(next) {
-  if (!this.referralLink && this.username) {
+  if (!this.referralLink) {
     this.referralLink = `https://elitearn.com/register?ref=${this.username}`;
   }
   next();
 });
 
 module.exports = mongoose.model('User', UserSchema);
-
 
 
 
