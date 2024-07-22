@@ -112,28 +112,6 @@ const authenticateVendorToken = (req, res, next) => {
 
 
 
-/*
-// Create a new task
-app.post('/admin/create-task', async (req, res) => {
-  try {
-      const { taskId, taskName, description, link, type, userIds } = req.body;
-      const newTask = new Task({ taskId, taskName, description, link, type, userIds });
-
-      await newTask.save();
-
-      // Assign task to selected users
-      await User.updateMany(
-          { _id: { $in: userIds } },
-          { $push: { tasks: newTask._id } }
-      );
-
-      res.status(201).json({ message: 'Task created and assigned to users' });
-  } catch (error) {
-      res.status(500).json({ message: 'Error creating task', error });
-  }
-});
-
-*/
 
 // Fetch all tasks
 app.get('/tasks', authenticateAdmin, async (req, res) => {
@@ -154,23 +132,12 @@ app.get('/admin/tasks', async (req, res) => {
   res.json(tasks);
 });
 
-
-/*
-app.get('/user/tasks', authenticateToken, async (req, res) => {
-  try {
-      const userId = req.user._id;
-      const tasks = await Task.find({ userIds: userId });
-
-      if (tasks.length === 0) {
-          return res.status(404).json({ message: 'No tasks found yet, always check for updated daily tasks' });
-      }
-
-      res.json(tasks);
-  } catch (error) {
-      res.status(500).json({ message: 'Error fetching tasks', error });
-  }
+app.get('/user/tasks', async (req, res) => {
+  const tasks = await Task.find();
+  res.json(tasks);
 });
-*/
+
+
 // Mark task as completed
 app.post('/admin/complete-task/:taskId', async (req, res) => {
   const { taskId } = req.params;
@@ -187,365 +154,6 @@ app.post('/admin/complete-task/:taskId', async (req, res) => {
 
 
 /*
-// Protected route example
-
-app.post('/user/complete-task/:taskId', async (req, res) => {
-  try {
-      const { taskId } = req.params;
-      const userId = req.user._id;
-
-      const user = await User.findById(userId);
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
-
-      const taskIndex = user.tasks.indexOf(taskId);
-      if (taskIndex > -1) {
-          user.tasks.splice(taskIndex, 1);
-          user.elitewallet += 0.2;
-          await user.save();
-          return res.status(200).json({ message: 'Task completed and user rewarded' });
-      } else {
-          return res.status(404).json({ message: 'Task not found for user' });
-      }
-  } catch (error) {
-      res.status(500).json({ message: 'Error completing task', error });
-  }
-});
-
-
-
-// Fetch tasks for authenticated user
-app.get('/user/tasks', authenticateToken, async (req, res) => {
-  try {
-      const userId = req.user._id;
-      const tasks = await Task.find({ userIds: userId });
-
-      if (tasks.length === 0) {
-          return res.status(404).json({ message: 'No tasks found yet, always check for updated daily tasks' });
-      }
-
-      res.json(tasks);
-  } catch (error) {
-      res.status(500).json({ message: 'Error fetching tasks', error });
-  }
-});
-
-// Mark task as completed and update user's elitewallet
-app.post('/user/complete-task/:taskId', authenticateToken, async (req, res) => {
-  try {
-      const { taskId } = req.params;
-      const userId = req.user._id;
-
-      const user = await User.findById(userId);
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
-
-      const taskIndex = user.tasks.indexOf(taskId);
-      if (taskIndex > -1) {
-          user.tasks.splice(taskIndex, 1);
-          user.elitewallet += 0.2;
-          await user.save();
-
-          // Mark task as completed
-          const task = await Task.findById(taskId);
-          task.status = 'completed';
-          await task.save();
-
-          return res.status(200).json({ message: 'Task completed and user rewarded' });
-      } else {
-          return res.status(404).json({ message: 'Task not found for user' });
-      }
-  } catch (error) {
-      res.status(500).json({ message: 'Error completing task', error });
-  }
-});
-
-
-
-// Create a new task and assign to users
-app.post('/admin/create-task', async (req, res) => {
-  try {
-    const { taskId, taskName, description, link, type, userIds } = req.body;
-    const newTask = new Task({ taskId, taskName, description, link, type, userIds });
-
-    await newTask.save();
-
-    // Assign task to selected users
-    await User.updateMany(
-      { _id: { $in: userIds } },
-      {
-        $push: {
-          tasks: {
-            taskId: newTask._id,
-            taskName,
-            description,
-            link,
-            type,
-            assignedAt: new Date(),
-          },
-        },
-      }
-    );
-
-    res.status(201).json({ message: 'Task created and assigned to users' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating task', error });
-  }
-});*/
-
-
-// Create a new task and assign to users
-
-const createTask = async (taskData, userIds, session) => {
-  const newTask = new Task(taskData);
-  await newTask.save({ session });
-  console.log('Task saved:', newTask);
-
-  const updateResult = await User.updateMany(
-    { _id: { $in: userIds } },
-    {
-      $push: {
-        tasks: {
-          taskId: newTask._id,
-          ...taskData,
-          assignedAt: new Date(),
-        },
-      },
-    },
-    { session }
-  );
-
-  console.log('Users updated:', updateResult);
-  return newTask;
-};
-
-app.post('/admin/create-task', async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  const { taskName, description, link, type, userIds } = req.body;
-  const taskData = { taskName, description, link, type };
-
-  // Validate userIds
-  if (!Array.isArray(userIds) || userIds.length === 0) {
-    await session.abortTransaction();
-    session.endSession();
-    return res.status(400).json({ message: 'userIds must be a non-empty array' });
-  }
-
-  try {
-    let task;
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      try {
-        task = await createTask(taskData, userIds, session);
-        await session.commitTransaction();
-        session.endSession();
-        return res.status(201).json({ message: 'Task created and assigned to users', task });
-      } catch (error) {
-        console.log(`Attempt ${attempt} failed with error: ${error.message}`);
-        if (attempt < 3 && error.errorLabels && error.errorLabels.includes('TransientTransactionError')) {
-          console.log(`TransientTransactionError detected, retrying... ${attempt}`);
-          await session.abortTransaction();
-          await new Promise(res => setTimeout(res, 1000)); // Wait before retrying
-          session.startTransaction();
-        } else {
-          throw error;
-        }
-      }
-    }
-
-    // If we reach here, it means all attempts have failed
-    throw new Error('Failed to create task after multiple attempts');
-  } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
-    console.error('Error creating task:', error);
-    res.status(500).json({ message: 'Error creating task', error });
-  }
-});
-
-
-
-
-/*
-const MAX_RETRY_COUNT = 3; // Maximum number of retries for transient errors
-
-
-app.post('/admin/create-task', async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    const { taskName, description, link, type, userIds } = req.body;
-
-    // Validate userIds
-    if (!Array.isArray(userIds) || userIds.length === 0) {
-      return res.status(400).json({ message: 'userIds must be a non-empty array' });
-    }
-
-    // Create a new task
-    const newTask = new Task({ taskName, description, link, type });
-
-    // Save the task outside the retry loop to ensure it's only saved once
-    await newTask.save({ session });
-    console.log('Task saved:', newTask);
-
-    let updateResult;
-    let retryCount = 0;
-    let success = false;
-
-    while (retryCount < MAX_RETRY_COUNT && !success) {
-      try {
-        // Assign task to selected users
-        updateResult = await User.updateMany(
-          { _id: { $in: userIds } },
-          {
-            $push: {
-              tasks: {
-                taskId: newTask._id,
-                taskName,
-                description,
-                link,
-                type,
-                assignedAt: new Date(),
-              },
-            },
-          },
-          { session }
-        );
-
-        console.log('Users updated:', updateResult);
-
-        // Check if any users were actually updated
-        if (updateResult.modifiedCount === 0) {
-          console.warn('No users were updated. Check if the userIds are correct.');
-          await session.abortTransaction();
-          return res.status(404).json({ message: 'No users found to update' });
-        }
-
-        success = true;
-      } catch (error) {
-        if (error.errorLabels && error.errorLabels.includes('TransientTransactionError')) {
-          console.warn('TransientTransactionError detected, retrying...', retryCount + 1);
-          retryCount++;
-        } else {
-          throw error;
-        }
-      }
-    }
-
-    if (!success) {
-      await session.abortTransaction();
-      return res.status(500).json({ message: 'Failed to update users after multiple retries' });
-    }
-
-    await session.commitTransaction();
-    session.endSession();
-
-    res.status(201).json({ message: 'Task created and assigned to users' });
-  } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
-    console.error('Error creating task:', error);
-    res.status(500).json({ message: 'Error creating task', error });
-  }
-});*/
-
-
-/*
-app.post('/admin/create-task', async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    const { taskName, description, link, type, userIds } = req.body;
-
-    // Validate userIds
-    if (!Array.isArray(userIds) || userIds.length === 0) {
-      return res.status(400).json({ message: 'userIds must be a non-empty array' });
-    }
-
-    // Create a new task
-    const newTask = new Task({ taskName, description, link, type });
-    await newTask.save({ session });
-    console.log('Task saved:', newTask);
-
-    // Assign task to selected users
-    const updateResult = await User.updateMany(
-      { _id: { $in: userIds } },
-      {
-        $push: {
-          tasks: {
-            taskId: newTask._id,
-            taskName,
-            description,
-            link,
-            type,
-            assignedAt: new Date(),
-          },
-        },
-      },
-      { session }
-    );
-
-    console.log('Users updated:', updateResult);
-
-    // Check if any users were actually updated
-    if (updateResult.modifiedCount === 0) {
-      console.warn('No users were updated. Check if the userIds are correct.');
-      await session.abortTransaction();
-      return res.status(404).json({ message: 'No users found to update' });
-    }
-
-    await session.commitTransaction();
-    session.endSession();
-
-    res.status(201).json({ message: 'Task created and assigned to users' });
-  } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
-    console.error('Error creating task:', error);
-    res.status(500).json({ message: 'Error creating task', error });
-  }
-});
-
-
-app.post('/admin/create-task', async (req, res) => {
-  try {
-    const { taskId, taskName, description, link, type, userIds } = req.body;
-    const newTask = new Task({ taskId, taskName, description, link, type, userIds });
-
-    await newTask.save();
-    console.log('Task saved:', newTask);
-
-    // Assign task to selected users
-    const updateResult = await User.updateMany(
-      { _id: { $in: userIds } },
-      {
-        $push: {
-          tasks: {
-            taskId: newTask._id,
-            taskName,
-            description,
-            link,
-            type,
-            assignedAt: new Date(),
-          },
-        },
-      }
-    );
-    console.log('Users updated:', updateResult);
-
-    res.status(201).json({ message: 'Task created and assigned to users' });
-  } catch (error) {
-    console.error('Error creating task:', error);
-    res.status(500).json({ message: 'Error creating task', error });
-  }
-});
-*/
-
 // Fetch tasks for authenticated user
 app.get('/user/tasks', authenticateToken, async (req, res) => {
   try {
@@ -560,7 +168,9 @@ app.get('/user/tasks', authenticateToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error fetching tasks', error });
   }
-});
+});*
+
+
 
 // Mark task as completed and update user's elitewallet
 app.post('/user/complete-task/:taskId', authenticateToken, async (req, res) => {
@@ -592,7 +202,7 @@ app.post('/user/complete-task/:taskId', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Error completing task', error });
   }
 });
-
+*/
 
 /*
 // Schedule a job to check for tasks assigned for more than 24 hours
@@ -624,20 +234,134 @@ cron.schedule('* * * * *', async () => {
     console.error('Error in scheduled task:', error);
   }
 });*/
-/*
-// Middleware for authenticating user token
-function authenticateToken(req, res, next) {
-  const token = req.headers['authorization'];
-  if (!token) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-}*/
 
 
+app.post('/admin/create-task', async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  const { taskName, description, link, type, userIds } = req.body;
+  const taskData = { taskName, description, link, type, status: 'pending' };
+
+  if (!Array.isArray(userIds) || userIds.length === 0) {
+    await session.abortTransaction();
+    session.endSession();
+    return res.status(400).json({ message: 'userIds must be a non-empty array' });
+  }
+
+  try {
+    let task;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        task = await createTask(taskData, userIds, session);
+        await session.commitTransaction();
+        session.endSession();
+        return res.status(201).json({ message: 'Task created and assigned to users', task });
+      } catch (error) {
+        console.log(`Attempt ${attempt} failed with error: ${error.message}`);
+        if (attempt < 3 && error.errorLabels && error.errorLabels.includes('TransientTransactionError')) {
+          console.log(`TransientTransactionError detected, retrying... ${attempt}`);
+          await session.abortTransaction();
+          await new Promise(res => setTimeout(res, 1000)); // Wait before retrying
+          session.startTransaction();
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    throw new Error('Failed to create task after multiple attempts');
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Error creating task:', error);
+    res.status(500).json({ message: 'Error creating task', error });
+  }
+});
+
+const createTask = async (taskData, userIds, session) => {
+  const newTask = new Task(taskData);
+  await newTask.save({ session });
+  console.log('Task saved:', newTask);
+
+  const updateResult = await User.updateMany(
+    { _id: { $in: userIds } },
+    {
+      $push: {
+        tasks: {
+          taskId: newTask._id,
+          taskName: taskData.taskName,
+          description: taskData.description,
+          link: taskData.link,
+          type: taskData.type,
+          status: taskData.status,
+          assignedAt: new Date(),
+        },
+      },
+    },
+    { session }
+  );
+
+  console.log('Users updated:', updateResult);
+  return newTask;
+};
+
+// Fetch and display tasks for users and admin
+app.get('/tasks', async (req, res) => {
+  try {
+    const tasks = await Task.find();
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    res.status(500).json({ message: 'Error fetching tasks', error });
+  }
+});
+
+app.get('/user/:userId/tasks', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const user = await User.findById(userId).populate('tasks.taskId');
+    res.status(200).json(user.tasks);
+  } catch (error) {
+    console.error('Error fetching user tasks:', error);
+    res.status(500).json({ message: 'Error fetching user tasks', error });
+  }
+});
+
+// Add logic to remove tasks from user table after 24 hours
+const removeExpiredTasks = async () => {
+  const users = await User.find({ "tasks.assignedAt": { $lte: new Date(Date.now() - 24 * 60 * 60 * 1000) } });
+
+  for (const user of users) {
+    user.tasks = user.tasks.filter(task => task.assignedAt > new Date(Date.now() - 24 * 60 * 60 * 1000));
+    await user.save();
+  }
+};
+
+setInterval(removeExpiredTasks, 60 * 60 * 1000); // Run every hour
+
+// Add logic to add 0.2 to user eliteWallet if task is completed
+app.post('/user/:userId/complete-task/:taskId', async (req, res) => {
+  const { userId, taskId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    const task = user.tasks.id(taskId);
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    task.status = 'completed';
+    user.eliteWallet += 0.2;
+    await user.save();
+
+    res.status(200).json({ message: 'Task marked as completed and eliteWallet updated', user });
+  } catch (error) {
+    console.error('Error completing task:', error);
+    res.status(500).json({ message: 'Error completing task', error });
+  }
+});
 
   //User Endpoints
 
